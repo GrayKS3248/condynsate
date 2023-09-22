@@ -476,7 +476,10 @@ class Simulator:
                   pitch=None,
                   yaw=None):
         """
-        Loads a URDF object to the simulation engine.
+        Loads a URDF object to the simulation engine. All joint's
+        velocity control is disabled (this allows the joint to move freely),
+        angular and linear damping is set to 0 (eliminates air resistance), and 
+        joint dampling is set to 0 (eliminates joint friction).
 
         Parameters
         ----------
@@ -544,8 +547,25 @@ class Simulator:
         # Get the joint and link maps for the urdf object
         joint_map, link_map = self.make_joint_and_link_maps(urdf_id)
         
-        # Return the ID of the loaded urdf object
+        # Create urdf_obj and adjust the default state of its joints
         urdf_obj = URDF_Obj(urdf_id, joint_map, link_map)
+        for joint_name in joint_map:
+            # Disable velocity control ()
+            self.disable_velocity_control(urdf_obj,
+                                          joint_name=joint_name)
+            
+            # Set the linear and angular damping to 0 (eliminate drag)
+            self.set_linear_angular_damping(urdf_obj,
+                                            joint_name=joint_name,
+                                            linear_damping=0.,
+                                            angular_damping=0.)
+            
+            # Set damping of joints to 0 (eliminate friction)
+            self.set_joint_damping(urdf_obj,
+                                   joint_name=joint_name,
+                                   damping=0.)
+
+        # Return the URDF_Obj
         return urdf_obj
     
     
@@ -586,12 +606,91 @@ class Simulator:
         return joint_map, link_map
     
     
+    def disable_velocity_control(self,
+                                 urdf_obj=URDF_Obj(),
+                                 joint_name=""):
+        """
+        Disable velocity control mode for a joint. In pybullet, all joints are
+        initialized with velocity control mode engaged and a target velocity of
+        0. To simulate freely moving joints, velocity control is turned off.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj that contains that joint for which velocity control is
+            disabled. The default is URDF_Obj().
+        joint_name : string, optional
+            The name of the joint whose velocity control is disabled. The
+            joint name is specified in the .urdf file. The default is "".
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Set the joint velocity
+        if joint_name in joint_map:
+            joint_id = [joint_map[joint_name]]
+            mode = self.engine.VELOCITY_CONTROL
+            self.engine.setJointMotorControlArray(urdf_id,
+                                                  joint_id,
+                                                  mode,
+                                                  forces=[0])
+    
+    
+    def set_linear_angular_damping(self,
+                                   urdf_obj=URDF_Obj(),
+                                   joint_name="",
+                                   linear_damping=0.,
+                                   angular_damping=0.):
+        """
+        Allows user to set the linear and angular damping of a joint. Linear
+        and angular damping is a way to model drag. It is typically
+        reccomended that the user set these values to 0 for all joints.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj that contains that joint whose linear and angular
+            damping is being set. The default is URDF_Obj().
+        joint_name : string, optional
+            The name of the joint whose linear and angular damping is set. The
+            joint name is specified in the .urdf file. The default is "".
+        linear_damping : float, optional
+            The value of linear damping to apply. The default is 0..
+        angular_damping : float, optional
+            The value of angular damping to apply. The default is 0..
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Set the joint linear and angular damping
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+            self.engine.changeDynamics(urdf_id,
+                                       joint_id,
+                                       linearDamping=linear_damping,
+                                       angularDamping=angular_damping)
+    
+    
     def set_joint_damping(self,
                           urdf_obj=URDF_Obj(),
                           joint_name="",
                           damping=0.):
         """
-        Sets the damping of a joint in a urdf object.
+        Sets the damping of a joint in a urdf object. The damping of a joint
+        defines the energy loss incurred during movement of the joint. It is
+        a way to model joint friction.
 
         Parameters
         ----------
@@ -650,13 +749,12 @@ class Simulator:
         if link_name in link_map:
             joint_id = link_map[link_name]
             self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
-            
-            
+    
+        
     def set_joint_position(self,
                           urdf_obj=URDF_Obj(),
                           joint_name="",
-                          position=0.,
-                          verbose=False):
+                          position=0.):
         """
         Sets the position of a joint of a urdf object.
 
@@ -670,9 +768,6 @@ class Simulator:
             specified in the .urdf file. The default is "".
         position : float, optional
             The position to be applied to the joint. The default is 0..
-        verbose : bool, optional
-            Debug tool. When set to True, position is printed after being set.
-            The default is False.
 
         Returns
         -------
@@ -687,25 +782,11 @@ class Simulator:
         if joint_name in joint_map:
             joint_id = [joint_map[joint_name]]
             mode = self.engine.POSITION_CONTROL
-            force = [position]
+            position = [position]
             self.engine.setJointMotorControlArray(urdf_id,
                                                   joint_id,
                                                   mode,
-                                                  forces=force)
-    
-            # Debug printing
-            if verbose:
-                #TODO THIS IS INCORRECT. FIX INDICES
-                set_param = self.engine.getJointStates(urdf_id, joint_id)[0][1]
-                if set_param == force[0]:
-                    print(joint_name+" position set to: " + str(force[0]))
-                else:
-                    print("Could not set parameter.")
-                    print(joint_name + " position: " + str(set_param))
-        
-        # If the joint name is not in the joint map
-        elif verbose:
-            print("\"" + joint_name + "\"" + " is not in joint_map.")
+                                                  targetPositions=position)
     
     
     def set_joint_velocity(self,
@@ -743,31 +824,17 @@ class Simulator:
         if joint_name in joint_map:
             joint_id = [joint_map[joint_name]]
             mode = self.engine.VELOCITY_CONTROL
-            force = [velocity]
+            velocity = [velocity]
             self.engine.setJointMotorControlArray(urdf_id,
                                                   joint_id,
                                                   mode,
-                                                  forces=force)
-    
-            # Debug printing
-            if verbose:
-                set_param = self.engine.getJointStates(urdf_id, joint_id)[0][1]
-                if set_param == force[0]:
-                    print(joint_name+" velocity set to: " + str(force[0]))
-                else:
-                    print("Could not set parameter.")
-                    print(joint_name + " velocity: " + str(set_param))
-        
-        # If the joint name is not in the joint map
-        elif verbose:
-            print("\"" + joint_name + "\"" + " is not in joint_map.")
+                                                  targetVelocities=velocity)
     
     
     def set_joint_torque(self,
-                          urdf_obj=URDF_Obj(),
-                          joint_name="",
-                          torque=0.,
-                          verbose=False):
+                         urdf_obj=URDF_Obj(),
+                         joint_name="",
+                         torque=0.):
         """
         Sets the torque of a joint of a urdf object.
 
@@ -781,9 +848,6 @@ class Simulator:
             specified in the .urdf file. The default is "".
         torque : float, optional
             The torque in NM to be applied to the joint. The default is 0..
-        verbose : bool, optional
-            Debug tool. When set to True, results and errors are printed.
-            The default is False.
 
         Returns
         -------
@@ -798,28 +862,11 @@ class Simulator:
         if joint_name in joint_map:
             joint_id = [joint_map[joint_name]]
             mode = self.engine.TORQUE_CONTROL
-            force = [torque]
-            zero_gains = [0.]
+            torque = [torque]
             self.engine.setJointMotorControlArray(urdf_id,
                                                   joint_id,
                                                   mode,
-                                                  forces=force,
-                                                  positionGains=zero_gains,
-                                                  velocityGains=zero_gains)
-    
-            # Debug printing
-            if verbose:
-                #TODO THIS IS INCORRECT. FIX INDICES
-                set_param = self.engine.getJointStates(urdf_id, joint_id)[0][1]
-                if set_param == force[0]:
-                    print(joint_name+" torque set to: " + str(force[0]))
-                else:
-                    print("Could not set parameter.")
-                    print(joint_name + " torque: " + str(set_param))
-        
-        # If the joint name is not in the joint map
-        elif verbose:
-            print("\"" + joint_name + "\"" + " is not in joint_map.")
+                                                  forces=torque)
             
             
     def reset_joint(self,
@@ -828,7 +875,7 @@ class Simulator:
                     position=0.,
                     velocity=0.):
         """
-        Sets the torque of a joint of a urdf object.
+        Resets a joint to a desired position and velocity.
     
         Parameters
         ----------
@@ -842,9 +889,6 @@ class Simulator:
             The position to which the joint is reset. The default is 0..
         velocity : float, optional
             The velocity to which the joint is reset. The default is 0..
-        verbose : bool, optional
-            Debug tool. When set to True, results and errors are printed.
-            The default is False.
     
         Returns
         -------
@@ -885,42 +929,44 @@ if __name__ == "__main__":
                             pitch=0.,
                             yaw=0.)
     
-    # Get a list of the joints that we want to do things to
-    joint_names = ["world_to_outer",
-                   "outer_to_inner",
-                   "inner_to_wheel"]
-    
-    # Set damping of joints
-    for joint_name in joint_names:
-        sim.set_joint_damping(urdf_obj=cmg_obj,
-                              joint_name=joint_name,
-                              damping=0.)
-    
-    # Set joint velocity
-    for joint_name in joint_names:
-        sim.set_joint_damping(urdf_obj=cmg_obj,
-                              joint_name=joint_name,
-                              damping=0.)
-    
     # Set link mass
-    sim.set_joint_velocity(urdf_obj=cmg_obj,
-                           joint_name="mass",
-                           velocity=0.)
+    sim.set_link_mass(urdf_obj=cmg_obj,
+                      link_name="mass",
+                      mass=1.0)
     
-    # Reset the joints to 0 position and velocity
-    for joint_name in joint_names:
-        if joint_name == "inner_to_wheel":
-            velocity = 50.
-        else:
-            velocity = 0.
-        sim.reset_joint(urdf_obj=cmg_obj,
-                        joint_name=joint_name,
-                        position=0.,
-                        velocity=velocity)
+    # Set joint damping
+    sim.set_joint_damping(urdf_obj=cmg_obj,
+                          joint_name="world_to_outer",
+                          damping=0.1)
+    sim.set_joint_damping(urdf_obj=cmg_obj,
+                          joint_name="outer_to_inner",
+                          damping=0.01)
     
+    # Reset joints to 0 position and velocity
+    sim.reset_joint(urdf_obj=cmg_obj,
+                    joint_name="world_to_outer",
+                    position=0.,
+                    velocity=0.)
+    sim.reset_joint(urdf_obj=cmg_obj,
+                    joint_name="outer_to_inner",
+                    position=0.,
+                    velocity=0.)
+    sim.reset_joint(urdf_obj=cmg_obj,
+                    joint_name="inner_to_wheel",
+                    position=0.,
+                    velocity=100.)
+    
+    TIME = 0
     while(True):
+        start_time = time.time()
         sim.engine.stepSimulation()
-        
+        if TIME >= 1.0:
+            pass
+        TIME = TIME + sim.dt
+        time_to_wait = sim.dt + start_time - time.time()
+        if time_to_wait > 0.:
+            time.sleep(time_to_wait)
+            
         
     # viewer = Visualizer(grid_vis=False,
     #                     axes_vis=False)
