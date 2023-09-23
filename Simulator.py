@@ -35,6 +35,7 @@ import meshcat
 import meshcat.geometry as g
 import meshcat.transformations as t
 from pathlib import Path
+import keyboard
 
 
 ###############################################################################
@@ -140,12 +141,14 @@ class Visualizer():
                    translate=[0., 0., 0.],
                    wxyz_quaternion=[1., 0., 0., 0.]):
         """
-        Adds a textured .obj object to the visualization.
+        Adds a textured .obj object to the visualization. Objects are meant to
+        be stationary and their position cannot be updated after they are
+        placed in the visualization.
 
         Parameters
         ----------
         obj_name : string, optional
-            The name to be assigned to the object in the visualization.
+            The name to be assigned to the .obj object in the visualization.
             The default is '/Object'.
         obj_path : string, optional
             Relative path pointing to the .obj file that defines the object.
@@ -165,9 +168,7 @@ class Visualizer():
 
         Returns
         -------
-        transform : array-like, size (4,4)
-            The initial 4x4 3D affine transformation matrix applied to the 
-            object.
+        None.
 
         """
         # Get geometry of object from the .obj file at obj_path
@@ -185,19 +186,14 @@ class Visualizer():
         # Add the textured object to the visualizer
         self.vis[obj_name].set_object(obj_geometry, obj_texture)
         
-        # Transform the object
-        transform = self.apply_transform(obj_name=obj_name,
-                                         scale=scale,
-                                         translate=translate,
-                                         wxyz_quaternion=wxyz_quaternion)
-        
-        # Return the initial transformation
-        return transform
+        # Transform the object to its orientation and position
+        transform = self.get_transform(scale, translate, wxyz_quaternion)
+        self.vis[obj_name].set_transform(transform)
         
         
-    def add_part(self,
-                 obj_name = '/Object',
-                 part_name = '/Part',
+    def add_link(self,
+                 urdf_name = '/URDF',
+                 link_name = '/Link',
                  stl_path = './urdf/cmg_inner.stl',
                  color = [91, 155, 213],
                  transparent=False,
@@ -206,61 +202,62 @@ class Visualizer():
                  translate=[0., 0., 0.],
                  wxyz_quaternion=[1., 0., 0., 0.]):
         """
-        Adds a part of an object to the visualizer.
+        Adds a link of a urdf object to the visualizer. Links are not fixed and
+        are meant to have their position and orientation updated.
 
         Parameters
         ----------
-        obj_name : string, optional
-            The name of the object to which the part is being added.
-            The default is '/Body'.
-        part_name : string, optional
-            The name of the part. The default is '/Object'.
+        urdf_name : string, optional
+            The name of the urdf object to which the link is being added.
+            The default is '/URDF'. URDF objects define robots or assemblies.
+        link_name : string, optional
+            The name of the link. The default is '/Link'.
         stl_path : string, optional
-            The relative path pointing to the .stl description of the part that
+            The relative path pointing to the .stl description of the link that
             is being added. The default is './urdf/cmg_inner.stl'.
         color : array-like, size (3,), optional
-            The 0-255 RGB color of the part. The default is [91, 155, 213].
+            The 0-255 RGB color of the link. The default is [91, 155, 213].
         transparent : boolean, optional
-            A boolean that indicates if the part is transparent.
+            A boolean that indicates if the link is transparent.
             The default is False.
         opacity : float, optional
-            The opacity of the part. Can take float values between 0.0 and 1.0.
+            The opacity of the link. Can take float values between 0.0 and 1.0.
             The default is 1.0.
         scale : array-like, size (3,), optional
-            The initial scaling along the three axes applied to the part.
+            The initial scaling along the three axes applied to the link.
             The default is [1., 1., 1.].
         translate : array-like, size (3,), optional
-            The initial translation along the three axes applied to the part.
+            The initial translation along the three axes applied to the link.
             The default is [0., 0., 0.].
         wxyz_quaternion : array-like, size (4,), optional
             The wxyz quaternion that defines the initial rotation applied to
-            the part. The default is [1., 0., 0., 0.].
+            the link. The default is [1., 0., 0., 0.].
 
         Returns
         -------
         transform : array-like, size (4,4)
             The initial 4x4 3D affine transformation matrix applied to the 
-            part.
+            link.
 
         """
         # Set the parts's geometry
         stl_path = _format_path(stl_path)
-        part_geometry = g.StlMeshGeometry.from_file(stl_path)
+        link_geometry = g.StlMeshGeometry.from_file(stl_path)
         
         # Set the parts's color
         color_int = color[0]*256**2 + color[1]*256 + color[2]
         
         # Set the parts's material
-        part_mat = g.MeshPhongMaterial(color=color_int,
+        link_mat = g.MeshPhongMaterial(color=color_int,
                                        transparent=False,
                                        opacity=opacity)
         
         # Add the part to the visualizer
-        self.vis[obj_name][part_name].set_object(part_geometry, part_mat)
+        self.vis[urdf_name][link_name].set_object(link_geometry, link_mat)
         
         # Transform the part
-        transform = self.apply_transform(obj_name=obj_name,
-                                         part_name=part_name,
+        transform = self.apply_transform(urdf_name=urdf_name,
+                                         link_name=link_name,
                                          scale=scale,
                                          translate=translate,
                                          wxyz_quaternion=wxyz_quaternion)
@@ -270,22 +267,22 @@ class Visualizer():
         
 
     def apply_transform(self,
-                        obj_name='/Object',
-                        part_name=None,
+                        urdf_name='/URDF',
+                        link_name='/Link',
                         scale=[1., 1., 1.],
                         translate=[0., 0., 0.],
                         wxyz_quaternion=[1., 0., 0., 0.]):
         """
         Applies a 3D affine transformation inclunding scaling, translating,
-        and rotating to a specified object or part.
+        and rotating to a specified link.
 
         Parameters
         ----------
-        obj_name : string, optional
-            The name of the object being transformed. The default is '/Object'.
-        part_name : string, optional
-            The name of the part being transformed. If an object is being
-            transformed instead, leave part_name as None. The default is None.
+        urdf_name : string, optional
+            The name of the urdf object being transformed.
+            The default is '/URDF'.
+        link_name : string, optional
+            The name of the link being transformed. The default is '/Link'.
         scale : array-like, size (3,), optional
             The scaling along the three axes. The default is [1., 1., 1.].
         translate : array-like, size (3,), optional
@@ -297,19 +294,13 @@ class Visualizer():
         Returns
         -------
         transform : array-like, size (4,4)
-            The 4x4 3D affine transformation matrix applied to the object or
-            part.
+            The 4x4 3D affine transformation matrix applied to the link.
 
         """
         
-        # Calculate the transform
+        # Calculate and apply the transform
         transform = self.get_transform(scale, translate, wxyz_quaternion)
-        
-        # Apply the transform to either an object or a part
-        if isinstance(part_name, str):
-            self.vis[obj_name][part_name].set_transform(transform)
-        else:
-            self.vis[obj_name].set_transform(transform)
+        self.vis[urdf_name][link_name].set_transform(transform)
             
         # Return the transform
         return transform
@@ -906,6 +897,90 @@ class Simulator:
                                         joint_id,
                                         position,
                                         velocity)
+            
+            
+    def urdf_visual_data(self,
+                        urdf_obj=URDF_Obj()):
+        """
+        Extracts all relevant visual data from a urdf object loaded into the
+        simulator.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj whose visual data is being extracted.
+            The default is URDF_Obj().
+
+        Returns
+        -------
+        paths : list of strings
+            A list containing the paths to the files containing urdf or link
+            geometries.
+        link_names : list of strings
+            A list containing the name of all links in the urdf object.
+        scales : list of lists (3,)
+            A list containing the scale data for the urdf object or all links
+            in the urdf object.
+        colors : list of lists (4,)
+            A list containing the RGBA data for the urdf object or all links
+            in the urdf object.
+        positions : list of lists (3,)
+            A list containing the position data for the urdf object of all
+            links in the urdf object.
+        orientations : list of lists (4,)
+            A list containing the wxyz quaternion(s) for the urdf object or all
+            links in the urdf object.
+
+        """
+        # Create placeholders for all visual data collected
+        paths = []
+        link_names = []
+        scales = []
+        colors = []
+        positions = []
+        orientations = []
+    
+        # Determine the urdf id of the object
+        urdf_id = urdf_obj.urdf_id
+        
+        # Get the visual data of the urdf object
+        vis_data = self.engine.getVisualShapeData(urdf_id)
+        for vis_datum in vis_data:
+            path = vis_datum[4].decode('UTF-8')
+            path = _format_path(path)
+            paths.append(path)
+            scale = list(vis_datum[3])
+            scales.append(scale)
+            color = list(vis_datum[7])
+            colors.append(color)
+    
+        # If the length of paths is 1, then there are no links and we only 
+        # need to extract the base orientation and position
+        if len(paths)==1:
+            pos_ori_data = self.engine.getBasePositionAndOrientation(urdf_id)
+            position = list(pos_ori_data[0])
+            positions.append(position)
+            orientation = list(_xyzw_to_wxyz(pos_ori_data[1]))
+            orientations.append(orientation)
+            
+        # If the length of paths is greater than 1, then there are links and
+        # we need to extract name, position, and orientation data from each one
+        else:
+            for vis_datum in vis_data:
+                # Extract link names
+                link_id = vis_datum[1]
+                joint_data = self.engine.getJointInfo(urdf_id, link_id)
+                link_name = joint_data[12].decode('UTF-8')
+                link_names.append(link_name)
+                
+                # Extract link positions and orientations
+                link_state = self.engine.getLinkState(urdf_id, link_id)
+                position = list(link_state[4])
+                positions.append(position)
+                orientation = list(_xyzw_to_wxyz(link_state[5]))
+                orientations.append(orientation)
+                
+        return paths, link_names, scales, colors, positions, orientations
 
 
 ###############################################################################
@@ -916,13 +991,13 @@ if __name__ == "__main__":
     
     # Load all urdf objects
     ground_obj = sim.load_urdf(urdf_path='./urdf/plane.urdf',
-                               position=[0., 0., -3.],
-                               wxyz_quaternion=[1., 0., 0., 0.])
+                                position=[0., 0., -3.],
+                                wxyz_quaternion=[1., 0., 0., 0.])
     wall_obj = sim.load_urdf(urdf_path='./urdf/plane.urdf',
-                             position=[0., 0., 0.],
-                             roll=0.5*np.pi,
-                             pitch=0.,
-                             yaw=np.pi)
+                              position=[0., 0., 0.],
+                              roll=0.5*np.pi,
+                              pitch=0.,
+                              yaw=np.pi)
     cmg_obj = sim.load_urdf(urdf_path='./urdf/cmg.urdf',
                             position=[0., 1.1, 0.],
                             roll=0.,
@@ -956,12 +1031,32 @@ if __name__ == "__main__":
                     position=0.,
                     velocity=100.)
     
+    sim.urdf_visual_data(cmg_obj)
+    
     TIME = 0
+    active_mass = 1.0
     while(True):
         start_time = time.time()
         sim.engine.stepSimulation()
-        if TIME >= 1.0:
-            pass
+        
+        if TIME % 0.1 < sim.dt:
+            if keyboard.is_pressed("shift+d"):
+                active_mass = active_mass + 0.1
+            elif keyboard.is_pressed("d"):
+                active_mass = active_mass + 0.01
+        
+            if keyboard.is_pressed("shift+a"):
+                active_mass = active_mass - 0.1
+            elif keyboard.is_pressed("a"):
+                active_mass = active_mass - 0.1
+            
+            if active_mass < 0.:
+                active_mass = 0.
+            print(active_mass)
+            sim.set_link_mass(urdf_obj=cmg_obj,
+                              link_name="mass",
+                              mass=active_mass)
+        
         TIME = TIME + sim.dt
         time_to_wait = sim.dt + start_time - time.time()
         if time_to_wait > 0.:
@@ -977,18 +1072,18 @@ if __name__ == "__main__":
     # viewer.add_object(obj_name='/Ground',
     #                   tex_path='./urdf/check.png',
     #                   translate=[0,0,-4])
-    # viewer.add_part(obj_name="/CMG",
-    #                 part_name="/Inner",
+    # viewer.add_link(urdf_name="/CMG",
+    #                 link_name="/Inner",
     #                 stl_path='./urdf/cmg_inner.stl')
-    # viewer.add_part(obj_name="/CMG",
-    #                 part_name="/Mass",
+    # viewer.add_link(urdf_name="/CMG",
+    #                 link_name="/Mass",
     #                 stl_path='./urdf/cmg_mass.stl')
-    # viewer.add_part(obj_name="/CMG",
-    #                 part_name="/Outer",
+    # viewer.add_link(urdf_name="/CMG",
+    #                 link_name="/Outer",
     #                 stl_path='./urdf/cmg_outer.stl')
-    # viewer.add_part(obj_name="/CMG",
-    #                 part_name="/Spar",
+    # viewer.add_link(urdf_name="/CMG",
+    #                 link_name="/Spar",
     #                 stl_path='./urdf/cmg_spar.stl')
-    # viewer.add_part(obj_name="/CMG",
-    #                 part_name="/Wheel",
+    # viewer.add_link(urdf_name="/CMG",
+    #                 link_name="/Wheel",
     #                 stl_path='./urdf/cmg_wheel.stl')
