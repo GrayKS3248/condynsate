@@ -417,12 +417,16 @@ class URDF_Obj:
 ###############################################################################
 class Simulator:
     def __init__(self,
+                 visualization=True,
                  gravity=[0., 0., -9.81]):
         """
         Initializes an instance of the Simulator class.
 
         Parameters
         ----------
+        visualization : bool, optional
+            A boolean flag that indicates whether the simulation will be 
+            visualized in meshcat.
         gravity : array-like, shape (3,) optional
             The gravity vectory in m/s^2. The default is [0., 0., -9.81].
 
@@ -431,18 +435,18 @@ class Simulator:
         None.
 
         """
-        self.engine = bc.BulletClient(
-            connection_mode=pybullet.GUI,
-            options=f'--width={640} --height={480}',
-        )
-        self.engine.configureDebugVisualizer(
-            self.engine.COV_ENABLE_GUI, 0,
-            lightPosition=[10., 10., 10.],
-        )
-        self.engine.resetDebugVisualizerCamera(5., 140, -40, (0., 0.5, -1.))
+        # self.engine = bc.BulletClient(
+        #     connection_mode=pybullet.GUI,
+        #     options=f'--width={640} --height={480}',
+        # )
+        # self.engine.configureDebugVisualizer(
+        #     self.engine.COV_ENABLE_GUI, 0,
+        #     lightPosition=[10., 10., 10.],
+        # )
+        # self.engine.resetDebugVisualizerCamera(5., 140, -40, (0., 0.5, -1.))
         
         # Connect to pybullet
-        #self.engine = bc.BulletClient(connection_mode=pybullet.DIRECT)
+        self.engine = bc.BulletClient(connection_mode=pybullet.DIRECT)
         
         # Configure gravity
         self.gravity = gravity
@@ -458,9 +462,16 @@ class Simulator:
             restitutionVelocityThreshold=0.05,
             enableFileCaching=0)
         
+        # Create a visualizer
+        if visualization:
+            self.viewer = Visualizer(grid_vis=False,axes_vis=False)
+        else:
+            self.viewer=None
+        
         
     def load_urdf(self,
                   urdf_path='./urdf/plane.urdf',
+                  tex_path='./urdf/check.png',
                   position = [0., 0., 0.],
                   wxyz_quaternion = [1., 0., 0., 0.],
                   roll=None,
@@ -477,6 +488,9 @@ class Simulator:
         urdf_path : string, optional
             The path to the .urdf file that describes the urdf object to be
             loaded into the simulation. The default is './urdf/plane.urdf'.
+        tex_path : string, optional
+            The path pointing towards a texture file. This texture is applied
+            only to static .obj objects. The default is './urdf/check.png'.
         position : array-like, shape (3,) optional
             The initial position of the urdf object.
             The default is [0., 0., 0.].
@@ -555,6 +569,11 @@ class Simulator:
             self.set_joint_damping(urdf_obj,
                                    joint_name=joint_name,
                                    damping=0.)
+
+        # Add urdf objects to the visualizer if visualization is occuring
+        if isinstance(self.viewer, Visualizer):
+            self.add_urdf_to_visualizer(urdf_obj=urdf_obj,
+                                        tex_path=tex_path)
 
         # Return the URDF_Obj
         return urdf_obj
@@ -900,7 +919,6 @@ class Simulator:
             
     
     def add_urdf_to_visualizer(self,
-                               viwer,
                                urdf_obj=URDF_Obj(),
                                tex_path='./urdf/check.png'):
         """
@@ -936,12 +954,12 @@ class Simulator:
             # If the current object is a static .obj object, add a static
             # object to the visualizer
             if paths[i][-4:] == ".obj":
-                viewer.add_object(obj_name=urdf_name,
-                                  obj_path=paths[i],
-                                  tex_path=tex_path,
-                                  scale=scales[i],
-                                  translate=poss[i],
-                                  wxyz_quaternion=oris[i])
+                self.viewer.add_object(obj_name=urdf_name,
+                                       obj_path=paths[i],
+                                       tex_path=tex_path,
+                                       scale=scales[i],
+                                       translate=poss[i],
+                                       wxyz_quaternion=oris[i])
                 
             # If the current object is a link, add a .stl link to the
             # visualizer
@@ -950,27 +968,24 @@ class Simulator:
                 rgb = colors[i][0:3]
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
-                viewer.add_link(urdf_name=urdf_name,
-                                link_name=link_name,
-                                stl_path=paths[i],
-                                color=rgb,
-                                transparent=transparent,
-                                opacity=opacity,
-                                scale=scales[i],
-                                translate=poss[i],
-                                wxyz_quaternion=oris[i])
+                self.viewer.add_link(urdf_name=urdf_name,
+                                     link_name=link_name,
+                                     stl_path=paths[i],
+                                     color=rgb,
+                                     transparent=transparent,
+                                     opacity=opacity,
+                                     scale=scales[i],
+                                     translate=poss[i],
+                                     wxyz_quaternion=oris[i])
 
     
     def update_urdf_visual(self,
-                           viewer,
                            urdf_obj=URDF_Obj()):
         """
         Updates the positions of dynamic links in the visualizer.
 
         Parameters
         ----------
-        viewer : Visualizer
-            The visualizer which is being updated.
         urdf_obj : URDF_Obj, optional
             A URDF_Obj whose links are being updated.
             The default is URDF_Obj().
@@ -987,11 +1002,11 @@ class Simulator:
         for i in range(len(paths)):
             if paths[i][-4:]==".stl":
                 link_name = "/" + names[i]
-                viewer.apply_transform(urdf_name=urdf_name,
-                                       link_name=link_name,
-                                       scale=scales[i],
-                                       translate=poss[i],
-                                       wxyz_quaternion=oris[i])
+                self.viewer.apply_transform(urdf_name=urdf_name,
+                                            link_name=link_name,
+                                            scale=scales[i],
+                                            translate=poss[i],
+                                            wxyz_quaternion=oris[i])
     
     
     def urdf_visual_data(self,
@@ -1077,21 +1092,27 @@ class Simulator:
         return paths, link_names, scales, colors, positions, orientations
 
 
+    def step_simulation():
+        pass
+
+
 ###############################################################################
 """MAIN LOOP"""
 ###############################################################################
 if __name__ == "__main__":
-    sim = Simulator()
+    sim = Simulator(visualization=True)
     
     # Load all urdf objects
     ground_obj = sim.load_urdf(urdf_path='./urdf/plane.urdf',
-                                position=[0., 0., -3.],
-                                wxyz_quaternion=[1., 0., 0., 0.])
+                               tex_path='./urdf/check.png',
+                               position=[0., 0., -3.],
+                               wxyz_quaternion=[1., 0., 0., 0.])
     wall_obj = sim.load_urdf(urdf_path='./urdf/plane.urdf',
-                              position=[0., 0., 0.],
-                              roll=0.5*np.pi,
-                              pitch=0.,
-                              yaw=np.pi)
+                             tex_path='./urdf/concrete.png',
+                             position=[0., 0., 0.],
+                             roll=0.5*np.pi,
+                             pitch=0.,
+                             yaw=np.pi)
     cmg_obj = sim.load_urdf(urdf_path='./urdf/cmg.urdf',
                             position=[0., 1.1, 0.],
                             roll=0.,
@@ -1125,16 +1146,7 @@ if __name__ == "__main__":
                     position=0.,
                     velocity=100.)
     
-    # Add urdf objects to the visualizer
-    viewer = Visualizer(grid_vis=False,axes_vis=False)
-    sim.add_urdf_to_visualizer(viewer,
-                               urdf_obj=ground_obj,
-                               tex_path='./urdf/check.png')
-    sim.add_urdf_to_visualizer(viewer,
-                               urdf_obj=wall_obj,
-                               tex_path='./urdf/concrete.png')
-    sim.add_urdf_to_visualizer(viewer,
-                               urdf_obj=cmg_obj)
+
     
     TIME = 0
     active_mass = 1.0
@@ -1160,7 +1172,7 @@ if __name__ == "__main__":
                               link_name="mass",
                               mass=active_mass)
         
-        sim.update_urdf_visual(viewer, cmg_obj)
+        sim.update_urdf_visual(cmg_obj)
         
         TIME = TIME + sim.dt
         time_to_wait = sim.dt + start_time - time.time()
