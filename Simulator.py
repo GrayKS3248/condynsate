@@ -898,7 +898,102 @@ class Simulator:
                                         position,
                                         velocity)
             
+    
+    def add_urdf_to_visualizer(self,
+                               viwer,
+                               urdf_obj=URDF_Obj(),
+                               tex_path='./urdf/check.png'):
+        """
+        Adds static .obj objects and dynamic .stl links to the visualizer
+        based on their urdf description.
+
+        Parameters
+        ----------
+        viewer : Visualizer
+            The visualizer to which the object is added.
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj that will be added to the visualizer.
+            The default is URDF_Obj().
+        tex_path : string, optional
+            The path pointing towards a texture file. This texture is applied
+            only to static .obj objects. The default is './urdf/check.png'.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Extract the visual data from the urdf object in the simulator
+        paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
+        
+        # Make the URDF name and format the texture path
+        urdf_name = "/"+str(urdf_obj.urdf_id)
+        tex_path = _format_path(tex_path)
+        
+        # Loop through all the links
+        for i in range(len(paths)):
             
+            # If the current object is a static .obj object, add a static
+            # object to the visualizer
+            if paths[i][-4:] == ".obj":
+                viewer.add_object(obj_name=urdf_name,
+                                  obj_path=paths[i],
+                                  tex_path=tex_path,
+                                  scale=scales[i],
+                                  translate=poss[i],
+                                  wxyz_quaternion=oris[i])
+                
+            # If the current object is a link, add a .stl link to the
+            # visualizer
+            elif paths[i][-4:] == ".stl":
+                link_name = "/" + names[i]
+                rgb = colors[i][0:3]
+                opacity = colors[i][3]
+                transparent = opacity != 1.0
+                viewer.add_link(urdf_name=urdf_name,
+                                link_name=link_name,
+                                stl_path=paths[i],
+                                color=rgb,
+                                transparent=transparent,
+                                opacity=opacity,
+                                scale=scales[i],
+                                translate=poss[i],
+                                wxyz_quaternion=oris[i])
+
+    
+    def update_urdf_visual(self,
+                           viewer,
+                           urdf_obj=URDF_Obj()):
+        """
+        Updates the positions of dynamic links in the visualizer.
+
+        Parameters
+        ----------
+        viewer : Visualizer
+            The visualizer which is being updated.
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj whose links are being updated.
+            The default is URDF_Obj().
+
+        Returns
+        -------
+        None.
+
+        """
+        paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
+        
+        urdf_name = "/"+str(urdf_obj.urdf_id)
+        
+        for i in range(len(paths)):
+            if paths[i][-4:]==".stl":
+                link_name = "/" + names[i]
+                viewer.apply_transform(urdf_name=urdf_name,
+                                       link_name=link_name,
+                                       scale=scales[i],
+                                       translate=poss[i],
+                                       wxyz_quaternion=oris[i])
+    
+    
     def urdf_visual_data(self,
                         urdf_obj=URDF_Obj()):
         """
@@ -953,20 +1048,19 @@ class Simulator:
             scales.append(scale)
             color = list(vis_datum[7])
             colors.append(color)
-    
-        # If the length of paths is 1, then there are no links and we only 
-        # need to extract the base orientation and position
-        if len(paths)==1:
-            pos_ori_data = self.engine.getBasePositionAndOrientation(urdf_id)
-            position = list(pos_ori_data[0])
-            positions.append(position)
-            orientation = list(_xyzw_to_wxyz(pos_ori_data[1]))
-            orientations.append(orientation)
             
-        # If the length of paths is greater than 1, then there are links and
-        # we need to extract name, position, and orientation data from each one
-        else:
-            for vis_datum in vis_data:
+            # If the path points to a .obj file, then the object for which we
+            # are collecting data is a static object and we gather no link data
+            if path[-4:] == ".obj":
+                pos_ori_data = self.engine.getBasePositionAndOrientation(urdf_id)
+                position = list(pos_ori_data[0])
+                positions.append(position)
+                orientation = list(_xyzw_to_wxyz(pos_ori_data[1]))
+                orientations.append(orientation)
+            
+            # If the path points to a .stl file, then the object for which we
+            # are collecting data is a dynamic link and we gather link data
+            elif path[-4:] == ".stl":
                 # Extract link names
                 link_id = vis_datum[1]
                 joint_data = self.engine.getJointInfo(urdf_id, link_id)
@@ -1031,7 +1125,16 @@ if __name__ == "__main__":
                     position=0.,
                     velocity=100.)
     
-    sim.urdf_visual_data(cmg_obj)
+    # Add urdf objects to the visualizer
+    viewer = Visualizer(grid_vis=False,axes_vis=False)
+    sim.add_urdf_to_visualizer(viewer,
+                               urdf_obj=ground_obj,
+                               tex_path='./urdf/check.png')
+    sim.add_urdf_to_visualizer(viewer,
+                               urdf_obj=wall_obj,
+                               tex_path='./urdf/concrete.png')
+    sim.add_urdf_to_visualizer(viewer,
+                               urdf_obj=cmg_obj)
     
     TIME = 0
     active_mass = 1.0
@@ -1056,6 +1159,8 @@ if __name__ == "__main__":
             sim.set_link_mass(urdf_obj=cmg_obj,
                               link_name="mass",
                               mass=active_mass)
+        
+        sim.update_urdf_visual(viewer, cmg_obj)
         
         TIME = TIME + sim.dt
         time_to_wait = sim.dt + start_time - time.time()
