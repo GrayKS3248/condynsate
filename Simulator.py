@@ -265,6 +265,11 @@ class Visualizer():
         # Return the initial transformation
         return transform
         
+    
+    def set_link_color(self,
+                       ):
+        pass
+
 
     def apply_transform(self,
                         urdf_name='/URDF',
@@ -965,7 +970,8 @@ class Simulator:
             # visualizer
             elif paths[i][-4:] == ".stl":
                 link_name = "/" + names[i]
-                rgb = colors[i][0:3]
+                rgb_255 = np.round(np.array(colors[i][0:3])*255)
+                rgb = rgb_255.astype(int).tolist()
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
                 self.viewer.add_link(urdf_name=urdf_name,
@@ -995,10 +1001,15 @@ class Simulator:
         None.
 
         """
-        paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.viewer, Visualizer):
+            return
         
+        # Collect the visual data and urdf name
+        paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
         urdf_name = "/"+str(urdf_obj.urdf_id)
         
+        # Go through all links in urdf object and update their position
         for i in range(len(paths)):
             if paths[i][-4:]==".stl":
                 link_name = "/" + names[i]
@@ -1090,12 +1101,8 @@ class Simulator:
                 orientations.append(orientation)
                 
         return paths, link_names, scales, colors, positions, orientations
-
-
-    def step_simulation():
-        pass
-
-
+       
+     
 ###############################################################################
 """MAIN LOOP"""
 ###############################################################################
@@ -1115,8 +1122,8 @@ if __name__ == "__main__":
                              yaw=np.pi)
     cmg_obj = sim.load_urdf(urdf_path='./urdf/cmg.urdf',
                             position=[0., 1.1, 0.],
-                            roll=0.,
-                            pitch=0.,
+                            roll=0.0,
+                            pitch=-1.57,
                             yaw=0.)
     
     # Set link mass
@@ -1127,10 +1134,10 @@ if __name__ == "__main__":
     # Set joint damping
     sim.set_joint_damping(urdf_obj=cmg_obj,
                           joint_name="world_to_outer",
-                          damping=0.1)
+                          damping=0.0)
     sim.set_joint_damping(urdf_obj=cmg_obj,
                           joint_name="outer_to_inner",
-                          damping=0.01)
+                          damping=0.0)
     
     # Reset joints to 0 position and velocity
     sim.reset_joint(urdf_obj=cmg_obj,
@@ -1145,62 +1152,40 @@ if __name__ == "__main__":
                     joint_name="inner_to_wheel",
                     position=0.,
                     velocity=100.)
-    
 
-    
+    # Run the simulation
     TIME = 0
-    active_mass = 1.0
+    active = 0.0
     while(True):
+        # Keep track of time to run sim in real time
         start_time = time.time()
         sim.engine.stepSimulation()
         
-        if TIME % 0.1 < sim.dt:
+        # Collect keyboard IO data
+        if TIME % 0.01 < sim.dt:
             if keyboard.is_pressed("shift+d"):
-                active_mass = active_mass + 0.1
+                active = 0.5
             elif keyboard.is_pressed("d"):
-                active_mass = active_mass + 0.01
-        
-            if keyboard.is_pressed("shift+a"):
-                active_mass = active_mass - 0.1
+                active = 0.1
+            elif keyboard.is_pressed("shift+a"):
+                active = -0.5
             elif keyboard.is_pressed("a"):
-                active_mass = active_mass - 0.1
-            
-            if active_mass < 0.:
-                active_mass = 0.
-            print(active_mass)
-            sim.set_link_mass(urdf_obj=cmg_obj,
-                              link_name="mass",
-                              mass=active_mass)
-        
+                active = -0.1
+            else:
+                active = 0.0
+                
+            # Set the torque based on keyboard inputs
+            print(active)
+            sim.set_joint_torque(urdf_obj=cmg_obj,
+                                 joint_name="outer_to_inner",
+                                 torque=active)
+    
+        # Update the visualizer
         sim.update_urdf_visual(cmg_obj)
         
+        # Add sleep to run sim in real time
         TIME = TIME + sim.dt
         time_to_wait = sim.dt + start_time - time.time()
         if time_to_wait > 0.:
             time.sleep(time_to_wait)
             
-        
-    # viewer = Visualizer(grid_vis=False,
-    #                     axes_vis=False)
-    # viewer.add_object(obj_name='/Wall', 
-    #                   tex_path='./urdf/concrete.png',
-    #                   translate=[0, -1.1, 0],
-    #                   wxyz_quaternion=[0.70710678, 0.70710678, 0.0, 0.0])
-    # viewer.add_object(obj_name='/Ground',
-    #                   tex_path='./urdf/check.png',
-    #                   translate=[0,0,-4])
-    # viewer.add_link(urdf_name="/CMG",
-    #                 link_name="/Inner",
-    #                 stl_path='./urdf/cmg_inner.stl')
-    # viewer.add_link(urdf_name="/CMG",
-    #                 link_name="/Mass",
-    #                 stl_path='./urdf/cmg_mass.stl')
-    # viewer.add_link(urdf_name="/CMG",
-    #                 link_name="/Outer",
-    #                 stl_path='./urdf/cmg_outer.stl')
-    # viewer.add_link(urdf_name="/CMG",
-    #                 link_name="/Spar",
-    #                 stl_path='./urdf/cmg_spar.stl')
-    # viewer.add_link(urdf_name="/CMG",
-    #                 link_name="/Wheel",
-    #                 stl_path='./urdf/cmg_wheel.stl')
