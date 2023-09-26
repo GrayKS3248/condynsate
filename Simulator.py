@@ -34,6 +34,7 @@ import meshcat.geometry as geo
 import meshcat.transformations as tf
 from pathlib import Path
 import keyboard
+from matplotlib import colormaps as cmaps
 
 
 ###############################################################################
@@ -130,6 +131,18 @@ def _format_path(unformatted_path):
     formatted_path = str(Path(unformatted_path))
     return formatted_path
     
+
+def _format_RGB(unformatted_rgb,
+                range_to_255=True):
+    rgb = np.array(unformatted_rgb)
+    if range_to_255:
+        rgb_255 = np.round(rgb*255)
+    else:
+        rgb_255 = np.round(rgb)
+    rgb_255_int = rgb_255.astype(int)
+    list_rgb_255_int = rgb_255_int.tolist()
+    return list_rgb_255_int
+
 
 ###############################################################################
 """VISUALIZER CLASS"""
@@ -281,7 +294,8 @@ class Visualizer():
         # Set the parts's material
         link_mat = geo.MeshPhongMaterial(color=color_int,
                                          transparent=False,
-                                         opacity=opacity)
+                                         opacity=opacity,
+                                         reflectivity=0.3)
         
         # Calculate the transform
         transform = self.get_transform(scale, translate, wxyz_quaternion)
@@ -333,8 +347,9 @@ class Visualizer():
         # Set the parts's color
         color_int = color[0]*256**2 + color[1]*256 + color[2]
         link_mat = geo.MeshPhongMaterial(color=color_int,
-                                         transparent=False,
-                                         opacity=1.0)
+                                         transparent=transparent,
+                                         opacity=opacity,
+                                         reflectivity=0.3)
         
         # Update the part's geometry and color
         self.vis[urdf_name][link_name].set_object(link_geometry, link_mat)
@@ -935,8 +950,7 @@ class Simulator:
     def set_joint_velocity(self,
                           urdf_obj=URDF_Obj(),
                           joint_name="",
-                          velocity=0.,
-                          verbose=False):
+                          velocity=0.):
         """
         Sets the velocity of a joint of a urdf object.
 
@@ -950,9 +964,6 @@ class Simulator:
             specified in the .urdf file. The default is "".
         velocity : float, optional
             The velocity to be applied to the joint. The default is 0..
-        verbose : bool, optional
-            Debug tool. When set to True, velocity is printed after being set.
-            The default is False.
 
         Returns
         -------
@@ -1102,8 +1113,8 @@ class Simulator:
             # visualizer
             elif paths[i][-4:] == ".stl":
                 link_name = names[i]
-                rgb_255 = np.round(np.array(colors[i][0:3])*255)
-                rgb = rgb_255.astype(int).tolist()
+                rgb = _format_RGB(colors[i][0:3],
+                                  range_to_255=True)
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
                 self.viewer.add_link(urdf_name=urdf_name,
@@ -1153,7 +1164,7 @@ class Simulator:
     
     
     def urdf_visual_data(self,
-                        urdf_obj=URDF_Obj()):
+                         urdf_obj=URDF_Obj()):
         """
         Extracts all relevant visual data from a urdf object loaded into the
         simulator.
@@ -1291,7 +1302,7 @@ class Simulator:
     def set_link_color(self,
                           urdf_obj=URDF_Obj(),
                           link_name='',
-                          color=[0, 0, 0],
+                          color=[91, 155, 213],
                           transparent = False,
                           opacity = 1.0):
         """
@@ -1308,7 +1319,8 @@ class Simulator:
             The name of the link whose color is being updated. The link name is
             specified in the .urdf file. The default is "".
         color : array-like, size (3,), optional
-            The 0-255 RGB color of the link. The default is [91, 155, 213].
+            The 0-255 RGB color of the link.
+            The default is [91, 155, 213].
         transparent : boolean, optional
             A boolean that indicates if the link is transparent.
             The default is False.
@@ -1341,8 +1353,8 @@ class Simulator:
         stl_path = _format_path(vis_data[4].decode('UTF-8'))
         
         # Ensure color is in proper format
-        color = np.round(np.array(color))
-        color = color.astype(int).tolist()
+        color = _format_RGB(color,
+                            range_to_255=False)
         
         # Set the requested color
         self.viewer.set_link_color(urdf_name = urdf_name,
@@ -1407,45 +1419,124 @@ if __name__ == "__main__":
                          pitch=-0.2,
                          yaw=0.9)
 
+    # Variables to track applied torque
+    prev_torque = -1.0
+    torque = 0.0
+    max_torque = 0.5
+    min_torque = -0.5
+    torque = 0.5*(max_torque + min_torque)
+    torque_sat = (torque - min_torque) / (max_torque - min_torque)
+    inner_color = cmaps['coolwarm'](round(255*torque_sat))[0:3]
+    
+    # Variables to track mass
+    prev_mass = 0.0
+    max_mass = 2.0
+    min_mass = 0.0
+    mass = 0.5*(max_mass + min_mass)
+    mass_sat = (mass - min_mass) / (max_mass - min_mass)
+    mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
+    
+    # Variables to track wheel RPM
+    prev_vel = 0.0
+    max_vel = 100.0
+    min_vel = 0.0
+    vel = 0.5 * (max_vel + min_vel)
+    vel_sat = (vel - min_vel) / (max_vel - min_vel)
+    vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
+    
     # Run the simulation
     elapsed_time = 0
-    prev_torque = -0.0
-    torque = 0.0
-    color = [0,0,0]
     while(True):
         # Keep track of time to run sim in real time
         start_time = time.time()
         sim.engine.stepSimulation()
         
-        # Collect keyboard IO data
+        # Collect keyboard IO data for torque
         if keyboard.is_pressed("shift+d"):
-            torque = 0.5
-            color = [226,82,71]
+            torque = max_torque
         elif keyboard.is_pressed("d"):
-            torque = 0.1
-            color = [221,157,49]
+            torque = max_torque / 4.0
         elif keyboard.is_pressed("shift+a"):
-            torque = -0.5
-            color = [172,62,193]
+            torque = min_torque
         elif keyboard.is_pressed("a"):
-            torque = -0.1
-            color = [71,123,209]
+            torque = min_torque / 4.0
         else:
             torque = 0.0
-            color = [144,186,76]
             
         # Set the torque and link color based on keyboard inputs
+        torque = round(torque,2)
+        torque_sat = (torque - min_torque) / (max_torque - min_torque)
+        torque_color = cmaps['coolwarm'](round(255*torque_sat))[0:3]
+        torque_color = _format_RGB(torque_color,
+                                   range_to_255=True)
         sim.set_joint_torque(urdf_obj=cmg_obj,
                              joint_name="outer_to_inner",
                              torque=torque)
         sim.set_link_color(urdf_obj=cmg_obj,
                            link_name='inner',
-                           color=color)
+                           color=torque_color)
         
         # Print the current torque
         if torque != prev_torque:
-            print(torque)
+            print("Torque: " + str(torque) + "Nm")
         prev_torque = torque
+        
+        # Collect keyboard IO data for mass
+        if keyboard.is_pressed('e'):
+            mass = mass + 0.005*(max_mass - min_mass)
+            if mass > max_mass:
+                mass = max_mass
+        elif keyboard.is_pressed('q'):
+            mass = mass - 0.005*(max_mass - min_mass)
+            if mass < min_mass:
+                mass = min_mass
+            
+        # Set the mass and link color based on keyboard inputs
+        mass = round(mass,2)
+        mass_sat = (mass - min_mass) / (max_mass - min_mass)
+        mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
+        mass_color = _format_RGB(mass_color,
+                                 range_to_255=True)
+        sim.set_link_mass(urdf_obj=cmg_obj,
+                          link_name='mass',
+                          mass = mass)
+        sim.set_link_color(urdf_obj=cmg_obj,
+                           link_name='mass',
+                           color=mass_color)
+    
+        # Print the current torque
+        if mass != prev_mass:
+            print("Mass: " + str(mass) + "Kg")
+        prev_mass = mass
+    
+        # Collect keyboard IO data for wheel vel
+        if keyboard.is_pressed('w'):
+            vel = vel + 0.005*(max_vel - min_vel)
+            if vel > max_vel:
+                vel = max_vel
+        elif keyboard.is_pressed('s'):
+            vel = vel - 0.005*(max_vel - min_vel)
+            if vel < min_vel:
+                vel = min_vel
+            
+        # Set the wheel vel and link color based on keyboard inputs
+        vel = round(vel,2)
+        vel_sat = (vel - min_vel) / (max_vel - min_vel)
+        vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
+        vel_color = _format_RGB(vel_color,
+                                range_to_255=True)
+        
+        sim.set_joint_velocity(urdf_obj=cmg_obj,
+                              joint_name="inner_to_wheel",
+                              velocity=vel)
+        sim.set_link_color(urdf_obj=cmg_obj,
+                           link_name='wheel',
+                           color=vel_color)
+    
+        # Print the current wheel velocity
+        if vel != prev_vel:
+            print("Wheel Speed: " + str(vel) + "RPM")
+        prev_vel = vel
     
         # Update the visualizer
         sim.update_urdf_visual(cmg_obj)

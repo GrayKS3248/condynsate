@@ -13,6 +13,10 @@
     <color rgba = "0.96078431 0.50980392 0.11764706 1" />
   </material>
 
+  <material name = "forest-green">
+    <color rgba = "0.2156862 0.309803 0.184313725 1" />
+  </material>
+
   <link name="world"/>
 
   <link name="outer">
@@ -21,7 +25,7 @@
       <geometry>
   			<mesh filename="cmg_outer.stl" scale="1.0 1.0 1.0"/>
       </geometry>
-      <material name = "industrial-blue"/>
+      <material name = "forest-green"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -84,7 +88,7 @@
       <geometry>
   			<mesh filename="cmg_spar.stl" scale="1.0 1.0 1.0"/>
       </geometry>
-      <material name = "industrial-blue"/>
+      <material name = "forest-green"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
