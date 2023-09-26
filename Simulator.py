@@ -29,11 +29,9 @@ import numpy as np
 import pybullet
 from pybullet_utils import bullet_client as bc
 import time
-import json
-import importlib
 import meshcat
-import meshcat.geometry as g
-import meshcat.transformations as t
+import meshcat.geometry as geo
+import meshcat.transformations as tf
 from pathlib import Path
 import keyboard
 
@@ -77,6 +75,41 @@ def _wxyz_to_xyzw(wxyz_quaternion):
     """
     xyzw_quaternion = np.roll(wxyz_quaternion, -1)
     return xyzw_quaternion
+
+
+def _wxyz_from_euler(roll, pitch, yaw):
+    """
+    Converts Euler angles to a Hamilton quaternion (wxyz)
+
+    Parameters
+    ----------
+    roll : float
+        The roll angle in rad.
+    pitch : float
+        The pitch angle in rad.
+    yaw : float
+        The yaw angle in rad.
+
+    Returns
+    -------
+    wxyz_quaternion : array-like, shape (4,)
+        The Hamilton quaternion representation of the input Euler angles.
+
+    """
+    cr = np.cos(roll * 0.5)
+    sr = np.sin(roll * 0.5)
+    cp = np.cos(pitch * 0.5)
+    sp = np.sin(pitch * 0.5)
+    cy = np.cos(yaw * 0.5)
+    sy = np.sin(yaw * 0.5)
+    
+    w = cr * cp * cy + sr * sp * sy
+    x = sr * cp * cy - cr * sp * sy
+    y = cr * sp * cy + sr * cp * sy
+    z = cr * cp * sy - sr * sp * cy
+    
+    wxyz_quaternion = [w, x, y, z]
+    return wxyz_quaternion
 
 
 def _format_path(unformatted_path):
@@ -134,7 +167,7 @@ class Visualizer():
 
 
     def add_object(self,
-                   obj_name='/Object',
+                   obj_name='Object',
                    obj_path='./urdf/plane.obj', 
                    tex_path='./urdf/check.png',
                    scale=[1., 1., 1.],
@@ -149,7 +182,7 @@ class Visualizer():
         ----------
         obj_name : string, optional
             The name to be assigned to the .obj object in the visualization.
-            The default is '/Object'.
+            The default is 'Object'.
         obj_path : string, optional
             Relative path pointing to the .obj file that defines the object.
             The default is './urdf/plane.obj'.
@@ -173,27 +206,27 @@ class Visualizer():
         """
         # Get geometry of object from the .obj file at obj_path
         obj_path = _format_path(obj_path)
-        obj_geometry = g.ObjMeshGeometry.from_file(obj_path)
+        obj_geometry = geo.ObjMeshGeometry.from_file(obj_path)
         
         # Get the texture of object from the .png file at tex_path
         tex_path = _format_path(tex_path)
-        meshcat_png = g.PngImage.from_file(tex_path)
-        im_tex = g.ImageTexture(image=meshcat_png,
-                                wrap=[1, 1],
-                                repeat=[1, 1])
-        obj_texture = g.MeshPhongMaterial(map = im_tex)
+        meshcat_png = geo.PngImage.from_file(tex_path)
+        im_tex = geo.ImageTexture(image=meshcat_png,
+                                  wrap=[1, 1],
+                                  repeat=[1, 1])
+        obj_texture = geo.MeshPhongMaterial(map = im_tex)
         
-        # Add the textured object to the visualizer
-        self.vis[obj_name].set_object(obj_geometry, obj_texture)
-        
-        # Transform the object to its orientation and position
+        # Calculate the transform
         transform = self.get_transform(scale, translate, wxyz_quaternion)
+
+        # Add and transform the object to its orientation and position
+        self.vis[obj_name].set_object(obj_geometry, obj_texture)
         self.vis[obj_name].set_transform(transform)
         
         
     def add_link(self,
-                 urdf_name = '/URDF',
-                 link_name = '/Link',
+                 urdf_name = 'URDF',
+                 link_name = 'Link',
                  stl_path = './urdf/cmg_inner.stl',
                  color = [91, 155, 213],
                  transparent=False,
@@ -209,9 +242,9 @@ class Visualizer():
         ----------
         urdf_name : string, optional
             The name of the urdf object to which the link is being added.
-            The default is '/URDF'. URDF objects define robots or assemblies.
+            The default is 'URDF'. URDF objects define robots or assemblies.
         link_name : string, optional
-            The name of the link. The default is '/Link'.
+            The name of the link. The default is 'Link'.
         stl_path : string, optional
             The relative path pointing to the .stl description of the link that
             is being added. The default is './urdf/cmg_inner.stl'.
@@ -235,45 +268,81 @@ class Visualizer():
 
         Returns
         -------
-        transform : array-like, size (4,4)
-            The initial 4x4 3D affine transformation matrix applied to the 
-            link.
+        transform : None.
 
         """
         # Set the parts's geometry
         stl_path = _format_path(stl_path)
-        link_geometry = g.StlMeshGeometry.from_file(stl_path)
+        link_geometry = geo.StlMeshGeometry.from_file(stl_path)
         
         # Set the parts's color
         color_int = color[0]*256**2 + color[1]*256 + color[2]
         
         # Set the parts's material
-        link_mat = g.MeshPhongMaterial(color=color_int,
-                                       transparent=False,
-                                       opacity=opacity)
+        link_mat = geo.MeshPhongMaterial(color=color_int,
+                                         transparent=False,
+                                         opacity=opacity)
         
-        # Add the part to the visualizer
+        # Calculate the transform
+        transform = self.get_transform(scale, translate, wxyz_quaternion)
+
+        # Add and transform the link to its orientation and position
         self.vis[urdf_name][link_name].set_object(link_geometry, link_mat)
-        
-        # Transform the part
-        transform = self.apply_transform(urdf_name=urdf_name,
-                                         link_name=link_name,
-                                         scale=scale,
-                                         translate=translate,
-                                         wxyz_quaternion=wxyz_quaternion)
-        
-        # Return the initial transformation
-        return transform
+        self.vis[urdf_name][link_name].set_transform(transform)
         
     
     def set_link_color(self,
-                       ):
-        pass
+                       urdf_name = 'URDF',
+                       link_name = 'Link',
+                       stl_path = './urdf/cmg_inner.stl', 
+                       color = [91, 155, 213],
+                       transparent = False,
+                       opacity = 1.0):
+        """
+        Refresh a link by deleting it and then adding another copy of it.
+
+        Parameters
+        ----------
+        urdf_name : string, optional
+            The name of the urdf object that contains the link being refreshed.
+            The default is 'URDF'. URDF objects define robots or assemblies.
+        link_name : string, optional
+            The name of the link. The default is 'Link'.
+        stl_path : string, optional
+            The relative path pointing to the .stl description of the link that
+            is being refreshed. The default is './urdf/cmg_inner.stl'.
+        color : array-like, size (3,), optional
+            The 0-255 RGB color of the link. The default is [91, 155, 213].
+        transparent : boolean, optional
+            A boolean that indicates if the link is transparent.
+            The default is False.
+        opacity : float, optional
+            The opacity of the link. Can take float values between 0.0 and 1.0.
+            The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        # Set the parts's geometry
+        stl_path = _format_path(stl_path)
+        link_geometry = geo.StlMeshGeometry.from_file(stl_path)
+        
+        # Set the parts's color
+        color_int = color[0]*256**2 + color[1]*256 + color[2]
+        link_mat = geo.MeshPhongMaterial(color=color_int,
+                                         transparent=False,
+                                         opacity=1.0)
+        
+        # Update the part's geometry and color
+        self.vis[urdf_name][link_name].set_object(link_geometry, link_mat)
 
 
     def apply_transform(self,
-                        urdf_name='/URDF',
-                        link_name='/Link',
+                        urdf_name='URDF',
+                        link_name='Link',
                         scale=[1., 1., 1.],
                         translate=[0., 0., 0.],
                         wxyz_quaternion=[1., 0., 0., 0.]):
@@ -339,8 +408,8 @@ class Visualizer():
         # Get the translation matrix based on the translation vector
         # Get the rotation matrix based on the wxyz quaternion
         scale_matrix = np.diag(np.concatenate((scale, [1.0])))
-        translate_matrix = t.translation_matrix(translate)
-        rotation_matrix = t.quaternion_matrix(wxyz_quaternion)
+        translate_matrix = tf.translation_matrix(translate)
+        rotation_matrix = tf.quaternion_matrix(wxyz_quaternion)
         
         # Calculate and return the total transformation matrix
         transform = scale_matrix @ translate_matrix @ rotation_matrix
@@ -381,6 +450,65 @@ class Visualizer():
 
         """
         self.vis["/Axes"].set_property("visible", visible)
+        
+        
+    def transform_camera(self,
+                         scale = [1., 1., 1.],
+                         translate = [0., 0., 0.],
+                         wxyz_quaternion = [1., 0., 0., 0.],
+                         roll=None,
+                         pitch=None,
+                         yaw=None):
+        """
+        Transforms the position, orientation, and scale of the camera object
+        in the scene.
+
+        Parameters
+        ----------
+        scale : array-like, size (3,), optional
+            The scaling of the camera view about the camera point along the
+            three axes. The default is [1., 1., 1.].
+        translate : array-like, size (3,), optional
+            The translation of the camera point along the three axes.
+            The default is [0., 0., 0.].
+        wxyz_quaternion : array-like, shape (4,) optional
+            A wxyz quaternion that describes the intial orientation of camera
+            about the camera point. When roll, pitch, and yaw all have None
+            type, the quaternion is used. If any roll, pitch, or yaw have non
+            None type, the quaternion is ignored.
+            The default is [1., 0., 0., 0.].
+        roll : float, optional
+            The roll of the camera object about the camera point.
+            The default is None.
+        pitch : float, optional
+            The pitch of the camera object about the camera point.
+            The default is None.
+        yaw : float, optional
+            The yaw of the camera object about the camera point.
+            The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If any euler angles are specified, use the euler angles to set the
+        # initial orientation of the urdf object
+        # Any unspecified euler angles are set to 0.0
+        if roll!=None or pitch!=None or yaw!=None:
+            if roll==None:
+                roll=0.0
+            if pitch==None:
+                pitch=0.0
+            if yaw==None:
+                yaw=0.0
+            wxyz_quaternion = _wxyz_from_euler(roll, pitch, yaw)
+        
+        # Calculate and apply the transform
+        transform = self.get_transform(scale=scale,
+                                       translate=translate,
+                                       wxyz_quaternion=wxyz_quaternion)
+        self.vis["/Cameras/default"].set_transform(transform)
         
 
 ###############################################################################
@@ -946,11 +1074,15 @@ class Simulator:
         None.
 
         """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.viewer, Visualizer):
+            return
+        
         # Extract the visual data from the urdf object in the simulator
         paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
         
         # Make the URDF name and format the texture path
-        urdf_name = "/"+str(urdf_obj.urdf_id)
+        urdf_name = str(urdf_obj.urdf_id)
         tex_path = _format_path(tex_path)
         
         # Loop through all the links
@@ -969,7 +1101,7 @@ class Simulator:
             # If the current object is a link, add a .stl link to the
             # visualizer
             elif paths[i][-4:] == ".stl":
-                link_name = "/" + names[i]
+                link_name = names[i]
                 rgb_255 = np.round(np.array(colors[i][0:3])*255)
                 rgb = rgb_255.astype(int).tolist()
                 opacity = colors[i][3]
@@ -1007,12 +1139,12 @@ class Simulator:
         
         # Collect the visual data and urdf name
         paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
-        urdf_name = "/"+str(urdf_obj.urdf_id)
+        urdf_name = str(urdf_obj.urdf_id)
         
         # Go through all links in urdf object and update their position
         for i in range(len(paths)):
             if paths[i][-4:]==".stl":
-                link_name = "/" + names[i]
+                link_name = names[i]
                 self.viewer.apply_transform(urdf_name=urdf_name,
                                             link_name=link_name,
                                             scale=scales[i],
@@ -1101,7 +1233,124 @@ class Simulator:
                 orientations.append(orientation)
                 
         return paths, link_names, scales, colors, positions, orientations
-       
+    
+    
+    def transform_camera(self,
+                         scale = [1., 1., 1.],
+                         translate = [0., 0., 0.],
+                         wxyz_quaternion = [1., 0., 0., 0.],
+                         roll=None,
+                         pitch=None,
+                         yaw=None):
+        """
+        Transforms the position, orientation, and scale of the viewer camera.
+
+        Parameters
+        ----------
+        scale : array-like, size (3,), optional
+            The scaling of the camera view about the camera point along the
+            three axes. The default is [1., 1., 1.].
+        translate : array-like, size (3,), optional
+            The translation of the camera point along the three axes.
+            The default is [0., 0., 0.].
+        wxyz_quaternion : array-like, shape (4,) optional
+            A wxyz quaternion that describes the intial orientation of camera
+            about the camera point. When roll, pitch, and yaw all have None
+            type, the quaternion is used. If any roll, pitch, or yaw have non
+            None type, the quaternion is ignored.
+            The default is [1., 0., 0., 0.].
+        roll : float, optional
+            The roll of the camera object about the camera point.
+            The default is None.
+        pitch : float, optional
+            The pitch of the camera object about the camera point.
+            The default is None.
+        yaw : float, optional
+            The yaw of the camera object about the camera point.
+            The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.viewer, Visualizer):
+            return
+        
+        # Apply the camera transform
+        else:
+            self.viewer.transform_camera(scale = scale,
+                                         translate = translate,
+                                         wxyz_quaternion = wxyz_quaternion,
+                                         roll=roll,
+                                         pitch=pitch,
+                                         yaw=yaw)
+        
+        
+    def set_link_color(self,
+                          urdf_obj=URDF_Obj(),
+                          link_name='',
+                          color=[0, 0, 0],
+                          transparent = False,
+                          opacity = 1.0):
+        """
+        Allows the user to change the color, transparency, and opacity
+        of an existing object in the simulation. The position and orientation
+        are not altered.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj that contains that link whose color is being updated.
+            The default is URDF_Obj().
+        link_name : string, optional
+            The name of the link whose color is being updated. The link name is
+            specified in the .urdf file. The default is "".
+        color : array-like, size (3,), optional
+            The 0-255 RGB color of the link. The default is [91, 155, 213].
+        transparent : boolean, optional
+            A boolean that indicates if the link is transparent.
+            The default is False.
+        opacity : float, optional
+            The opacity of the link. Can take float values between 0.0 and 1.0.
+            The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.viewer, Visualizer):
+            return    
+        
+        # If the link name doesn't exist, don't attempt to update it
+        if not (link_name in urdf_obj.link_map):
+            return
+    
+        # Get name and id data from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        urdf_name = str(urdf_id)
+        link_id = urdf_obj.link_map[link_name]
+        
+        # Get current visual data for the requested link
+        vis_data = self.engine.getVisualShapeData(urdf_id)[link_id]
+        
+        # Format stl path
+        stl_path = _format_path(vis_data[4].decode('UTF-8'))
+        
+        # Ensure color is in proper format
+        color = np.round(np.array(color))
+        color = color.astype(int).tolist()
+        
+        # Set the requested color
+        self.viewer.set_link_color(urdf_name = urdf_name,
+                                   link_name = link_name,
+                                   stl_path = stl_path, 
+                                   color = color,
+                                   transparent = transparent,
+                                   opacity = opacity)
      
 ###############################################################################
 """MAIN LOOP"""
@@ -1152,39 +1401,57 @@ if __name__ == "__main__":
                     joint_name="inner_to_wheel",
                     position=0.,
                     velocity=100.)
+    
+    # Set the camera scale and orientation
+    sim.transform_camera(scale = [2.25, 2.25, 2.25],
+                         pitch=-0.2,
+                         yaw=0.9)
 
     # Run the simulation
-    TIME = 0
-    active = 0.0
+    elapsed_time = 0
+    prev_torque = -0.0
+    torque = 0.0
+    color = [0,0,0]
     while(True):
         # Keep track of time to run sim in real time
         start_time = time.time()
         sim.engine.stepSimulation()
         
         # Collect keyboard IO data
-        if TIME % 0.01 < sim.dt:
-            if keyboard.is_pressed("shift+d"):
-                active = 0.5
-            elif keyboard.is_pressed("d"):
-                active = 0.1
-            elif keyboard.is_pressed("shift+a"):
-                active = -0.5
-            elif keyboard.is_pressed("a"):
-                active = -0.1
-            else:
-                active = 0.0
-                
-            # Set the torque based on keyboard inputs
-            print(active)
-            sim.set_joint_torque(urdf_obj=cmg_obj,
-                                 joint_name="outer_to_inner",
-                                 torque=active)
+        if keyboard.is_pressed("shift+d"):
+            torque = 0.5
+            color = [226,82,71]
+        elif keyboard.is_pressed("d"):
+            torque = 0.1
+            color = [221,157,49]
+        elif keyboard.is_pressed("shift+a"):
+            torque = -0.5
+            color = [172,62,193]
+        elif keyboard.is_pressed("a"):
+            torque = -0.1
+            color = [71,123,209]
+        else:
+            torque = 0.0
+            color = [144,186,76]
+            
+        # Set the torque and link color based on keyboard inputs
+        sim.set_joint_torque(urdf_obj=cmg_obj,
+                             joint_name="outer_to_inner",
+                             torque=torque)
+        sim.set_link_color(urdf_obj=cmg_obj,
+                           link_name='inner',
+                           color=color)
+        
+        # Print the current torque
+        if torque != prev_torque:
+            print(torque)
+        prev_torque = torque
     
         # Update the visualizer
         sim.update_urdf_visual(cmg_obj)
         
         # Add sleep to run sim in real time
-        TIME = TIME + sim.dt
+        elapsed_time = elapsed_time + sim.dt
         time_to_wait = sim.dt + start_time - time.time()
         if time_to_wait > 0.:
             time.sleep(time_to_wait)
