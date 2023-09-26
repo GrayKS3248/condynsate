@@ -30,14 +30,15 @@ import numpy as np
 import time
 import keyboard
 from matplotlib import colormaps as cmaps
-import Simulator
-from Simulator import _format_RGB
+from condynsate import _format_RGB
+from condynsate import Simulator
 
 
 ###############################################################################
 """MAIN LOOP"""
 ###############################################################################
 if __name__ == "__main__":
+    # Create an instance of the simulator with visualization
     sim = Simulator(visualization=True)
     
     # Load all urdf objects
