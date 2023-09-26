@@ -22,19 +22,17 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
+
 ###############################################################################
 """DEPENDENCIES"""
 ###############################################################################
 import numpy as np
 import pybullet
 from pybullet_utils import bullet_client as bc
-import time
 import meshcat
 import meshcat.geometry as geo
 import meshcat.transformations as tf
 from pathlib import Path
-import keyboard
-from matplotlib import colormaps as cmaps
 
 
 ###############################################################################
@@ -134,6 +132,23 @@ def _format_path(unformatted_path):
 
 def _format_RGB(unformatted_rgb,
                 range_to_255=True):
+    """
+    Converts unformatted rgb array-like objects to formatted rgb lists
+
+    Parameters
+    ----------
+    unformatted_rgb : array-like, shape(3,)
+        A 3 item array-like that contains the RGB data either in 0-1 or 0-255.
+    range_to_255 : bool, optional
+        A boolean flag that indicates whether the unformatted_rgb data needs to
+        be converted from 0-1 to 0-255. The default is True.
+
+    Returns
+    -------
+    list_rgb_255_int : list of ints, shape(3,)
+        The formatted RGB list.
+
+    """
     rgb = np.array(unformatted_rgb)
     if range_to_255:
         rgb_255 = np.round(rgb*255)
@@ -169,10 +184,10 @@ class Visualizer():
 
         """
         # Open a new instance of a meshcat visualizer
-        self.vis = meshcat.Visualizer().open()
+        self.scene = meshcat.Visualizer().open()
         
         # Delete all instances from the visualizer
-        self.vis.delete()
+        self.scene.delete()
         
         # Set the visibility of grid and axes
         self.set_grid(grid_vis)
@@ -233,8 +248,8 @@ class Visualizer():
         transform = self.get_transform(scale, translate, wxyz_quaternion)
 
         # Add and transform the object to its orientation and position
-        self.vis[obj_name].set_object(obj_geometry, obj_texture)
-        self.vis[obj_name].set_transform(transform)
+        self.scene[obj_name].set_object(obj_geometry, obj_texture)
+        self.scene[obj_name].set_transform(transform)
         
         
     def add_link(self,
@@ -301,8 +316,8 @@ class Visualizer():
         transform = self.get_transform(scale, translate, wxyz_quaternion)
 
         # Add and transform the link to its orientation and position
-        self.vis[urdf_name][link_name].set_object(link_geometry, link_mat)
-        self.vis[urdf_name][link_name].set_transform(transform)
+        self.scene[urdf_name][link_name].set_object(link_geometry, link_mat)
+        self.scene[urdf_name][link_name].set_transform(transform)
         
     
     def set_link_color(self,
@@ -352,7 +367,7 @@ class Visualizer():
                                          reflectivity=0.3)
         
         # Update the part's geometry and color
-        self.vis[urdf_name][link_name].set_object(link_geometry, link_mat)
+        self.scene[urdf_name][link_name].set_object(link_geometry, link_mat)
 
 
     def apply_transform(self,
@@ -389,7 +404,7 @@ class Visualizer():
         
         # Calculate and apply the transform
         transform = self.get_transform(scale, translate, wxyz_quaternion)
-        self.vis[urdf_name][link_name].set_transform(transform)
+        self.scene[urdf_name][link_name].set_transform(transform)
             
         # Return the transform
         return transform
@@ -446,7 +461,7 @@ class Visualizer():
         None.
 
         """
-        self.vis["/Grid"].set_property("visible", visible)
+        self.scene["/Grid"].set_property("visible", visible)
         
         
     def set_axes(self, visible=True):
@@ -464,7 +479,7 @@ class Visualizer():
         None.
 
         """
-        self.vis["/Axes"].set_property("visible", visible)
+        self.scene["/Axes"].set_property("visible", visible)
         
         
     def transform_camera(self,
@@ -523,7 +538,7 @@ class Visualizer():
         transform = self.get_transform(scale=scale,
                                        translate=translate,
                                        wxyz_quaternion=wxyz_quaternion)
-        self.vis["/Cameras/default"].set_transform(transform)
+        self.scene["/Cameras/default"].set_transform(transform)
         
 
 ###############################################################################
@@ -583,16 +598,6 @@ class Simulator:
         None.
 
         """
-        # self.engine = bc.BulletClient(
-        #     connection_mode=pybullet.GUI,
-        #     options=f'--width={640} --height={480}',
-        # )
-        # self.engine.configureDebugVisualizer(
-        #     self.engine.COV_ENABLE_GUI, 0,
-        #     lightPosition=[10., 10., 10.],
-        # )
-        # self.engine.resetDebugVisualizerCamera(5., 140, -40, (0., 0.5, -1.))
-        
         # Connect to pybullet
         self.engine = bc.BulletClient(connection_mode=pybullet.DIRECT)
         
@@ -612,9 +617,9 @@ class Simulator:
         
         # Create a visualizer
         if visualization:
-            self.viewer = Visualizer(grid_vis=False,axes_vis=False)
+            self.vis = Visualizer(grid_vis=False,axes_vis=False)
         else:
-            self.viewer=None
+            self.vis=None
         
         
     def load_urdf(self,
@@ -719,7 +724,7 @@ class Simulator:
                                    damping=0.)
 
         # Add urdf objects to the visualizer if visualization is occuring
-        if isinstance(self.viewer, Visualizer):
+        if isinstance(self.vis, Visualizer):
             self.add_urdf_to_visualizer(urdf_obj=urdf_obj,
                                         tex_path=tex_path)
 
@@ -1071,7 +1076,7 @@ class Simulator:
 
         Parameters
         ----------
-        viewer : Visualizer
+        vis : Visualizer
             The visualizer to which the object is added.
         urdf_obj : URDF_Obj, optional
             A URDF_Obj that will be added to the visualizer.
@@ -1086,7 +1091,7 @@ class Simulator:
 
         """
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.viewer, Visualizer):
+        if not isinstance(self.vis, Visualizer):
             return
         
         # Extract the visual data from the urdf object in the simulator
@@ -1102,7 +1107,7 @@ class Simulator:
             # If the current object is a static .obj object, add a static
             # object to the visualizer
             if paths[i][-4:] == ".obj":
-                self.viewer.add_object(obj_name=urdf_name,
+                self.vis.add_object(obj_name=urdf_name,
                                        obj_path=paths[i],
                                        tex_path=tex_path,
                                        scale=scales[i],
@@ -1117,7 +1122,7 @@ class Simulator:
                                   range_to_255=True)
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
-                self.viewer.add_link(urdf_name=urdf_name,
+                self.vis.add_link(urdf_name=urdf_name,
                                      link_name=link_name,
                                      stl_path=paths[i],
                                      color=rgb,
@@ -1145,7 +1150,7 @@ class Simulator:
 
         """
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.viewer, Visualizer):
+        if not isinstance(self.vis, Visualizer):
             return
         
         # Collect the visual data and urdf name
@@ -1156,7 +1161,7 @@ class Simulator:
         for i in range(len(paths)):
             if paths[i][-4:]==".stl":
                 link_name = names[i]
-                self.viewer.apply_transform(urdf_name=urdf_name,
+                self.vis.apply_transform(urdf_name=urdf_name,
                                             link_name=link_name,
                                             scale=scales[i],
                                             translate=poss[i],
@@ -1254,7 +1259,8 @@ class Simulator:
                          pitch=None,
                          yaw=None):
         """
-        Transforms the position, orientation, and scale of the viewer camera.
+        Transforms the position, orientation, and scale of the Visualizer scene
+        camera.
 
         Parameters
         ----------
@@ -1286,12 +1292,12 @@ class Simulator:
 
         """
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.viewer, Visualizer):
+        if not isinstance(self.vis, Visualizer):
             return
         
         # Apply the camera transform
         else:
-            self.viewer.transform_camera(scale = scale,
+            self.vis.transform_camera(scale = scale,
                                          translate = translate,
                                          wxyz_quaternion = wxyz_quaternion,
                                          roll=roll,
@@ -1334,7 +1340,7 @@ class Simulator:
 
         """
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.viewer, Visualizer):
+        if not isinstance(self.vis, Visualizer):
             return    
         
         # If the link name doesn't exist, don't attempt to update it
@@ -1357,193 +1363,10 @@ class Simulator:
                             range_to_255=False)
         
         # Set the requested color
-        self.viewer.set_link_color(urdf_name = urdf_name,
+        self.vis.set_link_color(urdf_name = urdf_name,
                                    link_name = link_name,
                                    stl_path = stl_path, 
                                    color = color,
                                    transparent = transparent,
                                    opacity = opacity)
      
-###############################################################################
-"""MAIN LOOP"""
-###############################################################################
-if __name__ == "__main__":
-    sim = Simulator(visualization=True)
-    
-    # Load all urdf objects
-    ground_obj = sim.load_urdf(urdf_path='./urdf/plane.urdf',
-                               tex_path='./urdf/check.png',
-                               position=[0., 0., -3.],
-                               wxyz_quaternion=[1., 0., 0., 0.])
-    wall_obj = sim.load_urdf(urdf_path='./urdf/plane.urdf',
-                             tex_path='./urdf/concrete.png',
-                             position=[0., 0., 0.],
-                             roll=0.5*np.pi,
-                             pitch=0.,
-                             yaw=np.pi)
-    cmg_obj = sim.load_urdf(urdf_path='./urdf/cmg.urdf',
-                            position=[0., 1.1, 0.],
-                            roll=0.0,
-                            pitch=-1.57,
-                            yaw=0.)
-    
-    # Set link mass
-    sim.set_link_mass(urdf_obj=cmg_obj,
-                      link_name="mass",
-                      mass=1.0)
-    
-    # Set joint damping
-    sim.set_joint_damping(urdf_obj=cmg_obj,
-                          joint_name="world_to_outer",
-                          damping=0.0)
-    sim.set_joint_damping(urdf_obj=cmg_obj,
-                          joint_name="outer_to_inner",
-                          damping=0.0)
-    
-    # Reset joints to 0 position and velocity
-    sim.reset_joint(urdf_obj=cmg_obj,
-                    joint_name="world_to_outer",
-                    position=0.,
-                    velocity=0.)
-    sim.reset_joint(urdf_obj=cmg_obj,
-                    joint_name="outer_to_inner",
-                    position=0.,
-                    velocity=0.)
-    sim.reset_joint(urdf_obj=cmg_obj,
-                    joint_name="inner_to_wheel",
-                    position=0.,
-                    velocity=100.)
-    
-    # Set the camera scale and orientation
-    sim.transform_camera(scale = [2.25, 2.25, 2.25],
-                         pitch=-0.2,
-                         yaw=0.9)
-
-    # Variables to track applied torque
-    prev_torque = -1.0
-    torque = 0.0
-    max_torque = 0.5
-    min_torque = -0.5
-    torque = 0.5*(max_torque + min_torque)
-    torque_sat = (torque - min_torque) / (max_torque - min_torque)
-    inner_color = cmaps['coolwarm'](round(255*torque_sat))[0:3]
-    
-    # Variables to track mass
-    prev_mass = 0.0
-    max_mass = 2.0
-    min_mass = 0.0
-    mass = 0.5*(max_mass + min_mass)
-    mass_sat = (mass - min_mass) / (max_mass - min_mass)
-    mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
-    
-    # Variables to track wheel RPM
-    prev_vel = 0.0
-    max_vel = 100.0
-    min_vel = 0.0
-    vel = 0.5 * (max_vel + min_vel)
-    vel_sat = (vel - min_vel) / (max_vel - min_vel)
-    vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
-    
-    # Run the simulation
-    elapsed_time = 0
-    while(True):
-        # Keep track of time to run sim in real time
-        start_time = time.time()
-        sim.engine.stepSimulation()
-        
-        # Collect keyboard IO data for torque
-        if keyboard.is_pressed("shift+d"):
-            torque = max_torque
-        elif keyboard.is_pressed("d"):
-            torque = max_torque / 4.0
-        elif keyboard.is_pressed("shift+a"):
-            torque = min_torque
-        elif keyboard.is_pressed("a"):
-            torque = min_torque / 4.0
-        else:
-            torque = 0.0
-            
-        # Set the torque and link color based on keyboard inputs
-        torque = round(torque,2)
-        torque_sat = (torque - min_torque) / (max_torque - min_torque)
-        torque_color = cmaps['coolwarm'](round(255*torque_sat))[0:3]
-        torque_color = _format_RGB(torque_color,
-                                   range_to_255=True)
-        sim.set_joint_torque(urdf_obj=cmg_obj,
-                             joint_name="outer_to_inner",
-                             torque=torque)
-        sim.set_link_color(urdf_obj=cmg_obj,
-                           link_name='inner',
-                           color=torque_color)
-        
-        # Print the current torque
-        if torque != prev_torque:
-            print("Torque: " + str(torque) + "Nm")
-        prev_torque = torque
-        
-        # Collect keyboard IO data for mass
-        if keyboard.is_pressed('e'):
-            mass = mass + 0.005*(max_mass - min_mass)
-            if mass > max_mass:
-                mass = max_mass
-        elif keyboard.is_pressed('q'):
-            mass = mass - 0.005*(max_mass - min_mass)
-            if mass < min_mass:
-                mass = min_mass
-            
-        # Set the mass and link color based on keyboard inputs
-        mass = round(mass,2)
-        mass_sat = (mass - min_mass) / (max_mass - min_mass)
-        mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
-        mass_color = _format_RGB(mass_color,
-                                 range_to_255=True)
-        sim.set_link_mass(urdf_obj=cmg_obj,
-                          link_name='mass',
-                          mass = mass)
-        sim.set_link_color(urdf_obj=cmg_obj,
-                           link_name='mass',
-                           color=mass_color)
-    
-        # Print the current torque
-        if mass != prev_mass:
-            print("Mass: " + str(mass) + "Kg")
-        prev_mass = mass
-    
-        # Collect keyboard IO data for wheel vel
-        if keyboard.is_pressed('w'):
-            vel = vel + 0.005*(max_vel - min_vel)
-            if vel > max_vel:
-                vel = max_vel
-        elif keyboard.is_pressed('s'):
-            vel = vel - 0.005*(max_vel - min_vel)
-            if vel < min_vel:
-                vel = min_vel
-            
-        # Set the wheel vel and link color based on keyboard inputs
-        vel = round(vel,2)
-        vel_sat = (vel - min_vel) / (max_vel - min_vel)
-        vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
-        vel_color = _format_RGB(vel_color,
-                                range_to_255=True)
-        
-        sim.set_joint_velocity(urdf_obj=cmg_obj,
-                              joint_name="inner_to_wheel",
-                              velocity=vel)
-        sim.set_link_color(urdf_obj=cmg_obj,
-                           link_name='wheel',
-                           color=vel_color)
-    
-        # Print the current wheel velocity
-        if vel != prev_vel:
-            print("Wheel Speed: " + str(vel) + "RPM")
-        prev_vel = vel
-    
-        # Update the visualizer
-        sim.update_urdf_visual(cmg_obj)
-        
-        # Add sleep to run sim in real time
-        elapsed_time = elapsed_time + sim.dt
-        time_to_wait = sim.dt + start_time - time.time()
-        if time_to_wait > 0.:
-            time.sleep(time_to_wait)
-            
