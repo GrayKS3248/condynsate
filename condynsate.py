@@ -697,8 +697,7 @@ class Simulator:
         urdf_id = self.engine.loadURDF(urdf_path,
                                        flags=(f1 | f2),
                                        basePosition=position,
-                                       baseOrientation=orientation,
-                                       useFixedBase=1)
+                                       baseOrientation=orientation)
         
         # Get the joint and link maps for the urdf object
         joint_map, link_map = self.make_joint_and_link_maps(urdf_id)

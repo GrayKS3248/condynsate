@@ -48,7 +48,7 @@ if __name__ == "__main__":
                                 roll=np.pi/2.0)
     
     segbot_obj = sim.load_urdf(urdf_path='./segbot_urdf/segbot.urdf',
-                                position=[0., 0., 0.])
+                                position=[0., 0., 1.])
     
     # Set the station speed
     sim.set_joint_velocity(urdf_obj=station_obj,
@@ -59,11 +59,6 @@ if __name__ == "__main__":
     sim.transform_camera(scale = [1.5, 1.5, 1.5],
                          pitch=-0.2,
                          yaw = 0.3)
-    
-    sim.set_joint_torque(urdf_obj=segbot_obj,
-                         joint_name='chassis_to_left_wheel',
-                         torque=1.0)
-                         
     
     # Run the simulation
     elapsed_time = 0
