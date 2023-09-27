@@ -648,7 +648,8 @@ class Simulator:
                   wxyz_quaternion = [1., 0., 0., 0.],
                   roll=None,
                   pitch=None,
-                  yaw=None):
+                  yaw=None,
+                  fixed=False):
         """
         Loads a URDF object to the simulation engine. All joint's
         velocity control is disabled (this allows the joint to move freely),
@@ -677,6 +678,9 @@ class Simulator:
             The initial pitch angle of the urdf object. The default is None.
         yaw : float, optional
             The initial yaw angle of the urdf object. The default is None.
+        fixed : bool, optional
+            A boolean flag that indicates whether the base joint of the
+            loaded urdf is fixed. The default is False.
         Returns
         -------
         urdf_obj : URDF_Obj
@@ -717,7 +721,8 @@ class Simulator:
         urdf_id = self.engine.loadURDF(urdf_path,
                                        flags=(f1 | f2),
                                        basePosition=position,
-                                       baseOrientation=orientation)
+                                       baseOrientation=orientation,
+                                       useFixedBase=fixed)
         
         # Get the joint and link maps for the urdf object
         joint_map, link_map = self.make_joint_and_link_maps(urdf_id)
@@ -1046,11 +1051,36 @@ class Simulator:
             joint_id = link_map[link_name]
             self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
     
+    
+    def get_base_pos(self,
+                     urdf_obj=URDF_Obj()):
+        """
+        Returns the position of the base link of a urdf object.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj whose base position is returned
+
+        Returns
+        -------
+        position : array-like, shape(3,)
+            The X,Y,Z coordinates of the of base of the urdf object.
+
+        """
+        # Get object id
+        urdf_id = urdf_obj.urdf_id
+        
+        # Retrieve pos and ori data
+        pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
+        position = list(pos_ori[0])
+        return position
+    
         
     def set_joint_position(self,
-                          urdf_obj=URDF_Obj(),
-                          joint_name="",
-                          position=0.):
+                           urdf_obj=URDF_Obj(),
+                           joint_name="",
+                           position=0.):
         """
         Sets the position of a joint of a urdf object.
 

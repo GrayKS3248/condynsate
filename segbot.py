@@ -45,10 +45,11 @@ if __name__ == "__main__":
     # Load all urdf objects
     station_obj = sim.load_urdf(urdf_path='./segbot_urdf/station.urdf',
                                 position=[0., 0., 19.34],
-                                roll=np.pi/2.0)
-    
+                                roll=np.pi/2.0,
+                                fixed=True)
     segbot_obj = sim.load_urdf(urdf_path='./segbot_urdf/segbot.urdf',
-                                position=[0., 0., 1.])
+                                position=[0., 0., 0.],
+                                fixed=False)
     
     # Set the station speed
     sim.set_joint_velocity(urdf_obj=station_obj,
