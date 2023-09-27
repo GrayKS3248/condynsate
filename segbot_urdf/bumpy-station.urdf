@@ -1,0 +1,1045 @@
+<?xml version="1.0" ?>
+<robot name="spacecraft">
+
+  <material name="industrial-blue">
+    <color rgba="0.11372549019607843 0.34509803921568627 0.6549019607843137 1" />
+  </material>
+
+  <material name="arches-blue">
+    <color rgba="0.0 0.6235294117647059 0.8313725490196079 1" />
+  </material>
+
+  <material name = "heritage-orange">
+    <color rgba = "0.96078431 0.50980392 0.11764706 1" />
+  </material>
+
+  <link name="world"/>
+
+  <link name="station" concave="yes">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<mesh filename="station.stl" scale="1.0 1.0 3.0"/>
+      </geometry>
+      <material name = "arches-blue"/>
+    </visual>
+    <collision concave="yes">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<mesh filename="station.stl" scale="1.0 1.0 3.0"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1000.0"/>
+      <inertia ixx="1000.0" ixy="0" ixz="0" iyy="1000.0" iyz="0" izz="1000.0" />
+    </inertial>
+  </link>
+
+  <link name="marker1">
+    <visual>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+      <material name = "arches-blue"/>
+    </visual>
+    <collision>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.0" ixy="0" ixz="0" iyy="0.0" iyz="0" izz="0.0" />
+    </inertial>
+  </link>
+
+  <link name="marker2">
+    <visual>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+      <material name = "arches-blue"/>
+    </visual>
+    <collision>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.0" ixy="0" ixz="0" iyy="0.0" iyz="0" izz="0.0" />
+    </inertial>
+  </link>
+
+  <link name="marker3">
+    <visual>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+      <material name = "arches-blue"/>
+    </visual>
+    <collision>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.0" ixy="0" ixz="0" iyy="0.0" iyz="0" izz="0.0" />
+    </inertial>
+  </link>
+
+  <link name="marker4">
+    <visual>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+      <material name = "arches-blue"/>
+    </visual>
+    <collision>
+      <geometry>
+  			<mesh filename="disc.stl" scale="2.0 2.0 0.5"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.0" ixy="0" ixz="0" iyy="0.0" iyz="0" izz="0.0" />
+    </inertial>
+  </link>
+
+  <joint name="world_to_station" type="continuous">
+		<parent link = "world" />
+		<child link = "station" />
+		<origin xyz = "0 0 0" />
+		<axis xyz = "0 0 1" />
+		<limit effort="1000" velocity="1000"/>
+	</joint>
+
+  <joint name="station_to_marker1" type="fixed">
+		<parent link="station" />
+		<child link="marker1" />
+		<origin xyz="0 -20 -3.25" />
+	</joint>
+
+  <joint name="station_to_marker2" type="fixed">
+		<parent link="station" />
+		<child link="marker2" />
+		<origin xyz="20 0 -3.25" />
+	</joint>
+
+  <joint name="station_to_marker3" type="fixed">
+		<parent link="station" />
+		<child link="marker3" />
+		<origin xyz="0 20 -3.25" />
+	</joint>
+
+  <joint name="station_to_marker4" type="fixed">
+		<parent link="station" />
+		<child link="marker4" />
+		<origin xyz="-20 0 -3.25" />
+	</joint>
+
+  <link name="bumplink00">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink01">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink02">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink03">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink04">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink05">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink06">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink07">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink08">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink09">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink10">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink11">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink12">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink13">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink14">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink15">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink16">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink17">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink18">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink19">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink20">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink21">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink22">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink23">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink24">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink25">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink26">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink27">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink28">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink29">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink30">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink31">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink32">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink33">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink34">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink35">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink36">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink37">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink38">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink39">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="0.200 0.200 4.000"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <link name="bumplink40">
+    <visual>
+      <geometry>
+        <mesh filename="disc.stl" scale="3.000 3.000 0.030"/>
+      </geometry>
+      <material name="heritage-orange"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="disc.stl" scale="3.000 3.000 0.030"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="bumpjoint00" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink00"/>
+    <origin xyz="5.762 -19.152 0.000" rpy="1.571 0.000 0.292"/>
+  </joint>
+  <joint name="bumpjoint01" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink01"/>
+    <origin xyz="7.799 -18.417 -2.717" rpy="1.571 0.000 0.401"/>
+  </joint>
+  <joint name="bumpjoint02" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink02"/>
+    <origin xyz="10.752 -16.864 0.821" rpy="1.571 0.000 0.568"/>
+  </joint>
+  <joint name="bumpjoint03" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink03"/>
+    <origin xyz="13.756 -14.518 -0.636" rpy="1.571 0.000 0.758"/>
+  </joint>
+  <joint name="bumpjoint04" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink04"/>
+    <origin xyz="15.148 -13.059 -0.933" rpy="1.571 0.000 0.859"/>
+  </joint>
+  <joint name="bumpjoint05" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink05"/>
+    <origin xyz="16.988 -10.556 2.781" rpy="1.571 0.000 1.015"/>
+  </joint>
+  <joint name="bumpjoint06" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink06"/>
+    <origin xyz="18.322 -8.020 -0.829" rpy="1.571 0.000 1.158"/>
+  </joint>
+  <joint name="bumpjoint07" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink07"/>
+    <origin xyz="19.552 -4.208 2.286" rpy="1.571 0.000 1.359"/>
+  </joint>
+  <joint name="bumpjoint08" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink08"/>
+    <origin xyz="19.828 -2.620 -1.213" rpy="1.571 0.000 1.439"/>
+  </joint>
+  <joint name="bumpjoint09" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink09"/>
+    <origin xyz="19.973 1.045 -0.554" rpy="1.571 0.000 1.623"/>
+  </joint>
+  <joint name="bumpjoint10" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink10"/>
+    <origin xyz="19.671 3.613 1.792" rpy="1.571 0.000 1.752"/>
+  </joint>
+  <joint name="bumpjoint11" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink11"/>
+    <origin xyz="19.009 6.219 -0.037" rpy="1.571 0.000 1.887"/>
+  </joint>
+  <joint name="bumpjoint12" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink12"/>
+    <origin xyz="17.859 9.003 2.562" rpy="1.571 0.000 2.038"/>
+  </joint>
+  <joint name="bumpjoint13" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink13"/>
+    <origin xyz="16.610 11.140 -1.123" rpy="1.571 0.000 2.162"/>
+  </joint>
+  <joint name="bumpjoint14" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink14"/>
+    <origin xyz="13.885 14.395 -0.294" rpy="1.571 0.000 2.374"/>
+  </joint>
+  <joint name="bumpjoint15" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink15"/>
+    <origin xyz="11.773 16.168 -2.387" rpy="1.571 0.000 2.512"/>
+  </joint>
+  <joint name="bumpjoint16" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink16"/>
+    <origin xyz="10.202 17.202 -2.083" rpy="1.571 0.000 2.606"/>
+  </joint>
+  <joint name="bumpjoint17" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink17"/>
+    <origin xyz="6.992 18.738 0.009" rpy="1.571 0.000 2.784"/>
+  </joint>
+  <joint name="bumpjoint18" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink18"/>
+    <origin xyz="4.968 19.373 -1.389" rpy="1.571 0.000 2.891"/>
+  </joint>
+  <joint name="bumpjoint19" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink19"/>
+    <origin xyz="0.586 19.991 1.394" rpy="1.571 0.000 3.112"/>
+  </joint>
+  <joint name="bumpjoint20" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink20"/>
+    <origin xyz="-1.648 19.932 0.644" rpy="1.571 0.000 3.224"/>
+  </joint>
+  <joint name="bumpjoint21" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink21"/>
+    <origin xyz="-4.171 19.560 -2.004" rpy="1.571 0.000 3.352"/>
+  </joint>
+  <joint name="bumpjoint22" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink22"/>
+    <origin xyz="-7.096 18.699 -0.252" rpy="1.571 0.000 3.504"/>
+  </joint>
+  <joint name="bumpjoint23" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink23"/>
+    <origin xyz="-9.372 17.668 2.030" rpy="1.571 0.000 3.629"/>
+  </joint>
+  <joint name="bumpjoint24" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink24"/>
+    <origin xyz="-12.311 15.762 1.749" rpy="1.571 0.000 3.805"/>
+  </joint>
+  <joint name="bumpjoint25" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink25"/>
+    <origin xyz="-13.895 14.385 -2.713" rpy="1.571 0.000 3.910"/>
+  </joint>
+  <joint name="bumpjoint26" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink26"/>
+    <origin xyz="-16.275 11.624 -0.349" rpy="1.571 0.000 4.092"/>
+  </joint>
+  <joint name="bumpjoint27" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink27"/>
+    <origin xyz="-17.810 9.100 -0.019" rpy="1.571 0.000 4.240"/>
+  </joint>
+  <joint name="bumpjoint28" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink28"/>
+    <origin xyz="-19.108 5.906 -1.785" rpy="1.571 0.000 4.413"/>
+  </joint>
+  <joint name="bumpjoint29" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink29"/>
+    <origin xyz="-19.635 3.801 0.733" rpy="1.571 0.000 4.521"/>
+  </joint>
+  <joint name="bumpjoint30" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink30"/>
+    <origin xyz="-19.928 1.695 -0.005" rpy="1.571 0.000 4.628"/>
+  </joint>
+  <joint name="bumpjoint31" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink31"/>
+    <origin xyz="-19.956 -1.327 -0.625" rpy="1.571 0.000 4.779"/>
+  </joint>
+  <joint name="bumpjoint32" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink32"/>
+    <origin xyz="-19.160 -5.735 -2.303" rpy="1.571 0.000 5.003"/>
+  </joint>
+  <joint name="bumpjoint33" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink33"/>
+    <origin xyz="-18.756 -6.944 -0.115" rpy="1.571 0.000 5.067"/>
+  </joint>
+  <joint name="bumpjoint34" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink34"/>
+    <origin xyz="-16.601 -11.154 -1.547" rpy="1.571 0.000 5.304"/>
+  </joint>
+  <joint name="bumpjoint35" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink35"/>
+    <origin xyz="-15.441 -12.711 -1.706" rpy="1.571 0.000 5.401"/>
+  </joint>
+  <joint name="bumpjoint36" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink36"/>
+    <origin xyz="-13.564 -14.697 -0.069" rpy="1.571 0.000 5.538"/>
+  </joint>
+  <joint name="bumpjoint37" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink37"/>
+    <origin xyz="-11.744 -16.189 -2.441" rpy="1.571 0.000 5.656"/>
+  </joint>
+  <joint name="bumpjoint38" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink38"/>
+    <origin xyz="-8.878 -17.921 -1.983" rpy="1.571 0.000 5.823"/>
+  </joint>
+  <joint name="bumpjoint39" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink39"/>
+    <origin xyz="-5.762 -19.152 0.000" rpy="1.571 0.000 5.991"/>
+  </joint>
+  <joint name="bumpjoint40" type="fixed">
+    <parent link="station"/>
+    <child link="bumplink40"/>
+    <origin xyz="0.000 -20.000 0.000" rpy="1.571 0.000 0.000"/>
+  </joint>
+</robot>

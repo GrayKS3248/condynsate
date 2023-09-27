@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+<robot name="platform">
+
+  <material name="industrial-blue">
+    <color rgba="0.11372549019607843 0.34509803921568627 0.6549019607843137 1" />
+  </material>
+
+  <material name="arches-blue">
+    <color rgba="0.0 0.6235294117647059 0.8313725490196079 1" />
+  </material>
+
+  <material name = "heritage-orange">
+    <color rgba = "0.96078431 0.50980392 0.11764706 1" />
+  </material>
+
+  <link name="chassis">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="cube.stl" scale="0.4 0.6 0.8"/>
+      </geometry>
+      <material name = "industrial-blue"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="cube.stl" scale="0.4 0.6 0.8"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="12.0"/>
+      <inertia ixx="1.0" ixy="0" ixz="0" iyy="0.8" iyz="0" izz="0.52"/>
+    </inertial>
+  </link>
+
+  <link name="right_wheel">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<mesh filename="wheel.stl" scale="0.325 0.325 0.075"/>
+      </geometry>
+      <material name = "heritage-orange"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<cylinder radius="0.325" length="0.075" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1.2"/>
+      <inertia ixx="0.03225" ixy="0" ixz="0" iyy="0.03225" iyz="0" izz="0.063375"/>
+    </inertial>
+  </link>
+
+  <link name="left_wheel">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<mesh filename="wheel.stl" scale="0.325 0.325 0.075"/>
+      </geometry>
+      <material name = "heritage-orange"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<cylinder radius="0.325" length="0.075" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1.2"/>
+      <inertia ixx="0.03225" ixy="0" ixz="0" iyy="0.03225" iyz="0" izz="0.063375"/>
+    </inertial>
+  </link>
+
+  <joint name="chassis_to_left_wheel" type="continuous">
+		<parent link = "chassis" />
+		<child link = "left_wheel" />
+		<origin rpy="1.57 0 0" xyz = "0 0.35 -0.3" />
+		<axis xyz = "0 0 -1" />
+		<limit effort="1000" velocity="1000"/>
+	</joint>
+
+  <joint name="chassis_to_right_wheel" type="continuous">
+		<parent link = "chassis" />
+		<child link = "right_wheel" />
+		<origin rpy="1.57 0 0" xyz="0 -0.35 -0.3" />
+		<axis xyz="0 0 -1" />
+		<limit effort="1000" velocity="1000"/>
+	</joint>
+
+</robot>
