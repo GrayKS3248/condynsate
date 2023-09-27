@@ -109,6 +109,11 @@ if __name__ == "__main__":
     vel_sat = (vel - min_vel) / (max_vel - min_vel)
     vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
     
+    # Wait for user input
+    print("PRESS ENTER TO RUN")
+    while not keyboard.is_pressed("enter"):
+        pass
+    
     # Run the simulation
     elapsed_time = 0
     done = False

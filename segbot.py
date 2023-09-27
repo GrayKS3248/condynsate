@@ -65,8 +65,8 @@ if __name__ == "__main__":
                          yaw = 0.3)
     
     # Variables to track applied torque
-    max_torque = 10.
-    min_torque = -10.
+    max_torque = 2.
+    min_torque = -2.
     prev_r_torque = -1.0
     r_torque = 0.5*(max_torque + min_torque)
     r_torque_sat = (r_torque - min_torque) / (max_torque - min_torque)
@@ -74,6 +74,11 @@ if __name__ == "__main__":
     l_torque = 0.5*(max_torque + min_torque)
     l_torque_sat = (l_torque - min_torque) / (max_torque - min_torque)
     l_color = cmaps['coolwarm'](round(255*l_torque_sat))[0:3]
+    
+    # Wait for user input
+    print("PRESS ENTER TO RUN")
+    while not keyboard.is_pressed("enter"):
+        pass
     
     # Run the simulation
     elapsed_time = 0
@@ -97,20 +102,24 @@ if __name__ == "__main__":
         
         # Collect keyboard IO data for torque
         if keyboard.is_pressed("shift+w"):
-            r_torque = max_torque
-            l_torque = max_torque
+            r_torque = 0.75 * max_torque
+            l_torque = 0.75 * max_torque
         elif keyboard.is_pressed("w"):
-            r_torque = max_torque / 4.0
-            l_torque = max_torque / 4.0
+            r_torque = 0.33 * max_torque
+            l_torque = 0.33 * max_torque / 2.0
         elif keyboard.is_pressed("shift+s"):
-            r_torque = min_torque
-            l_torque = min_torque
+            r_torque = 0.75 * min_torque
+            l_torque = 0.75 * min_torque
         elif keyboard.is_pressed("s"):
-            r_torque = min_torque / 4.0
-            l_torque = min_torque / 4.0
+            r_torque = 0.33 * min_torque
+            l_torque = 0.33 * min_torque
         else:
             r_torque = 0.0
             l_torque = 0.0
+        if keyboard.is_pressed("d"):
+            l_torque = l_torque + 0.25*max_torque
+        if keyboard.is_pressed("a"):
+            r_torque = r_torque + 0.25*max_torque
            
         # Set the torque and torque colors
         r_torque = round(r_torque,2)
