@@ -1534,10 +1534,14 @@ class Simulator:
         link_id = urdf_obj.link_map[link_name]
         
         # Get current visual data for the requested link
-        vis_data = self.engine.getVisualShapeData(urdf_id)[link_id]
-        
+        vis_data = self.engine.getVisualShapeData(urdf_id)
+        stl_path = ""
+        for vis_datum in vis_data:
+            if vis_datum[1] == link_id:
+                stl_path = vis_datum[4]
+            
         # Format stl path
-        stl_path = _format_path(vis_data[4].decode('UTF-8'))
+        stl_path = _format_path(stl_path.decode('UTF-8'))
         
         # Ensure color is in proper format
         color = _format_RGB(color,

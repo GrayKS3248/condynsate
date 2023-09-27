@@ -115,7 +115,6 @@ if __name__ == "__main__":
     while(not done):
         # Keep track of time to run sim in real time
         start_time = time.time()
-        sim.engine.stepSimulation()
         
         # Collect keyboard IO for termination
         if keyboard.is_pressed("esc"):
@@ -208,7 +207,8 @@ if __name__ == "__main__":
             print("Wheel Speed: " + str(vel) + "RPM")
         prev_vel = vel
     
-        # Update the visualizer
+        # Step the sim and update the visualizer
+        sim.engine.stepSimulation()
         sim.update_urdf_visual(cmg_obj)
         sim.update_urdf_visual(ground_obj)
         sim.update_urdf_visual(wall_obj)

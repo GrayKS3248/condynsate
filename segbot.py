@@ -43,23 +43,37 @@ if __name__ == "__main__":
                     gravity=[0., 0., -9.81])
     
     # Load all urdf objects
+    station_radius = 19.59
+    station_center = np.array([0., 0., 19.355])
     station_obj = sim.load_urdf(urdf_path='./segbot_urdf/station.urdf',
-                                position=[0., 0., 19.34],
+                                position=station_center,
                                 roll=np.pi/2.0,
                                 fixed=True)
     segbot_obj = sim.load_urdf(urdf_path='./segbot_urdf/segbot.urdf',
                                 position=[0., 0., 0.],
+                                yaw=np.pi,
                                 fixed=False)
     
     # Set the station speed
     sim.set_joint_velocity(urdf_obj=station_obj,
                            joint_name="world_to_station",
-                           velocity=0.25)
+                           velocity=0.1)
     
     # Set the camera scale and orientation
     sim.transform_camera(scale = [1.5, 1.5, 1.5],
                          pitch=-0.2,
                          yaw = 0.3)
+    
+    # Variables to track applied torque
+    max_torque = 10.
+    min_torque = -10.
+    prev_r_torque = -1.0
+    r_torque = 0.5*(max_torque + min_torque)
+    r_torque_sat = (r_torque - min_torque) / (max_torque - min_torque)
+    r_color = cmaps['coolwarm'](round(255*r_torque_sat))[0:3]
+    l_torque = 0.5*(max_torque + min_torque)
+    l_torque_sat = (l_torque - min_torque) / (max_torque - min_torque)
+    l_color = cmaps['coolwarm'](round(255*l_torque_sat))[0:3]
     
     # Run the simulation
     elapsed_time = 0
@@ -67,23 +81,63 @@ if __name__ == "__main__":
     while(not done):
         # Keep track of time to run sim in real time
         start_time = time.time()
-        sim.engine.stepSimulation()
         
-        # Update the visualizer
-        sim.update_urdf_visual(station_obj)
-        sim.update_urdf_visual(segbot_obj)
+        # Get the current base position of the robot and change
+        # gravity accordingly.
+        # This simulates centrifugal gravity from the station
+        seg_pos = np.array(sim.get_base_pos(segbot_obj))
+        diff = seg_pos - station_center
+        dirn = diff / np.linalg.norm(diff)
+        grav = 9.81 * dirn
+        sim.set_gravity(grav)
         
         # Collect keyboard IO for termination
         if keyboard.is_pressed("esc"):
             done = True
         
-        sim.set_joint_torque(urdf_obj=segbot_obj,
-                             joint_name='chassis_to_left_wheel',
-                             torque=-0.02)
+        # Collect keyboard IO data for torque
+        if keyboard.is_pressed("shift+w"):
+            r_torque = max_torque
+            l_torque = max_torque
+        elif keyboard.is_pressed("w"):
+            r_torque = max_torque / 4.0
+            l_torque = max_torque / 4.0
+        elif keyboard.is_pressed("shift+s"):
+            r_torque = min_torque
+            l_torque = min_torque
+        elif keyboard.is_pressed("s"):
+            r_torque = min_torque / 4.0
+            l_torque = min_torque / 4.0
+        else:
+            r_torque = 0.0
+            l_torque = 0.0
+           
+        # Set the torque and torque colors
+        r_torque = round(r_torque,2)
+        r_torque_sat = (r_torque - min_torque) / (max_torque - min_torque)
+        r_color = cmaps['coolwarm'](round(255*r_torque_sat))[0:3]
+        r_color = _format_RGB(r_color, range_to_255=True)
+        l_torque = round(l_torque,2)
+        l_torque_sat = (l_torque - min_torque) / (max_torque - min_torque)
+        l_color = cmaps['coolwarm'](round(255*l_torque_sat))[0:3]
+        l_color = _format_RGB(l_color, range_to_255=True)
         sim.set_joint_torque(urdf_obj=segbot_obj,
                              joint_name='chassis_to_right_wheel',
-                             torque=-0.02)
+                             torque=r_torque)
+        sim.set_link_color(urdf_obj=segbot_obj,
+                            link_name='right_wheel',
+                            color=r_color)
+        sim.set_joint_torque(urdf_obj=segbot_obj,
+                             joint_name='chassis_to_left_wheel',
+                             torque=l_torque)
+        sim.set_link_color(urdf_obj=segbot_obj,
+                            link_name='left_wheel',
+                            color=l_color)
         
+        # Step the simulation and update the visualization
+        sim.engine.stepSimulation()
+        sim.update_urdf_visual(station_obj)
+        sim.update_urdf_visual(segbot_obj)
         
         # Add sleep to run sim in real time
         elapsed_time = elapsed_time + sim.dt
