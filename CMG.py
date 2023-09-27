@@ -63,6 +63,11 @@ if __name__ == "__main__":
                       link_name="mass",
                       mass=1.0)
     
+    # Set wheel velocity
+    sim.set_joint_velocity(urdf_obj=cmg_obj,
+                           joint_name='inner_to_wheel',
+                           velocity = 50.)
+    
     # Set joint damping
     sim.set_joint_damping(urdf_obj=cmg_obj,
                           joint_name="world_to_outer",
@@ -70,20 +75,6 @@ if __name__ == "__main__":
     sim.set_joint_damping(urdf_obj=cmg_obj,
                           joint_name="outer_to_inner",
                           damping=0.0)
-    
-    # Reset joints to 0 position and velocity
-    sim.reset_joint(urdf_obj=cmg_obj,
-                    joint_name="world_to_outer",
-                    position=0.,
-                    velocity=0.)
-    sim.reset_joint(urdf_obj=cmg_obj,
-                    joint_name="outer_to_inner",
-                    position=0.,
-                    velocity=0.)
-    sim.reset_joint(urdf_obj=cmg_obj,
-                    joint_name="inner_to_wheel",
-                    position=0.,
-                    velocity=100.)
     
     # Set the camera scale and orientation
     sim.transform_camera(scale = [2.25, 2.25, 2.25],

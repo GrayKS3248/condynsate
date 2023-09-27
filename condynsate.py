@@ -602,10 +602,9 @@ class Simulator:
         self.engine = bc.BulletClient(connection_mode=pybullet.DIRECT)
         
         # Configure gravity
-        self.gravity = gravity
-        self.engine.setGravity(self.gravity[0],
-                               self.gravity[1],
-                               self.gravity[2])
+        self.engine.setGravity(gravity[0],
+                               gravity[1],
+                               gravity[2])
         
         # Configure physics engine parameters
         self.dt = 0.01
@@ -658,7 +657,6 @@ class Simulator:
             The initial pitch angle of the urdf object. The default is None.
         yaw : float, optional
             The initial yaw angle of the urdf object. The default is None.
-
         Returns
         -------
         urdf_obj : URDF_Obj
@@ -708,10 +706,14 @@ class Simulator:
         # Create urdf_obj and adjust the default state of its joints
         urdf_obj = URDF_Obj(urdf_id, joint_map, link_map)
         for joint_name in joint_map:
-            # Disable velocity control if the joint is not a base joint
-            if joint_map[joint_name]!=-1:
-                self.disable_velocity_control(urdf_obj,
-                                              joint_name=joint_name)
+            self.engine.changeDynamics(urdf_id,
+                                       joint_map[joint_name],
+                                       lateralFriction=1.0,
+                                       spinningFriction=0.0,
+                                       rollingFriction=0.0,
+                                       restitution=0.5,
+                                       contactDamping=-1,
+                                       contactStiffness=-1)
             
             # Set the linear and angular damping to 0 (eliminate drag)
             self.set_linear_angular_damping(urdf_obj,
@@ -723,6 +725,11 @@ class Simulator:
             self.set_joint_damping(urdf_obj,
                                    joint_name=joint_name,
                                    damping=0.)
+
+            # Disable velocity control if the joint is not a base joint
+            if joint_map[joint_name]!=-1:
+                self.disable_velocity_control(urdf_obj,
+                                              joint_name=joint_name)
 
         # Add urdf objects to the visualizer if visualization is occuring
         if isinstance(self.vis, Visualizer):
@@ -960,6 +967,7 @@ class Simulator:
             self.engine.setJointMotorControlArray(urdf_id,
                                                   joint_id,
                                                   mode,
+                                                  forces=[1000.],
                                                   targetPositions=position)
     
     
@@ -998,6 +1006,7 @@ class Simulator:
             self.engine.setJointMotorControlArray(urdf_id,
                                                   joint_id,
                                                   mode,
+                                                  forces=[1000.],
                                                   targetVelocities=velocity)
     
     
@@ -1325,11 +1334,11 @@ class Simulator:
         # Apply the camera transform
         else:
             self.vis.transform_camera(scale = scale,
-                                         translate = translate,
-                                         wxyz_quaternion = wxyz_quaternion,
-                                         roll=roll,
-                                         pitch=pitch,
-                                         yaw=yaw)
+                                      translate = translate,
+                                      wxyz_quaternion = wxyz_quaternion,
+                                      roll=roll,
+                                      pitch=pitch,
+                                      yaw=yaw)
         
         
     def set_link_color(self,
