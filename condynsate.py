@@ -602,9 +602,7 @@ class Simulator:
         self.engine = bc.BulletClient(connection_mode=pybullet.DIRECT)
         
         # Configure gravity
-        self.engine.setGravity(gravity[0],
-                               gravity[1],
-                               gravity[2])
+        self.set_gravity(gravity)
         
         # Configure physics engine parameters
         self.dt = 0.01
@@ -620,6 +618,28 @@ class Simulator:
         else:
             self.vis=None
         
+    
+    def set_gravity(self,
+                    gravity = [0., 0., 0.]):
+        """
+        Sets the acceleration due to gravity vector.
+
+        Parameters
+        ----------
+        gravity : array-like, shape (3,), optional
+            The acceleration due to gravity vector in m/s^2.
+            The default is [0., 0., 0.].
+
+        Returns
+        -------
+        None.
+
+        """
+        # Configure gravity
+        self.engine.setGravity(gravity[0],
+                               gravity[1],
+                               gravity[2])
+    
         
     def load_urdf(self,
                   urdf_path='./urdf/plane.urdf',
@@ -705,14 +725,21 @@ class Simulator:
         # Create urdf_obj and adjust the default state of its joints
         urdf_obj = URDF_Obj(urdf_id, joint_map, link_map)
         for joint_name in joint_map:
-            self.engine.changeDynamics(urdf_id,
-                                       joint_map[joint_name],
-                                       lateralFriction=1.0,
-                                       spinningFriction=0.0,
-                                       rollingFriction=0.0,
-                                       restitution=0.5,
-                                       contactDamping=-1,
-                                       contactStiffness=-1)
+            
+            # Set the joint's friction parameters to model metal to metal
+            # friction
+            self.set_joint_friction_params(urdf_obj=urdf_obj,
+                                           joint_name=joint_name,
+                                           lateral_friction=1.0,
+                                           spinning_friction=0.0,
+                                           rolling_friction=0.0)
+            
+            # Set the joint's contact parameters to model stiff metal contact
+            self.set_joint_contact_params(urdf_obj=urdf_obj,
+                                          joint_name=joint_name,
+                                          restitution=0.5,
+                                          contact_damping=-1.0,
+                                          contact_stiffness=-1.0)
             
             # Set the linear and angular damping to 0 (eliminate drag)
             self.set_linear_angular_damping(urdf_obj,
@@ -720,7 +747,7 @@ class Simulator:
                                             linear_damping=0.,
                                             angular_damping=0.)
             
-            # Set damping of joints to 0 (eliminate friction)
+            # Set damping of joints to 0 (eliminate joint friction)
             self.set_joint_damping(urdf_obj,
                                    joint_name=joint_name,
                                    damping=0.)
@@ -896,6 +923,95 @@ class Simulator:
         if joint_name in joint_map:
             joint_id = joint_map[joint_name]
             self.engine.changeDynamics(urdf_id, joint_id, jointDamping=damping)
+    
+    
+    def set_joint_friction_params(self,
+                                  urdf_obj=URDF_Obj(),
+                                  joint_name="",
+                                  lateral_friction=0.0,
+                                  spinning_friction=0.0,
+                                  rolling_friction=0.0):
+        """
+        Sets a joint's friction parameters. These parameters determine the
+        friction characteristics between 2 joints.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj that contains that joint whose friction is being set.
+            The default is URDF_Obj().
+        joint_name : string, optional
+            The name of the joint whose friction is set. The joint name is
+            specified in the .urdf file. The default is "".
+        lateral_friction : float, optional
+            The lateral friction applied to the joint. The default is 0.0.
+        spinning_friction : float, optional
+            The spinning friction applied to the joint. The default is 0.0.
+        rolling_friction : float, optional
+            The rolling friction applied to the joint. The default is 0.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Set the joint friction parameters
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+            self.engine.changeDynamics(urdf_id,
+                                       joint_id,
+                                       lateralFriction=lateral_friction, 
+                                       spinningFriction=spinning_friction, 
+                                       rollingFriction=rolling_friction)
+    
+    
+    def set_joint_contact_params(self,
+                                 urdf_obj=URDF_Obj(),
+                                 joint_name="",
+                                 restitution=0.0,
+                                 contact_damping=0.0,
+                                 contact_stiffness=0.0):
+        """
+        Sets a joint's contact parameters. These parameters determine the
+        energy transfer between two joints in contact.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj that contains that joint whose contact params are
+            being set. The default is URDF_Obj().
+        joint_name : string, optional
+            The name of the joint whose contact params are set.
+            The joint name is specified in the .urdf file. The default is "".
+        restitution : float, optional
+            The restitution applied to the joint. The default is 0.0.
+        contact_damping : float, optional
+            The contact damping friction applied to the joint.
+            The default is 0.0.
+        contact_stiffness : float, optional
+            The contact stiffness applied to the joint. The default is 0.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Set the joint contact parameters
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+            self.engine.changeDynamics(urdf_id,
+                                       joint_id,
+                                       restitution=restitution, 
+                                       contactDamping=contact_damping, 
+                                       contactStiffness=contact_stiffness)
     
     
     def set_link_mass(self,
