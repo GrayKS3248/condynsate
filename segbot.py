@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 Copyright (c) 2023; Grayson Schaer
 
@@ -59,9 +58,25 @@ if __name__ == "__main__":
                          pitch=-0.2,
                          yaw = 0.3)
     
+    # Set the chassis and wheel weights
+    sim.set_link_mass(urdf_obj=segbot_obj,
+                      link_name="chassis",
+                      mass=20.)
+    sim.set_link_mass(urdf_obj=segbot_obj,
+                      link_name="right_wheel",
+                      mass=20.)
+    sim.set_link_mass(urdf_obj=segbot_obj,
+                      link_name="left_wheel",
+                      mass=20.)
+    
+    # Set the camera scale and orientation
+    sim.transform_camera(scale = [1.5, 1.5, 1.5],
+                         pitch=-0.1,
+                         yaw=-1.3)
+    
     # Variables to track applied torque
-    max_torque = 5.
-    min_torque = -5.
+    max_torque = 10.
+    min_torque = -10.
     prev_r_torque = 10.
     prev_l_torque = 10.
     
@@ -183,4 +198,3 @@ if __name__ == "__main__":
         if time_to_wait > 0.:
             time.sleep(time_to_wait)
             
-    

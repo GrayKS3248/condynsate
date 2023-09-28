@@ -446,7 +446,8 @@ class Visualizer():
         return transform
         
         
-    def set_grid(self, visible=True):
+    def set_grid(self,
+                 visible=True):
         """
         Controls the visibility state of the XY grid in the visualizer.
 
@@ -464,7 +465,8 @@ class Visualizer():
         self.scene["/Grid"].set_property("visible", visible)
         
         
-    def set_axes(self, visible=True):
+    def set_axes(self,
+                 visible=True):
         """
         Controls the visibility state of the axes in the visualizer.
 
@@ -481,7 +483,213 @@ class Visualizer():
         """
         self.scene["/Axes"].set_property("visible", visible)
         
+    
+    def set_background(self,
+                       top_color = None,
+                       bot_color = None):
+        """
+        Set the top and bottom colors of the background of the scene.
+
+        Parameters
+        ----------
+        top_color : array-like, shape (3,), optional
+            The 0-255 color to apply to the top of the background.
+            The default is None. If top_color is set to None, top_color
+            is not altered.
+        bot_color : array-like, shape (3,), optional
+            The 0-255 color to apply to the bottom of the background.
+            The default is None. If bot_color is set to None, bot_color
+            is not altered.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Convert 0-255 top color to 0-1 formatted
+        if top_color != None:
+            top_color = np.array(top_color)
+            top_color = top_color / 255.0
+            top_color = top_color.astype(float)
+            top_color = top_color.tolist()
+            
+            # Apply selected color to top of background
+            self.scene["/Background"].set_property('top_color', top_color)
         
+        # Convert 0-255 bottom color to 0-1 formatted
+        if bot_color != None:
+            bot_color = np.array(bot_color)
+            bot_color = bot_color / 255.0
+            bot_color = bot_color.astype(float)
+            bot_color = bot_color.tolist()
+            
+            # Apply selected color to bottom of background
+            self.scene["/Background"].set_property('bottom_color', bot_color)
+
+
+    def set_spotlight(self,
+                   on = False,
+                   intensity = 1.0,
+                   radius = 0.0,
+                   distance = 100.):
+        """
+        Sets the properties of the spotlight object in the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+        distance : float (0. to 100.), optional
+            The distance from the origin of the light. The default is 100..
+
+        Returns
+        -------
+        None.
+
+        """
+        # Ensure all values are in the correct range
+        intensity = np.clip(intensity, 0., 20.)
+        distance = np.clip(distance, 0., 100.)
+        
+        # Set the spotlight properties
+        path = "/Lights/SpotLight/<object>"
+        self.scene["/Lights/SpotLight"].set_property('visible', on)
+        self.scene[path].set_property('visible', on)   
+        self.scene[path].set_property('intensity', intensity)           
+        self.scene[path].set_property('distance', distance)       
+
+
+    def set_posx_pt_light(self,
+                          on = False,
+                          intensity = 1.0,
+                          distance = 100.):
+        """
+        Sets the properties of the point light on the positive x axis
+        in the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+        distance : float (0. to 100.), optional
+            The distance from the origin of the light. The default is 100..
+
+        Returns
+        -------
+        None.
+
+        """
+        # Ensure all values are in the correct range
+        intensity = np.clip(intensity, 0., 20.)
+        distance = np.clip(distance, 0., 100.)
+        
+        # Set the spotlight properties
+        path = "/Lights/PointLightPositiveX/<object>"
+        self.scene["/Lights/PointLightPositiveX"].set_property('visible', on)
+        self.scene[path].set_property('visible', on)   
+        self.scene[path].set_property('intensity', intensity)              
+        self.scene[path].set_property('distance', distance)  
+
+
+    def set_negx_pt_light(self,
+                          on = False,
+                          intensity = 1.0,
+                          distance = 100.):
+        """
+        Sets the properties of the point light on the negative x axis
+        in the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+        distance : float (0. to 100.), optional
+            The distance from the origin of the light. The default is 100..
+
+        Returns
+        -------
+        None.
+
+        """
+        # Ensure all values are in the correct range
+        intensity = np.clip(intensity, 0., 20.)
+        distance = np.clip(distance, 0., 100.)
+        
+        # Set the spotlight properties
+        path = "/Lights/PointLightNegativeX/<object>"
+        self.scene["/Lights/PointLightNegativeX"].set_property('visible', on)
+        self.scene[path].set_property('visible', on)   
+        self.scene[path].set_property('intensity', intensity)              
+        self.scene[path].set_property('distance', distance) 
+        
+
+    def set_ambient_light(self,
+                          on = False,
+                          intensity = 1.0):
+        """
+        Sets the properties ambient light of the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Ensure all values are in the correct range
+        intensity = np.clip(intensity, 0., 20.)
+        
+        # Set the spotlight properties
+        path = "/Lights/AmbientLight/<object>"
+        self.scene["/Lights/AmbientLight"].set_property('visible', on)
+        self.scene[path].set_property('visible', on)   
+        self.scene[path].set_property('intensity', intensity)              
+
+
+    def set_fill_light(self,
+                          on = False,
+                          intensity = 1.0):
+        """
+        Sets the properties fill light of the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Ensure all values are in the correct range
+        intensity = np.clip(intensity, 0., 20.)
+        
+        # Set the spotlight properties
+        path = "/Lights/FillLight/<object>"
+        self.scene["/Lights/FillLight"].set_property('visible', on)
+        self.scene[path].set_property('visible', on)   
+        self.scene[path].set_property('intensity', intensity)     
+
+
     def transform_camera(self,
                          scale = [1., 1., 1.],
                          translate = [0., 0., 0.],
@@ -1554,4 +1762,193 @@ class Simulator:
                                    color = color,
                                    transparent = transparent,
                                    opacity = opacity)
+        
+    def set_background(self,
+                       top_color = None,
+                       bot_color = None):
+        """
+        Set the top and bottom colors of the background of the scene.
+    
+        Parameters
+        ----------
+        top_color : array-like, shape (3,), optional
+            The 0-255 color to apply to the top of the background.
+            The default is None. If top_color is set to None, top_color
+            is not altered.
+        bot_color : array-like, shape (3,), optional
+            The 0-255 color to apply to the bottom of the background.
+            The default is None. If bot_color is set to None, bot_color
+            is not altered.
+    
+        Returns
+        -------
+        None.
+    
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Apply the background colors
+        else:
+            self.vis.set_background(top_color = top_color,
+                                    bot_color = bot_color)
      
+        
+    def set_spotlight(self,
+                      on = False,
+                      intensity = 1.0,
+                      distance = 100.):
+        """
+        Sets the properties of the spotlight object in the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the spotlight is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the spotlight. The default is 1.0.
+        distance : float (0. to 100.), optional
+            The distance from the origin of the spotlight. The default is 100..
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Apply the background colors
+        else:
+            self.vis.set_spotlight(on = on,
+                                   intensity = intensity,
+                                   distance = distance)
+    
+    
+    def set_posx_pt_light(self,
+                          on = False,
+                          intensity = 1.0,
+                          distance = 100.):
+        """
+        Sets the properties of the point light on the positive x axis
+        in the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+        distance : float (0. to 100.), optional
+            The distance from the origin of the light. The default is 100..
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Apply the background colors
+        else:
+            self.vis.set_posx_pt_light(on = on,
+                                       intensity = intensity,
+                                       distance = distance)
+            
+            
+    def set_negx_pt_light(self,
+                          on = False,
+                          intensity = 1.0,
+                          distance = 100.):
+        """
+        Sets the properties of the point light on the negative x axis
+        in the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+        distance : float (0. to 100.), optional
+            The distance from the origin of the light. The default is 100..
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Apply the background colors
+        else:
+            self.vis.set_negx_pt_light(on = on,
+                                       intensity = intensity,
+                                       distance = distance)
+            
+            
+    def set_ambient_light(self,
+                          on = False,
+                          intensity = 1.0):
+        """
+        Sets the properties of the ambient light of the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Apply the background colors
+        else:
+            self.vis.set_ambient_light(on = on,
+                                       intensity = intensity)
+            
+            
+    def set_fill_light(self,
+                          on = False,
+                          intensity = 1.0):
+        """
+        Sets the properties of the fill light in the scene.
+
+        Parameters
+        ----------
+        on : bool, optional
+            A boolean flag that indicates whether the light is on.
+            The default is False.
+        intensity : float (0. to 20.), optional
+            The brightness of the light. The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Apply the background colors
+        else:
+            self.vis.set_fill_light(on = on,
+                                       intensity = intensity)
