@@ -178,7 +178,7 @@ if __name__ == "__main__":
                            link_name='mass',
                            color=mass_color)
     
-        # Print the current torque
+        # Print the current mass
         if mass != prev_mass:
             print("Mass: " + str(mass) + "Kg")
         prev_mass = mass

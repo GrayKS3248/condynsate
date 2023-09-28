@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 Copyright (c) 2023; Grayson Schaer
 
@@ -39,8 +40,7 @@ from condynsate import Simulator
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = Simulator(visualization=True,
-                    gravity=[0., 0., -9.81])
+    sim = Simulator(visualization=True)
     
     # Load all urdf objects
     station_radius = 19.59
@@ -54,26 +54,22 @@ if __name__ == "__main__":
                                 yaw=np.pi,
                                 fixed=False)
     
-    # Set the station speed
-    sim.set_joint_velocity(urdf_obj=station_obj,
-                           joint_name="world_to_station",
-                           velocity=0.1)
-    
     # Set the camera scale and orientation
     sim.transform_camera(scale = [1.5, 1.5, 1.5],
                          pitch=-0.2,
                          yaw = 0.3)
     
     # Variables to track applied torque
-    max_torque = 2.
-    min_torque = -2.
-    prev_r_torque = -1.0
-    r_torque = 0.5*(max_torque + min_torque)
-    r_torque_sat = (r_torque - min_torque) / (max_torque - min_torque)
-    r_color = cmaps['coolwarm'](round(255*r_torque_sat))[0:3]
-    l_torque = 0.5*(max_torque + min_torque)
-    l_torque_sat = (l_torque - min_torque) / (max_torque - min_torque)
-    l_color = cmaps['coolwarm'](round(255*l_torque_sat))[0:3]
+    max_torque = 5.
+    min_torque = -5.
+    prev_r_torque = 10.
+    prev_l_torque = 10.
+    
+    # Variables to track station velocity
+    max_vel = 1.
+    min_vel = 0.
+    prev_vel = 10.
+    vel = 0.025
     
     # Wait for user input
     print("PRESS ENTER TO RUN")
@@ -106,7 +102,7 @@ if __name__ == "__main__":
             l_torque = 0.75 * max_torque
         elif keyboard.is_pressed("w"):
             r_torque = 0.33 * max_torque
-            l_torque = 0.33 * max_torque / 2.0
+            l_torque = 0.33 * max_torque
         elif keyboard.is_pressed("shift+s"):
             r_torque = 0.75 * min_torque
             l_torque = 0.75 * min_torque
@@ -142,6 +138,39 @@ if __name__ == "__main__":
         sim.set_link_color(urdf_obj=segbot_obj,
                             link_name='left_wheel',
                             color=l_color)
+        
+        # Print the current torque
+        if r_torque != prev_r_torque or l_torque != prev_l_torque:
+            print("Torque: [" + str(l_torque) + ", " + str(r_torque) + "] Nm")
+        prev_r_torque = r_torque
+        prev_l_torque = l_torque
+        
+        # Collect keyboard IO data for station vel
+        if keyboard.is_pressed("e"):
+            vel = vel + 0.001*(max_vel - min_vel)
+            if vel > max_vel:
+                vel = max_vel
+        elif keyboard.is_pressed("q"):
+            vel = vel - 0.001*(max_vel - min_vel)
+            if vel < min_vel:
+                vel = min_vel
+           
+        # Set the torque and torque colors
+        vel = round(vel,4)
+        vel_sat = (vel - min_vel) / (max_vel - min_vel)
+        vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
+        vel_color = _format_RGB(vel_color, range_to_255=True)
+        sim.set_joint_velocity(urdf_obj=station_obj,
+                               joint_name="world_to_station",
+                               velocity=vel)
+        sim.set_link_color(urdf_obj=station_obj,
+                           link_name="station",
+                           color=vel_color)
+        
+        # Print the current station vel
+        if vel != prev_vel:
+            print("Station Vel: " + str(vel) + "RPM")
+        prev_vel = vel
         
         # Step the simulation and update the visualization
         sim.engine.stepSimulation()
