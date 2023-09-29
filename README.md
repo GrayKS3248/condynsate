@@ -1,15 +1,19 @@
 # condynsate
 
-***
-
 ## Description
 
  Visualization library for dynamic systems.
 
 ## Installation
 
-Visualization library for dynamic systems.
+From source:
+
+```
+git clone https://github.com/GrayKS3248/condynsate
+cd condynsate
+python setup.py install
+```
 
 ## Usage
 
-Visualization library for dynamic systems.
+For examples of usage, see [examples](/examples).
