@@ -42,19 +42,19 @@ if __name__ == "__main__":
     sim = Sim(visualization=True)
     
     # Load all urdf objects
-    ground_obj = sim.load_urdf(urdf_path='./cmg_urdf/plane.urdf',
-                               tex_path='./cmg_urdf/check.png',
+    ground_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
+                               tex_path='./cmg_vis/check.png',
                                position=[0., 0., -3.],
                                wxyz_quaternion=[1., 0., 0., 0],
                                fixed=True)
-    wall_obj = sim.load_urdf(urdf_path='./cmg_urdf/plane.urdf',
-                             tex_path='./cmg_urdf/concrete.png',
+    wall_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
+                             tex_path='./cmg_vis/concrete.png',
                              position=[0., 0., 0.],
                              roll=0.5*np.pi,
                              pitch=0.,
                              yaw=np.pi,
                              fixed=True)
-    cmg_obj = sim.load_urdf(urdf_path='./cmg_urdf/cmg.urdf',
+    cmg_obj = sim.load_urdf(urdf_path='./cmg_vis/cmg.urdf',
                             position=[0., 1.1, 0.],
                             roll=0.0,
                             pitch=-1.57,

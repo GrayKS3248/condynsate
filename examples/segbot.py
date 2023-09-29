@@ -44,11 +44,11 @@ if __name__ == "__main__":
     # Load all urdf objects
     station_radius = 19.59
     station_center = np.array([0., 0., 19.355])
-    station_obj = sim.load_urdf(urdf_path='./segbot_urdf/station.urdf',
+    station_obj = sim.load_urdf(urdf_path='./segbot_vis/station.urdf',
                                 position=station_center,
                                 roll=np.pi/2.0,
                                 fixed=True)
-    segbot_obj = sim.load_urdf(urdf_path='./segbot_urdf/segbot.urdf',
+    segbot_obj = sim.load_urdf(urdf_path='./segbot_vis/segbot.urdf',
                                 position=[0., 0., 0.],
                                 yaw=np.pi,
                                 fixed=False)

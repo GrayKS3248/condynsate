@@ -43,7 +43,7 @@ if __name__ == "__main__":
               gravity=[0., 0., 0.])
     
     # Load the spacecraft
-    craft_obj = sim.load_urdf(urdf_path='./spacecraft_urdf/spacecraft.urdf',
+    craft_obj = sim.load_urdf(urdf_path='./spacecraft_vis/spacecraft.urdf',
                               fixed=False)
     
     # Generate star cartesian coordinates based on their depth and
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # Load the constellation
     constellation_objs = []
     for base_pos in cartesians:
-        urdf_id = sim.load_urdf(urdf_path='./spacecraft_urdf/sphere.urdf',
+        urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=base_pos,
                                 fixed=True)
         constellation_objs.append(urdf_id)
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     positions = positions / np.linalg.norm(positions,axis=1).reshape(n_stars,1)
     positions = positions * rand_depths.reshape(n_stars,1)
     for i in range(n_stars):
-        urdf_id = sim.load_urdf(urdf_path='./spacecraft_urdf/sphere.urdf',
+        urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=positions[i],
                                 fixed=True)
         star_objs.append(urdf_id)
