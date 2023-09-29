@@ -1,5 +1,6 @@
 """
-utils
+This modules provides utility functions that are used by the 
+visualizer and simulator modules.
 """
 
 

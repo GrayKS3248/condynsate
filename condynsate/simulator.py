@@ -1,5 +1,6 @@
 """
-simulator
+This module provides the Simulator class and all associated classes and 
+functions that are used by it.
 """
 
 

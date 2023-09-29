@@ -1,5 +1,5 @@
 """
-visualizer
+This module provides the Visualizer class.
 """
 
 
@@ -18,7 +18,7 @@ from .utils import format_path, wxyz_from_euler
 ###############################################################################
 class Visualizer():
     """
-    Visualizer manages the meshcat based visulation
+    Visualizer manages the meshcat based visulation.
     """
     def __init__(self,
                  grid_vis=True,
