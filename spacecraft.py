@@ -89,8 +89,11 @@ if __name__ == "__main__":
         star_objs.append(urdf_id)
     
     # Set the camera scale and orientation
-    sim.transform_camera(yaw=np.pi,
-                         pitch=0.314)
+    sim.transform_camera(scale = [4., 4., 4.],
+                         yaw=-2.5,
+                         pitch=-0.1
+                         
+                         )
     
     # Set background and lighting properties
     sim.set_background(top_color=[10,10,10],
@@ -113,7 +116,7 @@ if __name__ == "__main__":
     prev_torque_2 = 10.
     prev_torque_3 = 10.
     prev_torque_4 = 10.
-
+    
     # Wait for user input
     print("PRESS ENTER TO RUN")
     while not keyboard.is_pressed("enter"):
