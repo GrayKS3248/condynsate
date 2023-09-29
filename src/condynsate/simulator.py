@@ -1,30 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-Copyright (c) 2023; Grayson Schaer
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files 
-(the “Software”), to deal in the Software without restriction,
-including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software,
-and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, 
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH 
-THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
-
-
 ###############################################################################
-"""DEPENDENCIES"""
+#DEPENDENCIES
 ###############################################################################
 import numpy as np
 import pybullet
@@ -34,9 +10,12 @@ from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
 
 
 ###############################################################################
-"""URDF OBJECT CLASS"""
+#URDF OBJECT CLASS
 ###############################################################################
 class URDF_Obj:
+    """
+    URDF_Obj encapsulates a urdf id, a joint map, and a link map
+    """
     def __init__(self,
                  urdf_id=0,
                  joint_map={},
@@ -68,9 +47,13 @@ class URDF_Obj:
 
 
 ###############################################################################
-"""SIMULATOR CLASS"""
+#SIMULATOR CLASS
 ###############################################################################
 class Simulator:
+    """
+    Simulator manages the PyBullet based simulation of dynamic objects and 
+    handles automatic visualization
+    """
     def __init__(self,
                  visualization=True,
                  gravity=[0., 0., -9.81]):
