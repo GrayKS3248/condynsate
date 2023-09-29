@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+"""
+simulator
+"""
+
+
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
@@ -14,27 +18,26 @@ from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
 ###############################################################################
 class URDF_Obj:
     """
-    URDF_Obj encapsulates a urdf id, a joint map, and a link map
+    URDF_Obj encapsulates a urdf id, a joint map, and a link map.
     """
     def __init__(self,
-                 urdf_id=0,
-                 joint_map={},
-                 link_map={}):
+                 urdf_id,
+                 joint_map,
+                 link_map):
         """
         Initialize an instance of the URDF_Obj class. This class is used to
-        store information relating to a urdf object described by a .urdf file.
+        store information relating to a urdf described by a .urdf file.
 
         Parameters
         ----------
-        urdf_id : int, optional
-            The unique integer ID of the loaded urdf object in the simulation
-            engine. The default is 0. 
-        joint_map : dictionary, optional
-            A dictionary that maps all urdf object joint names to joint
-            indices. The default is {}.
-        link_map : dictionary, optional
-            A dictionary that maps all urdf object link names to joint indices.
-            The default is {}.
+        urdf_id : int
+            The unique integer ID of the loaded urdf in the simulation
+            engine.
+        joint_map : dictionary
+            A dictionary that maps all urdf joint names to joint
+            indices.
+        link_map : dictionary
+            A dictionary that maps all urdf link names to joint indices.
 
         Returns
         -------
@@ -95,15 +98,14 @@ class Simulator:
         
     
     def set_gravity(self,
-                    gravity = [0., 0., 0.]):
+                    gravity):
         """
         Sets the acceleration due to gravity vector.
 
         Parameters
         ----------
-        gravity : array-like, shape (3,), optional
+        gravity : array-like, shape (3,)
             The acceleration due to gravity vector in m/s^2.
-            The default is [0., 0., 0.].
 
         Returns
         -------
@@ -117,8 +119,8 @@ class Simulator:
     
         
     def load_urdf(self,
-                  urdf_path='./urdf/plane.urdf',
-                  tex_path='./urdf/check.png',
+                  urdf_path,
+                  tex_path='./examples/cmg_vis/check.png',
                   position = [0., 0., 0.],
                   wxyz_quaternion = [1., 0., 0., 0.],
                   roll=None,
@@ -126,40 +128,40 @@ class Simulator:
                   yaw=None,
                   fixed=False):
         """
-        Loads a URDF object to the simulation engine. All joint's
+        Loads a URDF to the simulation engine. All joint's
         velocity control is disabled (this allows the joint to move freely),
         angular and linear damping is set to 0 (eliminates air resistance), and 
         joint dampling is set to 0 (eliminates joint friction).
 
         Parameters
         ----------
-        urdf_path : string, optional
-            The path to the .urdf file that describes the urdf object to be
-            loaded into the simulation. The default is './urdf/plane.urdf'.
+        urdf_path : string
+            The path to the .urdf file that describes the urdf to be
+            loaded into the simulation.
         tex_path : string, optional
             The path pointing towards a texture file. This texture is applied
-            only to static .obj objects. The default is './urdf/check.png'.
+            only to static .obj objects.
+            The default is './examples/cmg_vis/check.png'.
         position : array-like, shape (3,) optional
-            The initial position of the urdf object.
-            The default is [0., 0., 0.].
+            The initial position of the urdf. The default is [0., 0., 0.].
         wxyz_quaternion : array-like, shape (4,) optional
-            A wxyz quaternion that describes the intial orientation of the urdf
-            object. When roll, pitch, and yaw all have None type, the
+            A wxyz quaternion that describes the intial orientation of the
+            urdf. When roll, pitch, and yaw all have None type, the
             quaternion is used. If any roll, pitch, or yaw have non None type,
             the quaternion is ignored. The default is [1., 0., 0., 0.].
         roll : float, optional
-            The initial roll angle of the urdf object. The default is None.
+            The initial roll angle of the urdf. The default is None.
         pitch : float, optional
-            The initial pitch angle of the urdf object. The default is None.
+            The initial pitch angle of the urdf. The default is None.
         yaw : float, optional
-            The initial yaw angle of the urdf object. The default is None.
+            The initial yaw angle of the urdf. The default is None.
         fixed : bool, optional
             A boolean flag that indicates whether the base joint of the
             loaded urdf is fixed. The default is False.
         Returns
         -------
         urdf_obj : URDF_Obj
-            A URDF_Obj that describes the .urdf object that was loaded into
+            A URDF_Obj that describes the urdf that was loaded into
             the simulation.
             
         """
@@ -247,22 +249,22 @@ class Simulator:
     
     
     def make_joint_and_link_maps(self,
-                                 urdf_id=0):
+                                 urdf_id):
         """
-        Creates a joint map and a link map for a urdf object.
+        Creates a joint map and a link map for a urdf.
 
         Parameters
         ----------
-        urdf_id : int, optional
-            The unique integer ID of a loaded urdf object in the simulation
-            engine. The default is 0.
+        urdf_id : int
+            The unique integer ID of a loaded urdf in the simulation
+            engine.
 
         Returns
         -------
         joint_map : dictionary
-            A dictionary that maps all urdf object joint names to joint id
+            A dictionary that maps all urdf joint names to joint id
         link_map : dictionary
-            A dictionary that maps all urdf object link names to joint id
+            A dictionary that maps all urdf link names to joint id
 
         """
         # A dictionary that maps joint names to joint id
@@ -294,8 +296,8 @@ class Simulator:
     
     
     def disable_velocity_control(self,
-                                 urdf_obj=URDF_Obj(),
-                                 joint_name=""):
+                                 urdf_obj,
+                                 joint_name):
         """
         Disable velocity control mode for a joint. In pybullet, all joints are
         initialized with velocity control mode engaged and a target velocity of
@@ -303,12 +305,12 @@ class Simulator:
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint for which velocity control is
-            disabled. The default is URDF_Obj().
-        joint_name : string, optional
+            disabled.
+        joint_name : string
             The name of the joint whose velocity control is disabled. The
-            joint name is specified in the .urdf file. The default is "".
+            joint name is specified in the .urdf file.
 
         Returns
         -------
@@ -330,8 +332,8 @@ class Simulator:
     
     
     def set_linear_angular_damping(self,
-                                   urdf_obj=URDF_Obj(),
-                                   joint_name="",
+                                   urdf_obj,
+                                   joint_name,
                                    linear_damping=0.,
                                    angular_damping=0.):
         """
@@ -341,12 +343,12 @@ class Simulator:
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose linear and angular
-            damping is being set. The default is URDF_Obj().
-        joint_name : string, optional
+            damping is being set.
+        joint_name : string
             The name of the joint whose linear and angular damping is set. The
-            joint name is specified in the .urdf file. The default is "".
+            joint name is specified in the .urdf file.
         linear_damping : float, optional
             The value of linear damping to apply. The default is 0..
         angular_damping : float, optional
@@ -371,22 +373,21 @@ class Simulator:
     
     
     def set_joint_damping(self,
-                          urdf_obj=URDF_Obj(),
-                          joint_name="",
+                          urdf_obj,
+                          joint_name,
                           damping=0.):
         """
-        Sets the damping of a joint in a urdf object. The damping of a joint
+        Sets the damping of a joint in a urdf. The damping of a joint
         defines the energy loss incurred during movement of the joint. It is
         a way to model joint friction.
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose damping is being set.
-            The default is URDF_Obj().
-        joint_name : string, optional
+        joint_name : string
             The name of the joint whose damping is set. The joint name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file.
         damping : float, optional
             The value of damping to apply. The default is 0..
 
@@ -406,8 +407,8 @@ class Simulator:
     
     
     def set_joint_friction_params(self,
-                                  urdf_obj=URDF_Obj(),
-                                  joint_name="",
+                                  urdf_obj,
+                                  joint_name,
                                   lateral_friction=0.0,
                                   spinning_friction=0.0,
                                   rolling_friction=0.0):
@@ -417,12 +418,11 @@ class Simulator:
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose friction is being set.
-            The default is URDF_Obj().
-        joint_name : string, optional
+        joint_name : string
             The name of the joint whose friction is set. The joint name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file.
         lateral_friction : float, optional
             The lateral friction applied to the joint. The default is 0.0.
         spinning_friction : float, optional
@@ -450,8 +450,8 @@ class Simulator:
     
     
     def set_joint_contact_params(self,
-                                 urdf_obj=URDF_Obj(),
-                                 joint_name="",
+                                 urdf_obj,
+                                 joint_name,
                                  restitution=0.0,
                                  contact_damping=0.0,
                                  contact_stiffness=0.0):
@@ -461,12 +461,12 @@ class Simulator:
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose contact params are
-            being set. The default is URDF_Obj().
-        joint_name : string, optional
+            being set.
+        joint_name : string
             The name of the joint whose contact params are set.
-            The joint name is specified in the .urdf file. The default is "".
+            The joint name is specified in the .urdf file.
         restitution : float, optional
             The restitution applied to the joint. The default is 0.0.
         contact_damping : float, optional
@@ -495,20 +495,19 @@ class Simulator:
     
     
     def set_link_mass(self,
-                      urdf_obj=URDF_Obj(),
-                      link_name="",
+                      urdf_obj,
+                      link_name,
                       mass=0.):
         """
-        Sets the mass of a link in a urdf object.
+        Sets the mass of a link in a urdf.
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that link whose mass is being set.
-            The default is URDF_Obj().
-        link_name : string, optional
+        link_name : string
             The name of the link whose mass is set. The link name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file.
         mass : float, optional
             The mass to set in kg. The default is 0..
 
@@ -528,19 +527,19 @@ class Simulator:
     
     
     def get_base_pos(self,
-                     urdf_obj=URDF_Obj()):
+                     urdf_obj):
         """
-        Returns the position of the base link of a urdf object.
+        Returns the position of the base link of a urdf.
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj whose base position is returned
 
         Returns
         -------
         position : array-like, shape(3,)
-            The X,Y,Z coordinates of the of base of the urdf object.
+            The X,Y,Z coordinates of the of base of the urdf.
 
         """
         # Get object id
@@ -553,20 +552,19 @@ class Simulator:
     
         
     def set_joint_position(self,
-                           urdf_obj=URDF_Obj(),
-                           joint_name="",
+                           urdf_obj,
+                           joint_name,
                            position=0.):
         """
-        Sets the position of a joint of a urdf object.
+        Sets the position of a joint of a urdf .
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose position is being set.
-            The default is URDF_Obj().
-        joint_name : string, optional
+        joint_name : string
             The name of the joint whose position is set. The joint name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file.
         position : float, optional
             The position to be applied to the joint. The default is 0..
 
@@ -592,20 +590,19 @@ class Simulator:
     
     
     def set_joint_velocity(self,
-                          urdf_obj=URDF_Obj(),
-                          joint_name="",
+                          urdf_obj,
+                          joint_name,
                           velocity=0.):
         """
-        Sets the velocity of a joint of a urdf object.
+        Sets the velocity of a joint of a urdf.
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose velocity is being set.
-            The default is URDF_Obj().
-        joint_name : string, optional
+        joint_name : string
             The name of the joint whose velocity is set. The joint name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file.
         velocity : float, optional
             The velocity to be applied to the joint. The default is 0..
 
@@ -631,20 +628,19 @@ class Simulator:
     
     
     def set_joint_torque(self,
-                         urdf_obj=URDF_Obj(),
-                         joint_name="",
+                         urdf_obj,
+                         joint_name,
                          torque=0.):
         """
-        Sets the torque of a joint of a urdf object.
+        Sets the torque of a joint of a urdf.
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose torque is being set.
-            The default is URDF_Obj().
-        joint_name : string, optional
+        joint_name : string
             The name of the joint whose torque is set. The joint name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file
         torque : float, optional
             The torque in NM to be applied to the joint. The default is 0..
 
@@ -669,8 +665,8 @@ class Simulator:
             
             
     def reset_joint(self,
-                    urdf_obj=URDF_Obj(),
-                    joint_name="",
+                    urdf_obj,
+                    joint_name,
                     position=0.,
                     velocity=0.):
         """
@@ -678,12 +674,11 @@ class Simulator:
     
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that joint whose torque is being set.
-            The default is URDF_Obj().
-        joint_name : string, optional
+        joint_name : string
             The name of the joint whose torque is set. The joint name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file.
         position : float, optional
             The position to which the joint is reset. The default is 0..
         velocity : float, optional
@@ -708,8 +703,8 @@ class Simulator:
             
     
     def add_urdf_to_visualizer(self,
-                               urdf_obj=URDF_Obj(),
-                               tex_path='./urdf/check.png'):
+                               urdf_obj,
+                               tex_path='./examples/cmg_vis/check.png'):
         """
         Adds static .obj objects and dynamic .stl links to the visualizer
         based on their urdf description.
@@ -717,13 +712,13 @@ class Simulator:
         Parameters
         ----------
         vis : Visualizer
-            The visualizer to which the object is added.
-        urdf_obj : URDF_Obj, optional
+            The visualizer to which the urdf is added.
+        urdf_obj : URDF_Obj
             A URDF_Obj that will be added to the visualizer.
-            The default is URDF_Obj().
         tex_path : string, optional
             The path pointing towards a texture file. This texture is applied
-            only to static .obj objects. The default is './urdf/check.png'.
+            only to static .obj objects.
+            The default is './examples/cmg_vis/check.png'.
 
         Returns
         -------
@@ -774,7 +769,7 @@ class Simulator:
 
     
     def update_urdf_visual(self,
-                           urdf_obj=URDF_Obj()):
+                           urdf_obj):
         """
         Updates the positions of dynamic links in the visualizer.
 
@@ -782,7 +777,6 @@ class Simulator:
         ----------
         urdf_obj : URDF_Obj, optional
             A URDF_Obj whose links are being updated.
-            The default is URDF_Obj().
 
         Returns
         -------
@@ -809,16 +803,15 @@ class Simulator:
     
     
     def urdf_visual_data(self,
-                         urdf_obj=URDF_Obj()):
+                         urdf_obj):
         """
-        Extracts all relevant visual data from a urdf object loaded into the
+        Extracts all relevant visual data from a urdf loaded into the
         simulator.
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj whose visual data is being extracted.
-            The default is URDF_Obj().
 
         Returns
         -------
@@ -826,19 +819,19 @@ class Simulator:
             A list containing the paths to the files containing urdf or link
             geometries.
         link_names : list of strings
-            A list containing the name of all links in the urdf object.
+            A list containing the name of all links in the urdf.
         scales : list of lists (3,)
-            A list containing the scale data for the urdf object or all links
-            in the urdf object.
+            A list containing the scale data for the urdf or all links
+            in the urdf .
         colors : list of lists (4,)
-            A list containing the RGBA data for the urdf object or all links
-            in the urdf object.
+            A list containing the RGBA data for the urdf or all links
+            in the urdf.
         positions : list of lists (3,)
-            A list containing the position data for the urdf object of all
-            links in the urdf object.
+            A list containing the position data for the urdf of all
+            links in the urdf.
         orientations : list of lists (4,)
-            A list containing the wxyz quaternion(s) for the urdf object or all
-            links in the urdf object.
+            A list containing the wxyz quaternion(s) for the urdf or all
+            links in the urdf.
 
         """
         # Create placeholders for all visual data collected
@@ -933,13 +926,13 @@ class Simulator:
             None type, the quaternion is ignored.
             The default is [1., 0., 0., 0.].
         roll : float, optional
-            The roll of the camera object about the camera point.
+            The roll of the camera about the camera point.
             The default is None.
         pitch : float, optional
-            The pitch of the camera object about the camera point.
+            The pitch of the camera about the camera point.
             The default is None.
         yaw : float, optional
-            The yaw of the camera object about the camera point.
+            The yaw of the camera about the camera point.
             The default is None.
 
         Returns
@@ -962,24 +955,23 @@ class Simulator:
         
         
     def set_link_color(self,
-                          urdf_obj=URDF_Obj(),
-                          link_name='',
+                          urdf_obj,
+                          link_name,
                           color=[91, 155, 213],
                           transparent = False,
                           opacity = 1.0):
         """
         Allows the user to change the color, transparency, and opacity
-        of an existing object in the simulation. The position and orientation
+        of an existing urdf in the simulation. The position and orientation
         are not altered.
 
         Parameters
         ----------
-        urdf_obj : URDF_Obj, optional
+        urdf_obj : URDF_Obj
             A URDF_Obj that contains that link whose color is being updated.
-            The default is URDF_Obj().
-        link_name : string, optional
+        link_name : string
             The name of the link whose color is being updated. The link name is
-            specified in the .urdf file. The default is "".
+            specified in the .urdf file.
         color : array-like, size (3,), optional
             The 0-255 RGB color of the link.
             The default is [91, 155, 213].
@@ -1067,7 +1059,7 @@ class Simulator:
                       intensity = 1.0,
                       distance = 100.):
         """
-        Sets the properties of the spotlight object in the scene.
+        Sets the properties of the spotlight in the scene.
 
         Parameters
         ----------

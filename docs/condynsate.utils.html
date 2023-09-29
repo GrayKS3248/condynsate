@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module condynsate.utils</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="condynsate.html"><font color="#ffffff">condynsate</font></a>.utils</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:d%3A%5Cgithub_repos%5Ccondynsate%5Csrc%5Ccondynsate%5Cutils.py">d:\github_repos\condynsate\src\condynsate\utils.py</a></font></td></tr></table>
+    <p><tt>utils</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-format_RGB"><strong>format_RGB</strong></a>(unformatted_rgb, range_to_255=True)</dt><dd><tt>Converts&nbsp;unformatted&nbsp;rgb&nbsp;array-like&nbsp;objects&nbsp;to&nbsp;formatted&nbsp;rgb&nbsp;lists<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+unformatted_rgb&nbsp;:&nbsp;array-like,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;3&nbsp;item&nbsp;array-like&nbsp;that&nbsp;contains&nbsp;the&nbsp;RGB&nbsp;data&nbsp;either&nbsp;in&nbsp;0-1&nbsp;or&nbsp;0-255.<br>
+range_to_255&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;unformatted_rgb&nbsp;data&nbsp;needs&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;converted&nbsp;from&nbsp;0-1&nbsp;to&nbsp;0-255.&nbsp;The&nbsp;default&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+list_rgb_255_int&nbsp;:&nbsp;list&nbsp;of&nbsp;ints,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;formatted&nbsp;RGB&nbsp;list.</tt></dd></dl>
+ <dl><dt><a name="-format_path"><strong>format_path</strong></a>(unformatted_path)</dt><dd><tt>Converts&nbsp;an&nbsp;unformatted&nbsp;relative&nbsp;path&nbsp;to&nbsp;a&nbsp;formatted&nbsp;Windows&nbsp;path&nbsp;string<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+unformatted_path&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;unformatted&nbsp;relative&nbsp;path.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+formatted_path&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;formatted&nbsp;Windows&nbsp;path&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-wxyz_from_euler"><strong>wxyz_from_euler</strong></a>(roll, pitch, yaw)</dt><dd><tt>Converts&nbsp;Euler&nbsp;angles&nbsp;to&nbsp;a&nbsp;Hamilton&nbsp;quaternion&nbsp;(wxyz)<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+roll&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;roll&nbsp;angle&nbsp;in&nbsp;rad.<br>
+pitch&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;pitch&nbsp;angle&nbsp;in&nbsp;rad.<br>
+yaw&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;yaw&nbsp;angle&nbsp;in&nbsp;rad.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(4,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;Hamilton&nbsp;quaternion&nbsp;representation&nbsp;of&nbsp;the&nbsp;input&nbsp;Euler&nbsp;angles.</tt></dd></dl>
+ <dl><dt><a name="-wxyz_to_xyzw"><strong>wxyz_to_xyzw</strong></a>(wxyz_quaternion)</dt><dd><tt>Converts&nbsp;a&nbsp;Hamilton&nbsp;quaternion&nbsp;(wxyz)&nbsp;to&nbsp;a&nbsp;JPL&nbsp;quaternion&nbsp;(xyzw)<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Hamilton&nbsp;quaternion&nbsp;to&nbsp;be&nbsp;converted.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+xyzw_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;JPL&nbsp;representation&nbsp;of&nbsp;the&nbsp;input&nbsp;Hamilton&nbsp;quaterion.</tt></dd></dl>
+ <dl><dt><a name="-xyzw_to_wxyz"><strong>xyzw_to_wxyz</strong></a>(xyzw_quaternion)</dt><dd><tt>Converts&nbsp;a&nbsp;JPL&nbsp;quaternion&nbsp;(xyzw)&nbsp;to&nbsp;a&nbsp;Hamilton&nbsp;quaternion&nbsp;(wxyz)<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+xyzw_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;JPL&nbsp;quaternion&nbsp;to&nbsp;be&nbsp;converted.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;Hamilton&nbsp;representation&nbsp;of&nbsp;the&nbsp;input&nbsp;JPL&nbsp;quaterion</tt></dd></dl>
+</td></tr></table>
+</body></html>

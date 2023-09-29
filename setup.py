@@ -1,13 +1,5 @@
-# -*- coding: utf-8 -*-
-###############################################################################
-#DEPENDENCIES
-###############################################################################
 from setuptools import setup, find_packages
 
-
-###############################################################################
-#SETUP DESCRIPTION
-###############################################################################
 setup(name="condynsate",
     version="0.0.1",
     description="meshcat-based visualizer coupled with pybullet-based simulator",

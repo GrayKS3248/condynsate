@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+"""
+visualizer
+"""
+
+
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
@@ -48,37 +52,35 @@ class Visualizer():
 
 
     def add_object(self,
-                   obj_name='Object',
-                   obj_path='./urdf/plane.obj', 
-                   tex_path='./urdf/check.png',
+                   obj_name,
+                   obj_path, 
+                   tex_path,
                    scale=[1., 1., 1.],
                    translate=[0., 0., 0.],
                    wxyz_quaternion=[1., 0., 0., 0.]):
         """
-        Adds a textured .obj object to the visualization. Objects are meant to
+        Adds a textured .obj to the visualization. objs are meant to
         be stationary and their position cannot be updated after they are
         placed in the visualization.
 
         Parameters
         ----------
-        obj_name : string, optional
-            The name to be assigned to the .obj object in the visualization.
-            The default is 'Object'.
-        obj_path : string, optional
-            Relative path pointing to the .obj file that defines the object.
-            The default is './urdf/plane.obj'.
-        tex_path : string, optional
-            Relative path pointing to the .png file that provides the object
-            texture. The default is './urdf/check.png'.
+        obj_name : string
+            The name to be assigned to the .obj in the visualization.
+        obj_path : string
+            Relative path pointing to the .obj file that defines the obj.
+        tex_path : string
+            Relative path pointing to the .png file that provides the
+            texture.
         scale : array-like, size (3,), optional
-            The initial scaling along the three axes applied to the object.
+            The initial scaling along the three axes applied to the .obj.
             The default is [1., 1., 1.].
         translate : array-like, size (3,), optional
-            The initial translation along the three axes applied to the object.
+            The initial translation along the three axes applied to the .obj.
             The default is [0., 0., 0.].
         wxyz_quaternion : array-like, size (4,), optional
             The wxyz quaternion that defines the initial rotation applied to
-            the object. The default is [1., 0., 0., 0.].
+            the .obj. The default is [1., 0., 0., 0.].
 
         Returns
         -------
@@ -106,9 +108,9 @@ class Visualizer():
         
         
     def add_link(self,
-                 urdf_name = 'URDF',
-                 link_name = 'Link',
-                 stl_path = './urdf/cmg_inner.stl',
+                 urdf_name,
+                 link_name,
+                 stl_path,
                  color = [91, 155, 213],
                  transparent=False,
                  opacity = 1.0,
@@ -116,19 +118,19 @@ class Visualizer():
                  translate=[0., 0., 0.],
                  wxyz_quaternion=[1., 0., 0., 0.]):
         """
-        Adds a link of a urdf object to the visualizer. Links are not fixed and
+        Adds a link of a urdf to the visualizer. Links are not fixed and
         are meant to have their position and orientation updated.
 
         Parameters
         ----------
-        urdf_name : string, optional
-            The name of the urdf object to which the link is being added.
-            The default is 'URDF'. URDF objects define robots or assemblies.
-        link_name : string, optional
-            The name of the link. The default is 'Link'.
-        stl_path : string, optional
+        urdf_name : string
+            The name of the urdf to which the link is being added.
+            URDF objects define robots or assemblies.
+        link_name : string
+            The name of the link.
+        stl_path : string
             The relative path pointing to the .stl description of the link that
-            is being added. The default is './urdf/cmg_inner.stl'.
+            is being added.
         color : array-like, size (3,), optional
             The 0-255 RGB color of the link. The default is [91, 155, 213].
         transparent : boolean, optional
@@ -174,25 +176,25 @@ class Visualizer():
         
     
     def set_link_color(self,
-                       urdf_name = 'URDF',
-                       link_name = 'Link',
-                       stl_path = './urdf/cmg_inner.stl', 
+                       urdf_name,
+                       link_name,
+                       stl_path, 
                        color = [91, 155, 213],
                        transparent = False,
                        opacity = 1.0):
         """
-        Refresh a link by deleting it and then adding another copy of it.
+        Set a link color by deleting it and then adding another copy of it.
 
         Parameters
         ----------
-        urdf_name : string, optional
-            The name of the urdf object that contains the link being refreshed.
-            The default is 'URDF'. URDF objects define robots or assemblies.
-        link_name : string, optional
-            The name of the link. The default is 'Link'.
-        stl_path : string, optional
+        urdf_name : string
+            The name of the urdf that contains the link being refreshed.
+            URDF objects define robots or assemblies.
+        link_name : string
+            The name of the link.
+        stl_path : string
             The relative path pointing to the .stl description of the link that
-            is being refreshed. The default is './urdf/cmg_inner.stl'.
+            is being refreshed.
         color : array-like, size (3,), optional
             The 0-255 RGB color of the link. The default is [91, 155, 213].
         transparent : boolean, optional
@@ -224,8 +226,8 @@ class Visualizer():
 
 
     def apply_transform(self,
-                        urdf_name='URDF',
-                        link_name='Link',
+                        urdf_name,
+                        link_name,
                         scale=[1., 1., 1.],
                         translate=[0., 0., 0.],
                         wxyz_quaternion=[1., 0., 0., 0.]):
@@ -235,11 +237,10 @@ class Visualizer():
 
         Parameters
         ----------
-        urdf_name : string, optional
-            The name of the urdf object being transformed.
-            The default is '/URDF'.
-        link_name : string, optional
-            The name of the link being transformed. The default is '/Link'.
+        urdf_name : string
+            The name of the urdf being transformed.
+        link_name : string
+            The name of the link being transformed.
         scale : array-like, size (3,), optional
             The scaling along the three axes. The default is [1., 1., 1.].
         translate : array-like, size (3,), optional
@@ -386,7 +387,7 @@ class Visualizer():
                    radius = 0.0,
                    distance = 100.):
         """
-        Sets the properties of the spotlight object in the scene.
+        Sets the properties of the spotlight in the scene.
 
         Parameters
         ----------
@@ -551,7 +552,7 @@ class Visualizer():
                          pitch=None,
                          yaw=None):
         """
-        Transforms the position, orientation, and scale of the camera object
+        Transforms the position, orientation, and scale of the camera
         in the scene.
 
         Parameters
@@ -569,13 +570,13 @@ class Visualizer():
             None type, the quaternion is ignored.
             The default is [1., 0., 0., 0.].
         roll : float, optional
-            The roll of the camera object about the camera point.
+            The roll of the camera about the camera point.
             The default is None.
         pitch : float, optional
-            The pitch of the camera object about the camera point.
+            The pitch of the camera about the camera point.
             The default is None.
         yaw : float, optional
-            The yaw of the camera object about the camera point.
+            The yaw of the camera about the camera point.
             The default is None.
 
         Returns
