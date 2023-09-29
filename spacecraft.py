@@ -30,8 +30,8 @@ import numpy as np
 import time
 import keyboard
 from matplotlib import colormaps as cmaps
-from condynsate import _format_RGB
-from condynsate import Simulator
+from simulator import Simulator
+from utils import _format_RGB
 
 
 ###############################################################################
