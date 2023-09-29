@@ -5,7 +5,7 @@ import numpy as np
 import time
 import keyboard
 from matplotlib import colormaps as cmaps
-from condynsate.simulator import Simulator as Sim
+import condynsate
 from condynsate.utils import format_RGB
 
 
@@ -14,8 +14,8 @@ from condynsate.utils import format_RGB
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = Sim(visualization=True,
-              gravity=[0., 0., 0.])
+    sim = condynsate.Simulator(visualization=True,
+                               gravity=[0., 0., 0.])
     
     # Load the spacecraft
     craft_obj = sim.load_urdf(urdf_path='./spacecraft_vis/spacecraft.urdf',

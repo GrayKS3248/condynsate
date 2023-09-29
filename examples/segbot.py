@@ -5,7 +5,7 @@ import numpy as np
 import time
 import keyboard
 from matplotlib import colormaps as cmaps
-from condynsate.simulator import Simulator as Sim
+import condynsate
 from condynsate.utils import format_RGB
 
 
@@ -14,7 +14,7 @@ from condynsate.utils import format_RGB
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = Sim(visualization=True)
+    sim = condynsate.Simulator(visualization=True)
     
     # Load all urdf objects
     station_radius = 19.59
