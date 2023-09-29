@@ -30,8 +30,8 @@ import numpy as np
 import time
 import keyboard
 from matplotlib import colormaps as cmaps
-from simulator import Simulator
-from utils import _format_RGB
+from condynsate.simulator import Simulator as Sim
+from condynsate.utils import format_RGB
 
 
 ###############################################################################
@@ -39,7 +39,7 @@ from utils import _format_RGB
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = Simulator(visualization=True)
+    sim = Sim(visualization=True)
     
     # Load all urdf objects
     station_radius = 19.59
@@ -136,11 +136,13 @@ if __name__ == "__main__":
         r_torque = round(r_torque,2)
         r_torque_sat = (r_torque - min_torque) / (max_torque - min_torque)
         r_color = cmaps['coolwarm'](round(255*r_torque_sat))[0:3]
-        r_color = _format_RGB(r_color, range_to_255=True)
+        r_color = format_RGB(r_color,
+                             range_to_255=True)
         l_torque = round(l_torque,2)
         l_torque_sat = (l_torque - min_torque) / (max_torque - min_torque)
         l_color = cmaps['coolwarm'](round(255*l_torque_sat))[0:3]
-        l_color = _format_RGB(l_color, range_to_255=True)
+        l_color = format_RGB(l_color,
+                             range_to_255=True)
         sim.set_joint_torque(urdf_obj=segbot_obj,
                              joint_name='chassis_to_right_wheel',
                              torque=r_torque)
@@ -174,7 +176,8 @@ if __name__ == "__main__":
         vel = round(vel,4)
         vel_sat = (vel - min_vel) / (max_vel - min_vel)
         vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
-        vel_color = _format_RGB(vel_color, range_to_255=True)
+        vel_color = format_RGB(vel_color,
+                               range_to_255=True)
         sim.set_joint_velocity(urdf_obj=station_obj,
                                joint_name="world_to_station",
                                velocity=vel)

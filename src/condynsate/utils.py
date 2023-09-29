@@ -33,7 +33,7 @@ from pathlib import Path
 ###############################################################################
 """PUBLIC FUNCTIONS"""
 ###############################################################################
-def _xyzw_to_wxyz(xyzw_quaternion):
+def xyzw_to_wxyz(xyzw_quaternion):
     """
     Converts a JPL quaternion (xyzw) to a Hamilton quaternion (wxyz)
 
@@ -52,7 +52,7 @@ def _xyzw_to_wxyz(xyzw_quaternion):
     return wxyz_quaternion
 
 
-def _wxyz_to_xyzw(wxyz_quaternion):
+def wxyz_to_xyzw(wxyz_quaternion):
     """
     Converts a Hamilton quaternion (wxyz) to a JPL quaternion (xyzw)
 
@@ -71,7 +71,7 @@ def _wxyz_to_xyzw(wxyz_quaternion):
     return xyzw_quaternion
 
 
-def _wxyz_from_euler(roll, pitch, yaw):
+def wxyz_from_euler(roll, pitch, yaw):
     """
     Converts Euler angles to a Hamilton quaternion (wxyz)
 
@@ -106,7 +106,7 @@ def _wxyz_from_euler(roll, pitch, yaw):
     return wxyz_quaternion
 
 
-def _format_path(unformatted_path):
+def format_path(unformatted_path):
     """
     Converts an unformatted relative path to a formatted Windows path string
 
@@ -125,7 +125,7 @@ def _format_path(unformatted_path):
     return formatted_path
     
 
-def _format_RGB(unformatted_rgb,
+def format_RGB(unformatted_rgb,
                 range_to_255=True):
     """
     Converts unformatted rgb array-like objects to formatted rgb lists

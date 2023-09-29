@@ -30,8 +30,8 @@ import numpy as np
 import time
 import keyboard
 from matplotlib import colormaps as cmaps
-from simulator import Simulator
-from utils import _format_RGB
+from condynsate.simulator import Simulator as Sim
+from condynsate.utils import format_RGB
 
 
 ###############################################################################
@@ -39,7 +39,7 @@ from utils import _format_RGB
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = Simulator(visualization=True)
+    sim = Sim(visualization=True)
     
     # Load all urdf objects
     ground_obj = sim.load_urdf(urdf_path='./cmg_urdf/plane.urdf',
@@ -141,8 +141,8 @@ if __name__ == "__main__":
         torque = round(torque,2)
         torque_sat = (torque - min_torque) / (max_torque - min_torque)
         torque_color = cmaps['coolwarm'](round(255*torque_sat))[0:3]
-        torque_color = _format_RGB(torque_color,
-                                   range_to_255=True)
+        torque_color = format_RGB(torque_color,
+                                  range_to_255=True)
         sim.set_joint_torque(urdf_obj=cmg_obj,
                              joint_name="outer_to_inner",
                              torque=torque)
@@ -169,8 +169,8 @@ if __name__ == "__main__":
         mass = round(mass,2)
         mass_sat = (mass - min_mass) / (max_mass - min_mass)
         mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
-        mass_color = _format_RGB(mass_color,
-                                 range_to_255=True)
+        mass_color = format_RGB(mass_color,
+                                range_to_255=True)
         sim.set_link_mass(urdf_obj=cmg_obj,
                           link_name='mass',
                           mass = mass)
@@ -197,8 +197,8 @@ if __name__ == "__main__":
         vel = round(vel,2)
         vel_sat = (vel - min_vel) / (max_vel - min_vel)
         vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
-        vel_color = _format_RGB(vel_color,
-                                range_to_255=True)
+        vel_color = format_RGB(vel_color,
+                               range_to_255=True)
         
         sim.set_joint_velocity(urdf_obj=cmg_obj,
                               joint_name="inner_to_wheel",

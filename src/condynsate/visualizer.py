@@ -30,7 +30,7 @@ import numpy as np
 import meshcat
 import meshcat.geometry as geo
 import meshcat.transformations as tf
-from utils import _format_path, _wxyz_from_euler
+from .utils import format_path, wxyz_from_euler
 
 
 ###############################################################################
@@ -107,11 +107,11 @@ class Visualizer():
 
         """
         # Get geometry of object from the .obj file at obj_path
-        obj_path = _format_path(obj_path)
+        obj_path = format_path(obj_path)
         obj_geometry = geo.ObjMeshGeometry.from_file(obj_path)
         
         # Get the texture of object from the .png file at tex_path
-        tex_path = _format_path(tex_path)
+        tex_path = format_path(tex_path)
         meshcat_png = geo.PngImage.from_file(tex_path)
         im_tex = geo.ImageTexture(image=meshcat_png,
                                   wrap=[1, 1],
@@ -174,7 +174,7 @@ class Visualizer():
 
         """
         # Set the parts's geometry
-        stl_path = _format_path(stl_path)
+        stl_path = format_path(stl_path)
         link_geometry = geo.StlMeshGeometry.from_file(stl_path)
         
         # Set the parts's color
@@ -230,7 +230,7 @@ class Visualizer():
         """
         
         # Set the parts's geometry
-        stl_path = _format_path(stl_path)
+        stl_path = format_path(stl_path)
         link_geometry = geo.StlMeshGeometry.from_file(stl_path)
         
         # Set the parts's color
@@ -614,7 +614,7 @@ class Visualizer():
                 pitch=0.0
             if yaw==None:
                 yaw=0.0
-            wxyz_quaternion = _wxyz_from_euler(roll, pitch, yaw)
+            wxyz_quaternion = wxyz_from_euler(roll, pitch, yaw)
         
         # Calculate and apply the transform
         transform = self.get_transform(scale=scale,

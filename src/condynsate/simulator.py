@@ -29,8 +29,8 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import numpy as np
 import pybullet
 from pybullet_utils import bullet_client as bc
-from visualizer import Visualizer
-from utils import _format_path, _format_RGB, _wxyz_to_xyzw, _xyzw_to_wxyz
+from .visualizer import Visualizer
+from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
 
 
 ###############################################################################
@@ -181,7 +181,7 @@ class Simulator:
             
         """
         # Get the properly formatted string of the urdf path
-        urdf_path = _format_path(urdf_path)
+        urdf_path = format_path(urdf_path)
         
         # Get the initial position of the urdf object in world coordinates
         position = np.array(position)
@@ -189,7 +189,7 @@ class Simulator:
         # If no euler angles are specified, use the quaternion to set the
         # initial orientation of the urdf object
         if roll==None and pitch==None and yaw==None: 
-            orientation = _wxyz_to_xyzw(wxyz_quaternion)
+            orientation = wxyz_to_xyzw(wxyz_quaternion)
         
         # If any euler angles are specified, use the euler angles to set the
         # initial orientation of the urdf object
@@ -756,7 +756,7 @@ class Simulator:
         
         # Make the URDF name and format the texture path
         urdf_name = str(urdf_obj.urdf_id)
-        tex_path = _format_path(tex_path)
+        tex_path = format_path(tex_path)
         
         # Loop through all the links
         for i in range(len(paths)):
@@ -775,7 +775,7 @@ class Simulator:
             # visualizer
             elif paths[i][-4:] == ".stl":
                 link_name = names[i]
-                rgb = _format_RGB(colors[i][0:3],
+                rgb = format_RGB(colors[i][0:3],
                                   range_to_255=True)
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
@@ -873,7 +873,7 @@ class Simulator:
         vis_data = self.engine.getVisualShapeData(urdf_id)
         for vis_datum in vis_data:
             path = vis_datum[4].decode('UTF-8')
-            path = _format_path(path)
+            path = format_path(path)
             paths.append(path)
             scale = list(vis_datum[3])
             scales.append(scale)
@@ -886,7 +886,7 @@ class Simulator:
                 pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
                 position = list(pos_ori[0])
                 positions.append(position)
-                orientation = list(_xyzw_to_wxyz(pos_ori[1]))
+                orientation = list(xyzw_to_wxyz(pos_ori[1]))
                 orientations.append(orientation)
             
             # If the path points to a .stl file, then the object for which we
@@ -903,7 +903,7 @@ class Simulator:
                     pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
                     position = list(pos_ori[0])
                     positions.append(position)
-                    orientation = list(_xyzw_to_wxyz(pos_ori[1]))
+                    orientation = list(xyzw_to_wxyz(pos_ori[1]))
                     orientations.append(orientation)
                     
                 # Link id != -1 implies that the current link is a child
@@ -918,7 +918,7 @@ class Simulator:
                     link_state = self.engine.getLinkState(urdf_id, link_id)
                     position = list(link_state[4])
                     positions.append(position)
-                    orientation = list(_xyzw_to_wxyz(link_state[5]))
+                    orientation = list(xyzw_to_wxyz(link_state[5]))
                     orientations.append(orientation)
                 
         return paths, link_names, scales, colors, positions, orientations
@@ -1033,10 +1033,10 @@ class Simulator:
                 stl_path = vis_datum[4]
             
         # Format stl path
-        stl_path = _format_path(stl_path.decode('UTF-8'))
+        stl_path = format_path(stl_path.decode('UTF-8'))
         
         # Ensure color is in proper format
-        color = _format_RGB(color,
+        color = format_RGB(color,
                             range_to_255=False)
         
         # Set the requested color

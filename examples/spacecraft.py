@@ -30,8 +30,8 @@ import numpy as np
 import time
 import keyboard
 from matplotlib import colormaps as cmaps
-from simulator import Simulator
-from utils import _format_RGB
+from condynsate.simulator import Simulator as Sim
+from condynsate.utils import format_RGB
 
 
 ###############################################################################
@@ -39,8 +39,8 @@ from utils import _format_RGB
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = Simulator(visualization=True,
-                    gravity=[0., 0., 0.])
+    sim = Sim(visualization=True,
+              gravity=[0., 0., 0.])
     
     # Load the spacecraft
     craft_obj = sim.load_urdf(urdf_path='./spacecraft_urdf/spacecraft.urdf',
@@ -143,7 +143,8 @@ if __name__ == "__main__":
         torque_1 = round(torque_1,4)
         torque_1_sat = (torque_1 - min_torque) / (max_torque - min_torque)
         torque_1_color = cmaps['coolwarm'](round(255*torque_1_sat))[0:3]
-        torque_1_color = _format_RGB(torque_1_color, range_to_255=True)
+        torque_1_color = format_RGB(torque_1_color,
+                                    range_to_255=True)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_1',
                             torque=torque_1)
@@ -161,7 +162,8 @@ if __name__ == "__main__":
         torque_2 = round(torque_2,4)
         torque_2_sat = (torque_2 - min_torque) / (max_torque - min_torque)
         torque_2_color = cmaps['coolwarm'](round(255*torque_2_sat))[0:3]
-        torque_2_color = _format_RGB(torque_2_color, range_to_255=True)
+        torque_2_color = format_RGB(torque_2_color,
+                                    range_to_255=True)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_2',
                             torque=torque_2)
@@ -179,7 +181,8 @@ if __name__ == "__main__":
         torque_3 = round(torque_3,4)
         torque_3_sat = (torque_3 - min_torque) / (max_torque - min_torque)
         torque_3_color = cmaps['coolwarm'](round(255*torque_3_sat))[0:3]
-        torque_3_color = _format_RGB(torque_3_color, range_to_255=True)
+        torque_3_color = format_RGB(torque_3_color,
+                                    range_to_255=True)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_3',
                             torque=torque_3)
@@ -197,7 +200,8 @@ if __name__ == "__main__":
         torque_4 = round(torque_4,4)
         torque_4_sat = (torque_4 - min_torque) / (max_torque - min_torque)
         torque_4_color = cmaps['coolwarm'](round(255*torque_4_sat))[0:3]
-        torque_4_color = _format_RGB(torque_4_color, range_to_255=True)
+        torque_4_color = format_RGB(torque_4_color,
+                                    range_to_255=True)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_4',
                             torque=torque_4)
