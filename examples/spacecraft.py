@@ -66,9 +66,7 @@ if __name__ == "__main__":
     # Set the camera scale and orientation
     sim.transform_camera(scale = [4., 4., 4.],
                          yaw=-2.5,
-                         pitch=-0.1
-                         
-                         )
+                         pitch=-0.1)
     
     # Set background and lighting properties
     sim.set_background(top_color=[10,10,10],

@@ -705,10 +705,10 @@ class Simulator:
     
     def add_urdf_to_visualizer(self,
                                urdf_obj,
-                               tex_path='./examples/cmg_vis/check.png'):
+                               tex_path='./cmg_vis/check.png'):
         """
-        Adds static .obj objects and dynamic .stl links to the visualizer
-        based on their urdf description.
+        Adds urdfs to the visualizer. URDFs describe systems assembles from
+        .stl and .obj links.
 
         Parameters
         ----------
@@ -718,8 +718,7 @@ class Simulator:
             A URDF_Obj that will be added to the visualizer.
         tex_path : string, optional
             The path pointing towards a texture file. This texture is applied
-            only to static .obj objects.
-            The default is './examples/cmg_vis/check.png'.
+            to all .obj links in the urdf.
 
         Returns
         -------
@@ -740,33 +739,32 @@ class Simulator:
         # Loop through all the links
         for i in range(len(paths)):
             
-            # If the current object is a static .obj object, add a static
-            # object to the visualizer
+            # If the current link is defined by an .obj file
             if paths[i][-4:] == ".obj":
-                self.vis.add_object(obj_name=urdf_name,
-                                    obj_path=paths[i],
-                                    tex_path=tex_path,
-                                    scale=scales[i],
-                                    translate=poss[i],
-                                    wxyz_quaternion=oris[i])
+                self.vis.add_obj(urdf_name=urdf_name,
+                                 link_name=names[i],
+                                 obj_path=paths[i],
+                                 tex_path=tex_path,
+                                 scale=scales[i],
+                                 translate=poss[i],
+                                 wxyz_quaternion=oris[i])
                 
-            # If the current object is a link, add a .stl link to the
-            # visualizer
+            # If the current link is defined by an .stl file
             elif paths[i][-4:] == ".stl":
                 link_name = names[i]
                 rgb = format_RGB(colors[i][0:3],
                                   range_to_255=True)
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
-                self.vis.add_link(urdf_name=urdf_name,
-                                  link_name=link_name,
-                                  stl_path=paths[i],
-                                  color=rgb,
-                                  transparent=transparent,
-                                  opacity=opacity,
-                                  scale=scales[i],
-                                  translate=poss[i],
-                                  wxyz_quaternion=oris[i])
+                self.vis.add_stl(urdf_name=urdf_name,
+                                 link_name=link_name,
+                                 stl_path=paths[i],
+                                 color=rgb,
+                                 transparent=transparent,
+                                 opacity=opacity,
+                                 scale=scales[i],
+                                 translate=poss[i],
+                                 wxyz_quaternion=oris[i])
 
     
     def update_urdf_visual(self,
@@ -794,13 +792,12 @@ class Simulator:
         
         # Go through all links in urdf object and update their position
         for i in range(len(paths)):
-            if paths[i][-4:]==".stl":
-                link_name = names[i]
-                self.vis.apply_transform(urdf_name=urdf_name,
-                                         link_name=link_name,
-                                         scale=scales[i],
-                                         translate=poss[i],
-                                         wxyz_quaternion=oris[i])
+            link_name = names[i]
+            self.vis.apply_transform(urdf_name=urdf_name,
+                                     link_name=link_name,
+                                     scale=scales[i],
+                                     translate=poss[i],
+                                     wxyz_quaternion=oris[i])
     
     
     def urdf_visual_data(self,
@@ -857,46 +854,34 @@ class Simulator:
             color = list(vis_datum[7])
             colors.append(color)
             
-            # If the path points to a .obj file, then the object for which we
-            # are collecting data is a static object and we gather no link data
-            if path[-4:] == ".obj":
+            # Extract link id
+            link_id = vis_datum[1]
+            
+            # Link id of -1 implies that the current link is the base
+            # of a robot
+            if link_id == -1:
+                link_names.append('base')
                 pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
                 position = list(pos_ori[0])
                 positions.append(position)
                 orientation = list(xyzw_to_wxyz(pos_ori[1]))
                 orientations.append(orientation)
-            
-            # If the path points to a .stl file, then the object for which we
-            # are collecting data is a dynamic link and we gather link data
-            elif path[-4:] == ".stl":
                 
-                # Extract link id
-                link_id = vis_datum[1]
+            # If the link id is not -1, then the current link is not the base.
+            # Therefore, position and orientation data is extracted from the
+            # joint state and link state
+            else:
+                # Collect link name
+                joint_data = self.engine.getJointInfo(urdf_id, link_id)
+                link_name = joint_data[12].decode('UTF-8')
+                link_names.append(link_name)
                 
-                # Link id of -1 implies that the current link is the base
-                # of a robot
-                if link_id == -1:
-                    link_names.append('base')
-                    pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
-                    position = list(pos_ori[0])
-                    positions.append(position)
-                    orientation = list(xyzw_to_wxyz(pos_ori[1]))
-                    orientations.append(orientation)
-                    
-                # Link id != -1 implies that the current link is a child
-                if link_id >= 0:
-                    
-                    # Collect link name
-                    joint_data = self.engine.getJointInfo(urdf_id, link_id)
-                    link_name = joint_data[12].decode('UTF-8')
-                    link_names.append(link_name)
-                    
-                    # Extract link positions and orientations
-                    link_state = self.engine.getLinkState(urdf_id, link_id)
-                    position = list(link_state[4])
-                    positions.append(position)
-                    orientation = list(xyzw_to_wxyz(link_state[5]))
-                    orientations.append(orientation)
+                # Extract link positions and orientations
+                link_state = self.engine.getLinkState(urdf_id, link_id)
+                position = list(link_state[4])
+                positions.append(position)
+                orientation = list(xyzw_to_wxyz(link_state[5]))
+                orientations.append(orientation)
                 
         return paths, link_names, scales, colors, positions, orientations
     

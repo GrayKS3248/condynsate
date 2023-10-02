@@ -51,24 +51,24 @@ class Visualizer():
         self.set_axes(axes_vis)
 
 
-    def add_object(self,
-                   obj_name,
-                   obj_path, 
-                   tex_path,
-                   scale=[1., 1., 1.],
-                   translate=[0., 0., 0.],
-                   wxyz_quaternion=[1., 0., 0., 0.]):
+    def add_obj(self,
+                urdf_name,
+                link_name,
+                obj_path, 
+                tex_path,
+                scale=[1., 1., 1.],
+                translate=[0., 0., 0.],
+                wxyz_quaternion=[1., 0., 0., 0.]):
         """
-        Adds a textured .obj to the visualization. objs are meant to
-        be stationary and their position cannot be updated after they are
-        placed in the visualization.
+        Adds a textured .obj to the visualization.
 
         Parameters
         ----------
-        obj_name : string
-            The name to be assigned to the .obj in the visualization.
-        obj_path : string
-            Relative path pointing to the .obj file that defines the obj.
+        urdf_name : string
+            The name of the urdf to which the .obj is being added as a link.
+            URDF objects define robots or assemblies.
+        link_name : string
+            The name of the link.
         tex_path : string
             Relative path pointing to the .png file that provides the
             texture.
@@ -103,28 +103,27 @@ class Visualizer():
         transform = self.get_transform(scale, translate, wxyz_quaternion)
 
         # Add and transform the object to its orientation and position
-        self.scene[obj_name].set_object(obj_geometry, obj_texture)
-        self.scene[obj_name].set_transform(transform)
+        self.scene[urdf_name][link_name].set_object(obj_geometry, obj_texture)
+        self.scene[urdf_name][link_name].set_transform(transform)
         
         
-    def add_link(self,
-                 urdf_name,
-                 link_name,
-                 stl_path,
-                 color = [91, 155, 213],
-                 transparent=False,
-                 opacity = 1.0,
-                 scale=[1., 1., 1.],
-                 translate=[0., 0., 0.],
-                 wxyz_quaternion=[1., 0., 0., 0.]):
+    def add_stl(self,
+                urdf_name,
+                link_name,
+                stl_path,
+                color = [91, 155, 213],
+                transparent=False,
+                opacity = 1.0,
+                scale=[1., 1., 1.],
+                translate=[0., 0., 0.],
+                wxyz_quaternion=[1., 0., 0., 0.]):
         """
-        Adds a link of a urdf to the visualizer. Links are not fixed and
-        are meant to have their position and orientation updated.
+        Adds a colored .stl to the visualization.
 
         Parameters
         ----------
         urdf_name : string
-            The name of the urdf to which the link is being added.
+            The name of the urdf to which the .stl is being added as a link.
             URDF objects define robots or assemblies.
         link_name : string
             The name of the link.
@@ -132,22 +131,22 @@ class Visualizer():
             The relative path pointing to the .stl description of the link that
             is being added.
         color : array-like, size (3,), optional
-            The 0-255 RGB color of the link. The default is [91, 155, 213].
+            The 0-255 RGB color of the .stl. The default is [91, 155, 213].
         transparent : boolean, optional
-            A boolean that indicates if the link is transparent.
+            A boolean that indicates if the .stl is transparent.
             The default is False.
         opacity : float, optional
-            The opacity of the link. Can take float values between 0.0 and 1.0.
+            The opacity of the .stl. Can take float values between 0.0 and 1.0.
             The default is 1.0.
         scale : array-like, size (3,), optional
-            The initial scaling along the three axes applied to the link.
+            The initial scaling along the three axes applied to the .stl.
             The default is [1., 1., 1.].
         translate : array-like, size (3,), optional
-            The initial translation along the three axes applied to the link.
+            The initial translation along the three axes applied to the .stl.
             The default is [0., 0., 0.].
         wxyz_quaternion : array-like, size (4,), optional
             The wxyz quaternion that defines the initial rotation applied to
-            the link. The default is [1., 0., 0., 0.].
+            the .stl. The default is [1., 0., 0., 0.].
 
         Returns
         -------
