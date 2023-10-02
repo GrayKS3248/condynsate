@@ -23,7 +23,7 @@ if __name__ == "__main__":
                                 position=[0., 0., -3.],
                                 wxyz_quaternion=[1., 0., 0., 0],
                                 fixed=True)
-    quad_obj = sim.load_urdf(urdf_path='./quadcopter_vis/drone.urdf',
+    quad_obj = sim.load_urdf(urdf_path='./quadcopter_vis/quadcopter.urdf',
                              tex_path='./quadcopter_vis/nametag.png',
                              fixed=False)
     

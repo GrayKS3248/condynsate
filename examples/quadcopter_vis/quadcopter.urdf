@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<robot name="drone">
+<robot name="quadcopter">
 
   <material name="arches-blue">
     <color rgba="0.0 0.6235294117647059 0.8313725490196079 1" />
