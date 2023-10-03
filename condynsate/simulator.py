@@ -495,6 +495,75 @@ class Simulator:
                                        contactStiffness=contact_stiffness)
     
     
+    def set_link_color(self,
+                          urdf_obj,
+                          link_name,
+                          color=[91, 155, 213],
+                          transparent = False,
+                          opacity = 1.0):
+        """
+        Allows the user to change the color, transparency, and opacity
+        of an existing urdf in the simulation. The position and orientation
+        are not altered.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link whose color is being updated.
+        link_name : string
+            The name of the link whose color is being updated. The link name is
+            specified in the .urdf file.
+        color : array-like, size (3,), optional
+            The 0-255 RGB color of the link.
+            The default is [91, 155, 213].
+        transparent : boolean, optional
+            A boolean that indicates if the link is transparent.
+            The default is False.
+        opacity : float, optional
+            The opacity of the link. Can take float values between 0.0 and 1.0.
+            The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # If the link name doesn't exist, don't attempt to update it
+        if not (link_name in urdf_obj.link_map):
+            return
+    
+        # Get name and id data from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        urdf_name = str(urdf_id)
+        link_id = urdf_obj.link_map[link_name]
+        
+        # Get current visual data for the requested link
+        vis_data = self.engine.getVisualShapeData(urdf_id)
+        stl_path = ""
+        for vis_datum in vis_data:
+            if vis_datum[1] == link_id:
+                stl_path = vis_datum[4]
+            
+        # Format stl path
+        stl_path = format_path(stl_path.decode('UTF-8'))
+        
+        # Ensure color is in proper format
+        color = format_RGB(color,
+                            range_to_255=False)
+        
+        # Set the requested color
+        self.vis.set_link_color(urdf_name = urdf_name,
+                                   link_name = link_name,
+                                   stl_path = stl_path, 
+                                   color = color,
+                                   transparent = transparent,
+                                   opacity = opacity)
+        
+        
     def set_link_mass(self,
                       urdf_obj,
                       link_name,
@@ -525,32 +594,7 @@ class Simulator:
         if link_name in link_map:
             joint_id = link_map[link_name]
             self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
-    
-    
-    def get_base_pos(self,
-                     urdf_obj):
-        """
-        Returns the position of the base link of a urdf.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj whose base position is returned
-
-        Returns
-        -------
-        position : array-like, shape(3,)
-            The X,Y,Z coordinates of the of base of the urdf.
-
-        """
-        # Get object id
-        urdf_id = urdf_obj.urdf_id
         
-        # Retrieve pos and ori data
-        pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
-        position = list(pos_ori[0])
-        return position
-    
         
     def set_joint_position(self,
                            urdf_obj,
@@ -702,6 +746,73 @@ class Simulator:
                                         position,
                                         velocity)
             
+
+    def get_base_state(self,
+                       urdf_obj,
+                       body_coords=False):
+        """
+        Gets the rigid body states (position, orientation, linear velocity, and
+        angular velocitiy) of the base of a given urdf. 
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose state is being measured
+        body_coords : bool, optional
+            A boolean flag that indicates whether the velocity and angular 
+            velocity is given in world coords (False) or body coords (True).
+            The default is False.
+
+        Returns
+        -------
+        pos : array-like, shape (3,)
+            The (x,y,z) world coordinates of the base of the urdf.
+        rpy : array-like, shape (3,)
+            The Euler angles (roll, pitch, yaw) of the base of the urdf
+            that define the body's orientation in the world.
+        vel : array-like, shape (3,)
+            The linear velocity of the base of the urdf in either world 
+            coords or body coords.
+        ang_vel : array-like, shape (3,)
+            The angular velocity of the base of the urdf in either world 
+            coords or body coords.
+
+        """
+        # Get object id
+        urdf_id = urdf_obj.urdf_id
+        
+        # Retrieve pos, rpy, and vel (in world coordinates) data
+        pos, xyzw_ori = self.engine.getBasePositionAndOrientation(urdf_id)
+        rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
+        vel_world, ang_vel_world = self.engine.getBaseVelocity(urdf_id)
+        
+        # Format the base state data
+        pos = np.array(pos)
+        rpy = np.array(rpy)
+        vel_world = np.array(vel_world)
+        ang_vel_world = np.array(ang_vel_world)
+        
+        if body_coords:
+            # Get the rotation matrix of the body in the world
+            R_body_to_world = self.engine.getMatrixFromQuaternion(xyzw_ori)
+            R_body_to_world = np.array(R_body_to_world)
+            R_body_to_world = np.reshape(R_body_to_world, (3,3))
+            
+            # Get the body velocities in body coordinates
+            R_world_to_body = R_body_to_world.T
+            vel_body = R_world_to_body @ vel_world
+            ang_vel_body =  R_world_to_body @ ang_vel_world
+            
+            return pos, rpy, vel_body, ang_vel_body
+        
+        return pos, rpy, vel_world, ang_vel_world
+    
+    
+    def get_joint_speed(self,
+                        urdf_obj,
+                        joint_name):
+        pass
+    
     
     def add_urdf_to_visualizer(self,
                                urdf_obj,
@@ -939,74 +1050,6 @@ class Simulator:
                                       pitch=pitch,
                                       yaw=yaw)
         
-        
-    def set_link_color(self,
-                          urdf_obj,
-                          link_name,
-                          color=[91, 155, 213],
-                          transparent = False,
-                          opacity = 1.0):
-        """
-        Allows the user to change the color, transparency, and opacity
-        of an existing urdf in the simulation. The position and orientation
-        are not altered.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link whose color is being updated.
-        link_name : string
-            The name of the link whose color is being updated. The link name is
-            specified in the .urdf file.
-        color : array-like, size (3,), optional
-            The 0-255 RGB color of the link.
-            The default is [91, 155, 213].
-        transparent : boolean, optional
-            A boolean that indicates if the link is transparent.
-            The default is False.
-        opacity : float, optional
-            The opacity of the link. Can take float values between 0.0 and 1.0.
-            The default is 1.0.
-
-        Returns
-        -------
-        None.
-
-        """
-        # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
-            return    
-        
-        # If the link name doesn't exist, don't attempt to update it
-        if not (link_name in urdf_obj.link_map):
-            return
-    
-        # Get name and id data from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        urdf_name = str(urdf_id)
-        link_id = urdf_obj.link_map[link_name]
-        
-        # Get current visual data for the requested link
-        vis_data = self.engine.getVisualShapeData(urdf_id)
-        stl_path = ""
-        for vis_datum in vis_data:
-            if vis_datum[1] == link_id:
-                stl_path = vis_datum[4]
-            
-        # Format stl path
-        stl_path = format_path(stl_path.decode('UTF-8'))
-        
-        # Ensure color is in proper format
-        color = format_RGB(color,
-                            range_to_255=False)
-        
-        # Set the requested color
-        self.vis.set_link_color(urdf_name = urdf_name,
-                                   link_name = link_name,
-                                   stl_path = stl_path, 
-                                   color = color,
-                                   transparent = transparent,
-                                   opacity = opacity)
         
     def set_background(self,
                        top_color = None,

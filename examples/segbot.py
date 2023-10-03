@@ -76,7 +76,7 @@ if __name__ == "__main__":
         # Get the current base position of the robot and change
         # gravity accordingly.
         # This simulates centrifugal gravity from the station
-        seg_pos = np.array(sim.get_base_pos(segbot_obj))
+        seg_pos, _, _, _ = np.array(sim.get_base_state(segbot_obj))
         diff = seg_pos - station_center
         dirn = diff / np.linalg.norm(diff)
         grav = 9.81 * dirn

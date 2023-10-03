@@ -9,8 +9,8 @@
   <link name="core">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.5"/>
-      <inertia ixx="0.0023" ixy="0.0" ixz="0.0" iyy="0.0023" iyz="0.0" izz="0.004"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.002166" ixy="0.0" ixz="0.0" iyy="0.002166" iyz="0.0" izz="0.0041666"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -114,8 +114,8 @@
   <link name="rotor1">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0"/>
-      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.01414583" ixy="0" ixz="0" iyy="0.01414583" iyz="0" izz="0.028125"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -135,8 +135,8 @@
   <link name="rotor2">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0"/>
-      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.01414583" ixy="0" ixz="0" iyy="0.01414583" iyz="0" izz="0.028125"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -156,8 +156,8 @@
   <link name="rotor3">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0"/>
-      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.01414583" ixy="0" ixz="0" iyy="0.01414583" iyz="0" izz="0.028125"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -177,8 +177,8 @@
   <link name="rotor4">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0"/>
-      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.01414583" ixy="0" ixz="0" iyy="0.01414583" iyz="0" izz="0.028125"/>
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -239,28 +239,36 @@
     <origin xyz="0 0 1.25" rpy="1.5707963267948966 0 1.5707963267948966"/>
   </joint>
   
-  <joint name="spar1_to_rotor1" type="fixed">
+  <joint name="spar1_to_rotor1" type="continuous">
     <parent link="spar1"/>
     <child link="rotor1"/>
     <origin xyz="0 0.0875 -0.375" rpy="1.5707963267948966 0 0"/>
+    <axis xyz="0.0 0.0 -1.0"/>
+    <limit effort="1000.0" velocity="1000.0"/>
   </joint>
   
-  <joint name="spar2_to_rotor2" type="fixed">
+  <joint name="spar2_to_rotor2" type="continuous">
     <parent link="spar2"/>
     <child link="rotor2"/>
     <origin xyz="-0.0875 0 0.375" rpy="0 1.5707963267948966 0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit effort="1000.0" velocity="1000.0"/>
   </joint>
   
-  <joint name="spar3_to_rotor3" type="fixed">
+  <joint name="spar3_to_rotor3" type="continuous">
     <parent link="spar3"/>
     <child link="rotor3"/>
     <origin xyz="0 0.0875 0.375" rpy="1.5707963267948966 0 0"/>
+    <axis xyz="0.0 0.0 -1.0"/>
+    <limit effort="1000.0" velocity="1000.0"/>
   </joint>
   
-  <joint name="spar4_to_rotor4" type="fixed">
+  <joint name="spar4_to_rotor4" type="continuous">
     <parent link="spar4"/>
     <child link="rotor4"/>
     <origin xyz="-0.0875 0 -0.375" rpy="0 1.5707963267948966 0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit effort="1000.0" velocity="1000.0"/>
   </joint>
   
 </robot>
