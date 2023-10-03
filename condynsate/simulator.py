@@ -225,10 +225,10 @@ class Simulator:
                                           contact_stiffness=-1.0)
             
             # Set the linear and angular damping to 0 (eliminate drag)
-            self.set_linear_angular_damping(urdf_obj,
-                                            joint_name=joint_name,
-                                            linear_damping=0.,
-                                            angular_damping=0.)
+            self.set_joint_lin_ang_damp(urdf_obj,
+                                        joint_name=joint_name,
+                                        linear_damping=0.,
+                                        angular_damping=0.)
             
             # Set damping of joints to 0 (eliminate joint friction)
             self.set_joint_damping(urdf_obj,
@@ -237,8 +237,8 @@ class Simulator:
 
             # Disable velocity control if the joint is not a base joint
             if joint_map[joint_name]!=-1:
-                self.disable_velocity_control(urdf_obj,
-                                              joint_name=joint_name)
+                self.disable_joint_vel_con(urdf_obj,
+                                           joint_name=joint_name)
 
         # Add urdf objects to the visualizer if visualization is occuring
         if isinstance(self.vis, Visualizer):
@@ -296,9 +296,9 @@ class Simulator:
         return joint_map, link_map
     
     
-    def disable_velocity_control(self,
-                                 urdf_obj,
-                                 joint_name):
+    def disable_joint_vel_con(self,
+                              urdf_obj,
+                              joint_name):
         """
         Disable velocity control mode for a joint. In pybullet, all joints are
         initialized with velocity control mode engaged and a target velocity of
@@ -332,11 +332,11 @@ class Simulator:
                                                   forces=[0])
     
     
-    def set_linear_angular_damping(self,
-                                   urdf_obj,
-                                   joint_name,
-                                   linear_damping=0.,
-                                   angular_damping=0.):
+    def set_joint_lin_ang_damp(self,
+                               urdf_obj,
+                               joint_name,
+                               linear_damping=0.,
+                               angular_damping=0.):
         """
         Allows user to set the linear and angular damping of a joint. Linear
         and angular damping is a way to model drag. It is typically
@@ -493,107 +493,6 @@ class Simulator:
                                        restitution=restitution, 
                                        contactDamping=contact_damping, 
                                        contactStiffness=contact_stiffness)
-    
-    
-    def set_link_color(self,
-                          urdf_obj,
-                          link_name,
-                          color=[91, 155, 213],
-                          transparent = False,
-                          opacity = 1.0):
-        """
-        Allows the user to change the color, transparency, and opacity
-        of an existing urdf in the simulation. The position and orientation
-        are not altered.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link whose color is being updated.
-        link_name : string
-            The name of the link whose color is being updated. The link name is
-            specified in the .urdf file.
-        color : array-like, size (3,), optional
-            The 0-255 RGB color of the link.
-            The default is [91, 155, 213].
-        transparent : boolean, optional
-            A boolean that indicates if the link is transparent.
-            The default is False.
-        opacity : float, optional
-            The opacity of the link. Can take float values between 0.0 and 1.0.
-            The default is 1.0.
-
-        Returns
-        -------
-        None.
-
-        """
-        # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
-            return    
-        
-        # If the link name doesn't exist, don't attempt to update it
-        if not (link_name in urdf_obj.link_map):
-            return
-    
-        # Get name and id data from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        urdf_name = str(urdf_id)
-        link_id = urdf_obj.link_map[link_name]
-        
-        # Get current visual data for the requested link
-        vis_data = self.engine.getVisualShapeData(urdf_id)
-        stl_path = ""
-        for vis_datum in vis_data:
-            if vis_datum[1] == link_id:
-                stl_path = vis_datum[4]
-            
-        # Format stl path
-        stl_path = format_path(stl_path.decode('UTF-8'))
-        
-        # Ensure color is in proper format
-        color = format_RGB(color,
-                            range_to_255=False)
-        
-        # Set the requested color
-        self.vis.set_link_color(urdf_name = urdf_name,
-                                   link_name = link_name,
-                                   stl_path = stl_path, 
-                                   color = color,
-                                   transparent = transparent,
-                                   opacity = opacity)
-        
-        
-    def set_link_mass(self,
-                      urdf_obj,
-                      link_name,
-                      mass=0.):
-        """
-        Sets the mass of a link in a urdf.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link whose mass is being set.
-        link_name : string
-            The name of the link whose mass is set. The link name is
-            specified in the .urdf file.
-        mass : float, optional
-            The mass to set in kg. The default is 0..
-
-        Returns
-        -------
-        None.
-
-        """
-        # Gather information from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        link_map = urdf_obj.link_map
-        
-        # Set the link mass
-        if link_name in link_map:
-            joint_id = link_map[link_name]
-            self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
         
         
     def set_joint_position(self,
@@ -611,7 +510,8 @@ class Simulator:
             The name of the joint whose position is set. The joint name is
             specified in the .urdf file.
         position : float, optional
-            The position to be applied to the joint. The default is 0..
+            The position in rad to be applied to the joint.
+            The default is 0..
 
         Returns
         -------
@@ -649,7 +549,8 @@ class Simulator:
             The name of the joint whose velocity is set. The joint name is
             specified in the .urdf file.
         velocity : float, optional
-            The velocity to be applied to the joint. The default is 0..
+            The velocity in rad/s to be applied to the joint.
+            The default is 0..
 
         Returns
         -------
@@ -745,8 +646,153 @@ class Simulator:
                                         joint_id,
                                         position,
                                         velocity)
-            
 
+            
+    def set_link_color(self,
+                          urdf_obj,
+                          link_name,
+                          color=[91, 155, 213],
+                          transparent = False,
+                          opacity = 1.0):
+        """
+        Allows the user to change the color, transparency, and opacity
+        of an existing urdf in the simulation. The position and orientation
+        are not altered.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link whose color is being updated.
+        link_name : string
+            The name of the link whose color is being updated. The link name is
+            specified in the .urdf file unless the link is the base link of the
+            urdf, then its name is always 'base'.
+        color : array-like, size (3,), optional
+            The 0-255 RGB color of the link.
+            The default is [91, 155, 213].
+        transparent : boolean, optional
+            A boolean that indicates if the link is transparent.
+            The default is False.
+        opacity : float, optional
+            The opacity of the link. Can take float values between 0.0 and 1.0.
+            The default is 1.0.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # If the link name doesn't exist, don't attempt to update it
+        if not (link_name in urdf_obj.link_map):
+            return
+    
+        # Get name and id data from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        urdf_name = str(urdf_id)
+        link_id = urdf_obj.link_map[link_name]
+        
+        # Get current visual data for the requested link
+        vis_data = self.engine.getVisualShapeData(urdf_id)
+        stl_path = ""
+        for vis_datum in vis_data:
+            if vis_datum[1] == link_id:
+                stl_path = vis_datum[4]
+            
+        # Format stl path
+        stl_path = format_path(stl_path.decode('UTF-8'))
+        
+        # Ensure color is in proper format
+        color = format_RGB(color,
+                            range_to_255=False)
+        
+        # Set the requested color
+        self.vis.set_link_color(urdf_name = urdf_name,
+                                   link_name = link_name,
+                                   stl_path = stl_path, 
+                                   color = color,
+                                   transparent = transparent,
+                                   opacity = opacity)
+        
+        
+    def set_link_mass(self,
+                      urdf_obj,
+                      link_name,
+                      mass=0.):
+        """
+        Sets the mass of a link in a urdf.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link whose mass is being set.
+        link_name : string
+            The name of the link whose mass is set. The link name is
+            specified in the .urdf file unless the link is the base link of the
+            urdf, then its name is always 'base'.
+        mass : float, optional
+            The mass to set in kg. The default is 0..
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Set the link mass
+        if link_name in link_map:
+            joint_id = link_map[link_name]
+            self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
+        
+        
+    def apply_force_to_link(self,
+                            urdf_obj,
+                            link_name,
+                            force=[0., 0., 0.]):
+        """
+        Applies an external force the to center of a specified link of a urdf.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link to which the force is applied.
+        link_name : string
+            The name of the link to which the force is applied.
+            The link name is specified in the .urdf file unless the link is
+            the base link of the urdf, then its name is always 'base'.
+        force : array-like, shape (3,), optional
+            The force vector in body coordinates to apply to the link.
+            The default is [0., 0., 0.].
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Set the link mass
+        if link_name in link_map:
+            joint_id = link_map[link_name]
+        else:
+            return
+        
+        # Apply the external force
+        self.engine.applyExternalForce(urdf_id,
+                                       joint_id,
+                                       force,
+                                       [0., 0., 0.],
+                                       self.engine.LINK_FRAME)
+           
+        
     def get_base_state(self,
                        urdf_obj,
                        body_coords=False):
@@ -757,7 +803,7 @@ class Simulator:
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj whose state is being measured
+            A URDF_Obj whose state is being measured.
         body_coords : bool, optional
             A boolean flag that indicates whether the velocity and angular 
             velocity is given in world coords (False) or body coords (True).
@@ -808,10 +854,43 @@ class Simulator:
         return pos, rpy, vel_world, ang_vel_world
     
     
-    def get_joint_speed(self,
+    def get_joint_state(self,
                         urdf_obj,
                         joint_name):
-        pass
+        """
+        Gets the state of a joint (angle and velocity for continuous joints).
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose joint state is being measured.
+        joint_name : string
+            The name of the joint whose state is measured. The joint name is
+            specified in the .urdf file.
+
+        Returns
+        -------
+        ang : float
+            The angle, in rads, of the joint.
+        vel : float
+            The angular velocity, in rads/s, of the joint.
+
+        """
+        # Get object id and joint id
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Get the joint id
+        if joint_name in joint_map:
+            joint_id = [joint_map[joint_name]]
+        else:
+            return
+        
+        # Retrieve the joint states
+        states = self.engine.getJointStates(urdf_id, joint_id)
+        ang = states[0][0]
+        vel = states[0][1]
+        return ang, vel
     
     
     def add_urdf_to_visualizer(self,

@@ -76,7 +76,7 @@ if __name__ == "__main__":
     mass_sat = (mass - min_mass) / (max_mass - min_mass)
     mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
     
-    # Variables to track wheel RPM
+    # Variables to track wheel velocity
     prev_vel = 0.0
     max_vel = 100.0
     min_vel = 0.0
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         
         # Print the current torque
         if torque != prev_torque:
-            print("Torque: " + str(torque) + "Nm")
+            print("Torque: " + str(torque) + " Nm")
         prev_torque = torque
         
         # Collect keyboard IO data for mass
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     
         # Print the current mass
         if mass != prev_mass:
-            print("Mass: " + str(mass) + "Kg")
+            print("Mass: " + str(mass) + " Kg")
         prev_mass = mass
     
         # Collect keyboard IO data for wheel vel
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     
         # Print the current wheel velocity
         if vel != prev_vel:
-            print("Wheel Speed: " + str(vel) + "RPM")
+            print("Wheel Speed: " + str(vel) + " Rad/s")
         prev_vel = vel
     
         # Step the sim and update the visualizer
