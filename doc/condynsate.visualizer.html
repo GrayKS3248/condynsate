@@ -63,51 +63,15 @@ Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Visualizer-add_link"><strong>add_link</strong></a>(self, urdf_name, link_name, stl_path, color=[91, 155, 213], transparent=False, opacity=1.0, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Adds&nbsp;a&nbsp;link&nbsp;of&nbsp;a&nbsp;urdf&nbsp;to&nbsp;the&nbsp;visualizer.&nbsp;Links&nbsp;are&nbsp;not&nbsp;fixed&nbsp;and<br>
-are&nbsp;meant&nbsp;to&nbsp;have&nbsp;their&nbsp;position&nbsp;and&nbsp;orientation&nbsp;updated.<br>
+<dl><dt><a name="Visualizer-add_obj"><strong>add_obj</strong></a>(self, urdf_name, link_name, obj_path, tex_path, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Adds&nbsp;a&nbsp;textured&nbsp;.obj&nbsp;to&nbsp;the&nbsp;visualization.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
 urdf_name&nbsp;:&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;urdf&nbsp;to&nbsp;which&nbsp;the&nbsp;link&nbsp;is&nbsp;being&nbsp;added.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;urdf&nbsp;to&nbsp;which&nbsp;the&nbsp;.obj&nbsp;is&nbsp;being&nbsp;added&nbsp;as&nbsp;a&nbsp;link.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;URDF&nbsp;objects&nbsp;define&nbsp;robots&nbsp;or&nbsp;assemblies.<br>
 link_name&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link.<br>
-stl_path&nbsp;:&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.stl&nbsp;description&nbsp;of&nbsp;the&nbsp;link&nbsp;that<br>
-&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;being&nbsp;added.<br>
-color&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;RGB&nbsp;color&nbsp;of&nbsp;the&nbsp;link.&nbsp;The&nbsp;default&nbsp;is&nbsp;[91,&nbsp;155,&nbsp;213].<br>
-transparent&nbsp;:&nbsp;boolean,&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;that&nbsp;indicates&nbsp;if&nbsp;the&nbsp;link&nbsp;is&nbsp;transparent.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
-opacity&nbsp;:&nbsp;float,&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;opacity&nbsp;of&nbsp;the&nbsp;link.&nbsp;Can&nbsp;take&nbsp;float&nbsp;values&nbsp;between&nbsp;0.0&nbsp;and&nbsp;1.0.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
-scale&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;scaling&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;link.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;1.,&nbsp;1.].<br>
-translate&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;translation&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;link.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
-wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;wxyz&nbsp;quaternion&nbsp;that&nbsp;defines&nbsp;the&nbsp;initial&nbsp;rotation&nbsp;applied&nbsp;to<br>
-&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;link.&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;0.,&nbsp;0.,&nbsp;0.].<br>
-&nbsp;<br>
-Returns<br>
--------<br>
-transform&nbsp;:&nbsp;None.</tt></dd></dl>
-
-<dl><dt><a name="Visualizer-add_object"><strong>add_object</strong></a>(self, obj_name, obj_path, tex_path, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Adds&nbsp;a&nbsp;textured&nbsp;.obj&nbsp;to&nbsp;the&nbsp;visualization.&nbsp;objs&nbsp;are&nbsp;meant&nbsp;to<br>
-be&nbsp;stationary&nbsp;and&nbsp;their&nbsp;position&nbsp;cannot&nbsp;be&nbsp;updated&nbsp;after&nbsp;they&nbsp;are<br>
-placed&nbsp;in&nbsp;the&nbsp;visualization.<br>
-&nbsp;<br>
-Parameters<br>
-----------<br>
-obj_name&nbsp;:&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;to&nbsp;be&nbsp;assigned&nbsp;to&nbsp;the&nbsp;.obj&nbsp;in&nbsp;the&nbsp;visualization.<br>
-obj_path&nbsp;:&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.obj&nbsp;file&nbsp;that&nbsp;defines&nbsp;the&nbsp;obj.<br>
 tex_path&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;Relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.png&nbsp;file&nbsp;that&nbsp;provides&nbsp;the<br>
 &nbsp;&nbsp;&nbsp;&nbsp;texture.<br>
@@ -124,6 +88,40 @@ wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
 Returns<br>
 -------<br>
 None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-add_stl"><strong>add_stl</strong></a>(self, urdf_name, link_name, stl_path, color=[91, 155, 213], transparent=False, opacity=1.0, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Adds&nbsp;a&nbsp;colored&nbsp;.stl&nbsp;to&nbsp;the&nbsp;visualization.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;urdf&nbsp;to&nbsp;which&nbsp;the&nbsp;.stl&nbsp;is&nbsp;being&nbsp;added&nbsp;as&nbsp;a&nbsp;link.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;URDF&nbsp;objects&nbsp;define&nbsp;robots&nbsp;or&nbsp;assemblies.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link.<br>
+stl_path&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.stl&nbsp;description&nbsp;of&nbsp;the&nbsp;link&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;being&nbsp;added.<br>
+color&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;RGB&nbsp;color&nbsp;of&nbsp;the&nbsp;.stl.&nbsp;The&nbsp;default&nbsp;is&nbsp;[91,&nbsp;155,&nbsp;213].<br>
+transparent&nbsp;:&nbsp;boolean,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;that&nbsp;indicates&nbsp;if&nbsp;the&nbsp;.stl&nbsp;is&nbsp;transparent.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+opacity&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;opacity&nbsp;of&nbsp;the&nbsp;.stl.&nbsp;Can&nbsp;take&nbsp;float&nbsp;values&nbsp;between&nbsp;0.0&nbsp;and&nbsp;1.0.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+scale&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;scaling&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;.stl.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;1.,&nbsp;1.].<br>
+translate&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;translation&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;.stl.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;wxyz&nbsp;quaternion&nbsp;that&nbsp;defines&nbsp;the&nbsp;initial&nbsp;rotation&nbsp;applied&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;.stl.&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;0.,&nbsp;0.,&nbsp;0.].<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+transform&nbsp;:&nbsp;None.</tt></dd></dl>
 
 <dl><dt><a name="Visualizer-apply_transform"><strong>apply_transform</strong></a>(self, urdf_name, link_name, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Applies&nbsp;a&nbsp;3D&nbsp;affine&nbsp;transformation&nbsp;inclunding&nbsp;scaling,&nbsp;translating,<br>
 and&nbsp;rotating&nbsp;to&nbsp;a&nbsp;specified&nbsp;link.<br>
