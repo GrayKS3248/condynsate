@@ -949,7 +949,7 @@ class Simulator:
             return
         
         # Extract the visual data from the urdf object in the simulator
-        paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
+        paths,names,scales,colors,poss,oris = self.get_urdf_vis_dat(urdf_obj)
         
         # Make the URDF name and format the texture path
         urdf_name = str(urdf_obj.urdf_id)
@@ -1006,7 +1006,7 @@ class Simulator:
             return
         
         # Collect the visual data and urdf name
-        paths,names,scales,colors,poss,oris = self.urdf_visual_data(urdf_obj)
+        paths,names,scales,colors,poss,oris = self.get_urdf_vis_dat(urdf_obj)
         urdf_name = str(urdf_obj.urdf_id)
         
         # Go through all links in urdf object and update their position
@@ -1019,7 +1019,7 @@ class Simulator:
                                      wxyz_quaternion=oris[i])
     
     
-    def urdf_visual_data(self,
+    def get_urdf_vis_dat(self,
                          urdf_obj):
         """
         Extracts all relevant visual data from a urdf loaded into the
@@ -1348,6 +1348,47 @@ class Simulator:
         else:
             self.vis.set_fill_light(on = on,
                                        intensity = intensity)
+            
+            
+    def add_plot_to_animator(self,
+                             title=None,
+                             x_label=None,
+                             y_label=None,
+                             color=None,
+                             lock_x_range=False,
+                             lock_y_range=False,
+                             tail=None):
+        
+        # If there is no animator, do not attempt to add a plot to it
+        if not isinstance(self.ani, Animator):
+            return
+        
+        # Add the plot data to the plot
+        plot_index = self.ani.add_plot(title=title,
+                                       x_label=x_label,
+                                       y_label=y_label,
+                                       color=color,
+                                       lock_x_range=lock_x_range,
+                                       lock_y_range=lock_y_range,
+                                       tail=tail)
+        
+        # Return the plot index
+        return plot_index
+        
+        
+    def set_plot_data(self,
+                      plot_index,
+                      x,
+                      y):
+        # If there is no animator, do not attempt to update it
+        if not isinstance(self.ani, Animator):
+            return
+        
+        # Update the plot
+        self.ani.set_plot_data(plot_index,
+                               x,
+                               y)
+        
             
     def step(self,
              real_time=True,
