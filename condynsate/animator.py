@@ -10,34 +10,43 @@ functions that are used by it.
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+import time
+import multiprocessing
 
-class PauseAnimation:
-    def __init__(self):
-        fig, ax = plt.subplots()
-        x = np.linspace(-0.1, 0.1, 1000)
 
-        # Start with a normal distribution
-        self.n0 = (1.0 / ((4 * np.pi * 2e-4 * 0.1) ** 0.5)
-                   * np.exp(-x ** 2 / (4 * 2e-4 * 0.1)))
-        self.p, = ax.plot(x, self.n0)
+def start_ani(x, y):
+    fig, ax = plt.subplots()
+    animation.FuncAnimation(fig,
+                            update,
+                            frames=100,
+                            interval=10,
+                            blit=True)
+    plt.show()
 
-        self.animation = animation.FuncAnimation(
-            fig, self.update, frames=200, interval=50, blit=True, repeat=False)
-        self.paused = False
 
-        fig.canvas.mpl_connect('button_press_event', self.toggle_pause)
-
-    def toggle_pause(self, *args, **kwargs):
-        if self.paused:
-            self.animation.resume()
-        else:
-            self.animation.pause()
-        self.paused = not self.paused
-
-    def update(self, i):
-        self.n0 += i / 100 % 5
-        self.p.set_ydata(self.n0 % 20)
-        return (self.p,)
+def update(i):
+    x = np.linspace(0,100, 20)
+    y = np.random.rand(20)
+    p, = plt.plot(x, y)
+    plt.tight_layout()
+    return p,
     
-pa = PauseAnimation()
-plt.show()
+if __name__ == "__main__":
+    x = [0.]
+    y = [0.]
+
+    plt.plot(x,y)
+    
+    for i in range(100):
+        plt.clf()
+        x.append(x[-1]+0.01)
+        y.append(np.random.rand())
+        plt.plot(x, y)
+        plt.pause(0.01)
+        
+    plt.show()
+        
+    
+    
+    
+    

@@ -95,10 +95,7 @@ if __name__ == "__main__":
     # Run the simulation
     elapsed_time = 0
     done = False
-    while(not done):
-        # Keep track of time to run sim in real time
-        start_time = time.time()
-        
+    while(not done):        
         # Collect keyboard IO for termination
         if keyboard.is_pressed("esc"):
             done = True
@@ -190,12 +187,6 @@ if __name__ == "__main__":
             print("Wheel Speed: " + str(vel) + " Rad/s")
         prev_vel = vel
     
-        # Step the sim and update the visualizer
-        sim.step()
-        
-        # Add sleep to run sim in real time
-        elapsed_time = elapsed_time + sim.dt
-        time_to_wait = sim.dt + start_time - time.time()
-        if time_to_wait > 0.:
-            time.sleep(time_to_wait)
+        # Step the sim
+        sim.step(real_time=True)
             

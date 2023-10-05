@@ -102,9 +102,6 @@ if __name__ == "__main__":
     elapsed_time = 0
     done = False
     while(not done):
-        # Keep track of time to run sim in real time
-        start_time = time.time()
-        
         # Collect keyboard IO for termination
         if keyboard.is_pressed("esc"):
             done = True
@@ -201,12 +198,6 @@ if __name__ == "__main__":
         prev_torque_3 = torque_3
         prev_torque_4 = torque_4
         
-        # Step the simulation and update the visualization
-        sim.step()
-        
-        # Add sleep to run sim in real time
-        elapsed_time = elapsed_time + sim.dt
-        time_to_wait = sim.dt + start_time - time.time()
-        if time_to_wait > 0.:
-            time.sleep(time_to_wait)
+        # Step the sim
+        sim.step(real_time=True)
             

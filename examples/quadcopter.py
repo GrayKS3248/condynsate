@@ -58,9 +58,6 @@ if __name__ == "__main__":
     elapsed_time = 0
     done = False
     while(not done):
-        # Keep track of time to run sim in real time
-        start_time = time.time()
-        
         # Collect keyboard IO data for torque 1
         if keyboard.is_pressed("a"):
             torque_1 = max_torque
@@ -175,14 +172,6 @@ if __name__ == "__main__":
         if keyboard.is_pressed("esc"):
             done = True
             
-        # Step the simulation and update the visualization
-        sim.engine.stepSimulation()
-        sim.update_urdf_visual(quad_obj)
-        sim.update_urdf_visual(ground_obj)
-        
-        # Add sleep to run sim in real time
-        elapsed_time = elapsed_time + sim.dt
-        time_to_wait = sim.dt + start_time - time.time()
-        if time_to_wait > 0.:
-            time.sleep(time_to_wait)
+        # Step the sim
+        sim.step(real_time=True)
             

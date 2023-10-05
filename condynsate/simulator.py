@@ -8,6 +8,7 @@ functions that are used by it.
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
+import time
 import pybullet
 from pybullet_utils import bullet_client as bc
 from .visualizer import Visualizer
@@ -90,7 +91,9 @@ class Simulator:
         
         # Configure physics engine parameters
         self.time = 0.0
+        self.times = [self.time]
         self.dt = 0.01
+        self.last_step_time = time.time()
         self.engine.setPhysicsEngineParameter(
             fixedTimeStep=self.dt,
             numSubSteps=4,
@@ -1335,24 +1338,25 @@ class Simulator:
             self.vis.set_fill_light(on = on,
                                        intensity = intensity)
             
-    def step(self):
-        """
-        Takes a single step forward in time. Updates the physics engine and the
-        visualizer if there is one.
-
-        Returns
-        -------
-        None.
-
-        """
+    def step(self,
+             real_time = True):
+        # Pause before step if running in real time
+        if real_time:
+            time_since_last_step = time.time() - self.last_step_time
+            time_to_wait = self.dt - time_since_last_step
+            if time_to_wait > 0.:
+                time.sleep(time_to_wait)
+            
         # Step the physics engine
         self.engine.stepSimulation()
+        
+        # Update the time
+        self.last_step_time = time.time()
+        self.time = self.time + self.dt
+        self.times.append(self.time)
         
         # Update the visualizer if it exists
         if isinstance(self.vis, Visualizer):
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self.update_urdf_visual(urdf_obj)
-            
-        # Update the time
-        self.time = self.time + self.dt
