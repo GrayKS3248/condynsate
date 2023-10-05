@@ -12,6 +12,7 @@ import time
 import pybullet
 from pybullet_utils import bullet_client as bc
 from .visualizer import Visualizer
+from .animator import Animator
 from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
 
 
@@ -66,6 +67,7 @@ class Simulator:
     """
     def __init__(self,
                  visualization=True,
+                 animation=True,
                  gravity=[0., 0., -9.81]):
         """
         Initializes an instance of the Simulator class.
@@ -75,6 +77,9 @@ class Simulator:
         visualization : bool, optional
             A boolean flag that indicates whether the simulation will be 
             visualized in meshcat.
+        visualization : bool, optional
+            A boolean flag that indicates whether plots will be animated
+            in real time.
         gravity : array-like, shape (3,) optional
             The gravity vectory in m/s^2. The default is [0., 0., -9.81].
 
@@ -108,6 +113,12 @@ class Simulator:
             self.vis = Visualizer(grid_vis=False,axes_vis=False)
         else:
             self.vis=None
+            
+        # Create an animator
+        if animation:
+            self.ani = Animator()
+        else:
+            self.ani=None
         
     
     def set_gravity(self,
@@ -1339,7 +1350,8 @@ class Simulator:
                                        intensity = intensity)
             
     def step(self,
-             real_time = True):
+             real_time=True,
+             update_vis=True):
         # Pause before step if running in real time
         if real_time:
             time_since_last_step = time.time() - self.last_step_time
@@ -1356,7 +1368,7 @@ class Simulator:
         self.times.append(self.time)
         
         # Update the visualizer if it exists
-        if isinstance(self.vis, Visualizer):
+        if update_vis and isinstance(self.vis, Visualizer):
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self.update_urdf_visual(urdf_obj)

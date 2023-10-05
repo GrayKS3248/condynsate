@@ -199,5 +199,6 @@ if __name__ == "__main__":
         prev_torque_4 = torque_4
         
         # Step the sim
-        sim.step(real_time=True)
+        sim.step(real_time=True,
+                 update_vis=True)
             

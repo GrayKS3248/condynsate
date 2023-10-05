@@ -173,5 +173,6 @@ if __name__ == "__main__":
             done = True
             
         # Step the sim
-        sim.step(real_time=True)
+        sim.step(real_time=True,
+                 update_vis=True)
             

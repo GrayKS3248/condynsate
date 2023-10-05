@@ -165,5 +165,6 @@ if __name__ == "__main__":
         prev_vel = vel
         
         # Step the sim
-        sim.step(real_time=True)
+        sim.step(real_time=True,
+                 update_vis=True)
             
