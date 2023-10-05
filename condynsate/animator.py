@@ -30,6 +30,10 @@ class Animator():
         self.lock_ys = []
         self.x_ranges = []
         self.y_ranges = []
+        self.x_lims = []
+        self.y_lims = []
+    
+        self.figure_is_made = False
     
     
     def add_plot(self,
@@ -37,9 +41,9 @@ class Animator():
                  x_label=None,
                  y_label=None,
                  color=None,
-                 lock_x_range=False,
-                 lock_y_range=False,
-                 tail=None):
+                 tail=None,
+                 x_lim=None,
+                 y_lim=None):
         # Store the plot data
         self.xs.append([])
         self.ys.append([])
@@ -54,10 +58,10 @@ class Animator():
         self.colors.append(color)
         
         # Store the range parameters
-        self.lock_xs.append(lock_x_range)
-        self.lock_ys.append(lock_y_range)
         self.x_ranges.append([None, None])
         self.y_ranges.append([None, None])
+        self.x_lims.append(x_lim)
+        self.y_lims.append(y_lim)
         
         # Return the index of the added plot
         plot_index = len(self.xs)-1
@@ -79,84 +83,96 @@ class Animator():
         self.ys[plot_index] = y
         
         # Update the plot x range data
-        x_range = self.x_ranges[plot_index]
-        if x_range[0] == None:
-            min_x = np.min(x)
-            max_x = np.max(x)
+        if self.x_lims[plot_index] == None:
+            x_range = self.x_ranges[plot_index]
+            if x_range[0] == None:
+                min_x = np.min(x)
+                max_x = np.max(x)
+            else:
+                min_x = min(np.min(x), x_range[0])
+                max_x = max(np.max(x), x_range[1])
+            self.x_ranges[plot_index] = (min_x, max_x)
         else:
-            min_x = min(np.min(x), x_range[0])
-            max_x = max(np.max(x), x_range[1])
-        self.x_ranges[plot_index] = (min_x, max_x)
-        
+            self.x_ranges[plot_index] = self.x_lims[plot_index]
+            
         # Update the plot y range data
-        y_range = self.y_ranges[plot_index]
-        if y_range[0] == None:
-            min_y = np.min(y)
-            max_y = np.max(y)
+        if self.y_lims[plot_index] == None:
+            y_range = self.y_ranges[plot_index]
+            if y_range[0] == None:
+                min_y = np.min(y)
+                max_y = np.max(y)
+            else:
+                min_y = min(np.min(y), y_range[0])
+                max_y = max(np.max(y), y_range[1])
+            self.y_ranges[plot_index] = (min_y, max_y)
         else:
-            min_y = min(np.min(y), y_range[0])
-            max_y = max(np.max(y), y_range[1])
-        self.y_ranges[plot_index] = (min_y, max_y)
+            self.y_ranges[plot_index] = self.y_lims[plot_index]
 
 
     def create_figure(self):
         # Determine the dimensions of the subplots
         num_plots = len(self.xs)
         n_cols = int(np.ceil(0.5*num_plots))
-        if num_plots < 2:
+        if num_plots == 0:
+            n_rows = 0
+        elif num_plots == 1:
             n_rows = 1
         else:
             n_rows = 2
         
         # Create the figure and the axes
-        self.fig, self.axes = plt.subplots(n_rows, n_cols)
-        if num_plots > 1:
-            self.axes = self.axes.flatten()
+        if num_plots > 0:
+            self.fig, self.axes = plt.subplots(n_rows, n_cols)
+            if num_plots > 1:
+                self.axes = self.axes.flatten()
         
-        # Draw the axes
+        # Create each subplot
         for i in range(num_plots):
-            # Retrieve data for given axis
-            x = self.xs[i]
-            y = self.ys[i]
-            x_range = self.x_ranges[i]
-            y_range = self.y_ranges[i]
             title = self.titles[i]
             x_label = self.x_labels[i]
             y_label = self.y_labels[i]
-            color = self.colors[i]
             if num_plots > 1:
                 axis = self.axes[i]
             else:
                 axis = self.axes
-                
-            # Plot the data and set axis parameters
-            axis.plot(x, y, color=color)
+            axis.clear()
             axis.set_title(title)
             axis.set_xlabel(x_label)
             axis.set_ylabel(y_label)
-            if self.lock_xs[i]:
-                axis.set_xlim(x_range[0],
-                              x_range[1])
-            if self.lock_ys[i]:
-                axis.set_ylim(y_range[0],
-                              y_range[1])
+            if self.x_lims[i] != None:
+                x_lim = self.x_lims[i]
+                axis.set_xlim(x_lim[0],
+                              x_lim[1])
+            if self.y_lims[i] != None:
+                y_lim = self.y_lims[i]
+                axis.set_ylim(y_lim[0],
+                              y_lim[1])
+            
+        # Figure settings
+        if num_plots > 0:
+            self.fig.tight_layout()
         
-        # Set the figure settings
-        self.fig.tight_layout()
+        # Flag that the figure has been created
+        plt.show()
+        self.figure_is_made = True
         
         
     def step(self,
              pause):
+        # Create the figure if it is not already made
+        if not self.figure_is_made:
+            self.create_figure()
+        
+        # Deter how many plots there are to update
         num_plots = len(self.xs)
+        
+        # Update each plot
         for i in range(num_plots):
             # Retrieve the data for each axis
             x = self.xs[i]
             y = self.ys[i]
             x_range = self.x_ranges[i]
             y_range = self.y_ranges[i]
-            title = self.titles[i]
-            x_label = self.x_labels[i]
-            y_label = self.y_labels[i]
             color = self.colors[i]
             if num_plots > 1:
                 axis = self.axes[i]
@@ -166,15 +182,10 @@ class Animator():
             # Clear and replot data
             axis.clear()
             axis.plot(x, y, color=color)
-            axis.set_title(title)
-            axis.set_xlabel(x_label)
-            axis.set_ylabel(y_label)
-            if self.lock_xs[i]:
-                axis.set_xlim(x_range[0],
-                              x_range[1])
-            if self.lock_ys[i]:
-                axis.set_ylim(y_range[0],
-                              y_range[1])
+            axis.set_xlim(x_range[0],
+                          x_range[1])
+            axis.set_ylim(y_range[0],
+                          y_range[1])
             
         # Draw in real time according to the pause duration
         plt.pause(pause)
@@ -196,33 +207,26 @@ if __name__ == "__main__":
                     x_label="$x_{1}$",
                     y_label="$x_{1}$",
                     color='r',
-                    lock_x_range=False,
-                    lock_y_range=False,
-                    tail=20)
+                    tail=20,
+                    x_lim=[0,10],
+                    y_lim=[0,1])
     i2 = a.add_plot(title="2",
                     x_label="$x_{2}$",
                     y_label="$y_{2}$",
                     color='g',
-                    lock_x_range=True,
-                    lock_y_range=False,
                     tail=20)
     i3 = a.add_plot(title="3",
                     x_label="$x_{3}$",
                     y_label="$y_{3}$",
                     color='b',
-                    lock_x_range=False,
-                    lock_y_range=True,
                     tail=20)
     i4 = a.add_plot(title="4",
                     x_label="$x_{4}$",
                     y_label="$y_{4}$",
                     color='k',
-                    lock_x_range=True,
-                    lock_y_range=True,
                     tail=20)
-
-    a.create_figure()
     
+    a.create_figure()
     
     for i in range(100):
         x1 = np.append(x1, i*0.1)

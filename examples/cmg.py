@@ -2,7 +2,6 @@
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
-import time
 import keyboard
 from matplotlib import colormaps as cmaps
 import condynsate
@@ -14,7 +13,8 @@ from condynsate.utils import format_RGB
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = condynsate.Simulator(visualization=True)
+    sim = condynsate.Simulator(visualization=True,
+                               animation=True)
     
     # Load all urdf objects
     ground_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
@@ -86,6 +86,16 @@ if __name__ == "__main__":
     vel = 0.5 * (max_vel + min_vel)
     vel_sat = (vel - min_vel) / (max_vel - min_vel)
     vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
+    
+    # Open the animator and create a plot for the phase space
+    plot_ind = sim.add_plot_to_animator(title="Phase Space",
+                                        x_label="Angle [Rad]",
+                                        y_label="Momentum [Kg-m/s]",
+                                        color="r",
+                                        tail=None,
+                                        x_lim=None,
+                                        y_lim=None)
+    sim.open_animator()
     
     # Wait for user input
     print("PRESS ENTER TO RUN")
@@ -189,5 +199,6 @@ if __name__ == "__main__":
     
         # Step the sim
         sim.step(real_time=True,
-                 update_vis=True)
+                 update_vis=True,
+                 update_ani=True)
             

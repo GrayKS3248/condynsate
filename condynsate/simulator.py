@@ -1355,9 +1355,9 @@ class Simulator:
                              x_label=None,
                              y_label=None,
                              color=None,
-                             lock_x_range=False,
-                             lock_y_range=False,
-                             tail=None):
+                             tail=None,
+                             x_lim=None,
+                             y_lim=None):
         
         # If there is no animator, do not attempt to add a plot to it
         if not isinstance(self.ani, Animator):
@@ -1368,9 +1368,9 @@ class Simulator:
                                        x_label=x_label,
                                        y_label=y_label,
                                        color=color,
-                                       lock_x_range=lock_x_range,
-                                       lock_y_range=lock_y_range,
-                                       tail=tail)
+                                       tail=tail,
+                                       x_lim=x_lim,
+                                       y_lim=y_lim)
         
         # Return the plot index
         return plot_index
@@ -1389,16 +1389,38 @@ class Simulator:
                                x,
                                y)
         
+        
+    def open_animator(self):
+        # Open the animator figure window if it exists
+        if isinstance(self.ani, Animator):
+            self.ani.create_figure()
+        
             
     def step(self,
              real_time=True,
-             update_vis=True):
-        # Pause before step if running in real time
+             update_vis=True,
+             update_ani=True):
+        # Calculate suspend time if running in real time
+        time_to_wait = -1.
         if real_time:
             time_since_last_step = time.time() - self.last_step_time
             time_to_wait = self.dt - time_since_last_step
-            if time_to_wait > 0.:
+            
+        # Suspend execution if wait is needed
+        if time_to_wait > 0.:
+            
+            # Update the animator in real time if it exists
+            if update_ani and isinstance(self.ani, Animator):
+                self.ani.step(time_to_wait)
+                
+            # Just pause if no animator exists
+            else:
                 time.sleep(time_to_wait)
+            
+        # If not running in real time, update the animator ASAP if it exists
+        else:
+            if update_ani and isinstance(self.ani, Animator):
+                self.ani.step(1e-15)
             
         # Step the physics engine
         self.engine.stepSimulation()
