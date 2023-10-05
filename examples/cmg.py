@@ -21,20 +21,23 @@ if __name__ == "__main__":
                                tex_path='./cmg_vis/check.png',
                                position=[0., 0., -3.],
                                wxyz_quaternion=[1., 0., 0., 0],
-                               fixed=True)
+                               fixed=True,
+                               update_vis=False)
     wall_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
                              tex_path='./cmg_vis/concrete.png',
                              position=[0., 0., 0.],
                              roll=0.5*np.pi,
                              pitch=0.,
                              yaw=np.pi,
-                             fixed=True)
+                             fixed=True,
+                             update_vis=False)
     cmg_obj = sim.load_urdf(urdf_path='./cmg_vis/cmg.urdf',
                             position=[0., 1.1, 0.],
                             roll=0.0,
                             pitch=-1.57,
                             yaw=0.,
-                            fixed=True)
+                            fixed=True,
+                            update_vis=True)
     
     # Set link mass
     sim.set_link_mass(urdf_obj=cmg_obj,
@@ -188,10 +191,7 @@ if __name__ == "__main__":
         prev_vel = vel
     
         # Step the sim and update the visualizer
-        sim.engine.stepSimulation()
-        sim.update_urdf_visual(cmg_obj)
-        sim.update_urdf_visual(ground_obj)
-        sim.update_urdf_visual(wall_obj)
+        sim.step()
         
         # Add sleep to run sim in real time
         elapsed_time = elapsed_time + sim.dt

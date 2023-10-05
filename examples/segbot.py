@@ -22,11 +22,13 @@ if __name__ == "__main__":
     station_obj = sim.load_urdf(urdf_path='./segbot_vis/station.urdf',
                                 position=station_center,
                                 roll=np.pi/2.0,
-                                fixed=True)
+                                fixed=True,
+                                update_vis=True)
     segbot_obj = sim.load_urdf(urdf_path='./segbot_vis/segbot.urdf',
                                 position=[0., 0., 0.],
                                 yaw=np.pi,
-                                fixed=False)
+                                fixed=False,
+                                update_vis=True)
     
     # Set the camera scale and orientation
     sim.transform_camera(scale = [1.5, 1.5, 1.5],
@@ -166,9 +168,7 @@ if __name__ == "__main__":
         prev_vel = vel
         
         # Step the simulation and update the visualization
-        sim.engine.stepSimulation()
-        sim.update_urdf_visual(station_obj)
-        sim.update_urdf_visual(segbot_obj)
+        sim.step()
         
         # Add sleep to run sim in real time
         elapsed_time = elapsed_time + sim.dt

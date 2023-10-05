@@ -24,7 +24,8 @@ class URDF_Obj:
     def __init__(self,
                  urdf_id,
                  joint_map,
-                 link_map):
+                 link_map,
+                 update_vis):
         """
         Initialize an instance of the URDF_Obj class. This class is used to
         store information relating to a urdf described by a .urdf file.
@@ -39,7 +40,10 @@ class URDF_Obj:
             indices.
         link_map : dictionary
             A dictionary that maps all urdf link names to joint indices.
-
+        update_vis : bool
+            A boolean flag that indicates whether this urdf will be updated
+            by the visualizer each time step.
+            
         Returns
         -------
         None.
@@ -47,7 +51,8 @@ class URDF_Obj:
         """
         self.urdf_id = urdf_id
         self.joint_map = joint_map
-        self.link_map = link_map        
+        self.link_map = link_map     
+        self.update_vis = update_vis
 
 
 ###############################################################################
@@ -84,12 +89,16 @@ class Simulator:
         self.set_gravity(gravity)
         
         # Configure physics engine parameters
+        self.time = 0.0
         self.dt = 0.01
         self.engine.setPhysicsEngineParameter(
             fixedTimeStep=self.dt,
             numSubSteps=4,
             restitutionVelocityThreshold=0.05,
             enableFileCaching=0)
+        
+        # Keep track of all urdfs loaded to simulator
+        self.urdf_objs = []
         
         # Create a visualizer
         if visualization:
@@ -127,7 +136,8 @@ class Simulator:
                   roll=None,
                   pitch=None,
                   yaw=None,
-                  fixed=False):
+                  fixed=False,
+                  update_vis=True):
         """
         Loads a URDF to the simulation engine. All joint's
         velocity control is disabled (this allows the joint to move freely),
@@ -159,6 +169,10 @@ class Simulator:
         fixed : bool, optional
             A boolean flag that indicates whether the base joint of the
             loaded urdf is fixed. The default is False.
+        update_vis : bool, optional
+            A boolean flag that indicates whether this urdf will be updated
+            by the visualizer each time step. The default is True.
+            
         Returns
         -------
         urdf_obj : URDF_Obj
@@ -206,7 +220,7 @@ class Simulator:
         joint_map, link_map = self.make_joint_and_link_maps(urdf_id)
         
         # Create urdf_obj and adjust the default state of its joints
-        urdf_obj = URDF_Obj(urdf_id, joint_map, link_map)
+        urdf_obj = URDF_Obj(urdf_id, joint_map, link_map, update_vis)
         for joint_name in joint_map:
             
             # Set the joint's friction parameters to model metal to metal
@@ -246,6 +260,7 @@ class Simulator:
                                         tex_path=tex_path)
 
         # Return the URDF_Obj
+        self.urdf_objs.append(urdf_obj)
         return urdf_obj
     
     
@@ -1319,3 +1334,25 @@ class Simulator:
         else:
             self.vis.set_fill_light(on = on,
                                        intensity = intensity)
+            
+    def step(self):
+        """
+        Takes a single step forward in time. Updates the physics engine and the
+        visualizer if there is one.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Step the physics engine
+        self.engine.stepSimulation()
+        
+        # Update the visualizer if it exists
+        if isinstance(self.vis, Visualizer):
+            for urdf_obj in self.urdf_objs:
+                if urdf_obj.update_vis:
+                    self.update_urdf_visual(urdf_obj)
+            
+        # Update the time
+        self.time = self.time + self.dt

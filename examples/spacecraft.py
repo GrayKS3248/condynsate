@@ -19,7 +19,8 @@ if __name__ == "__main__":
     
     # Load the spacecraft
     craft_obj = sim.load_urdf(urdf_path='./spacecraft_vis/spacecraft.urdf',
-                              fixed=False)
+                              fixed=False,
+                              update_vis=True)
     
     # Generate star cartesian coordinates based on their depth and
     # equatorial astronomical coords (right ascension, declination)
@@ -46,7 +47,8 @@ if __name__ == "__main__":
     for base_pos in cartesians:
         urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=base_pos,
-                                fixed=True)
+                                fixed=True,
+                                update_vis=False)
         constellation_objs.append(urdf_id)
     
     # Load random stars
@@ -60,7 +62,8 @@ if __name__ == "__main__":
     for i in range(n_stars):
         urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=positions[i],
-                                fixed=True)
+                                fixed=True,
+                                update_vis=False)
         star_objs.append(urdf_id)
     
     # Set the camera scale and orientation
@@ -199,8 +202,7 @@ if __name__ == "__main__":
         prev_torque_4 = torque_4
         
         # Step the simulation and update the visualization
-        sim.engine.stepSimulation()
-        sim.update_urdf_visual(craft_obj)
+        sim.step()
         
         # Add sleep to run sim in real time
         elapsed_time = elapsed_time + sim.dt

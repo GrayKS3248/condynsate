@@ -21,10 +21,12 @@ if __name__ == "__main__":
                                 tex_path='./quadcopter_vis/wave.png',
                                 position=[0., 0., -3.],
                                 wxyz_quaternion=[1., 0., 0., 0],
-                                fixed=True)
+                                fixed=True,
+                                update_vis=False)
     quad_obj = sim.load_urdf(urdf_path='./quadcopter_vis/quadcopter.urdf',
                              tex_path='./quadcopter_vis/nametag.png',
-                             fixed=False)
+                             fixed=False,
+                             update_vis=True)
     
     # Apply damping to rotors
     sim.set_joint_damping(urdf_obj=quad_obj,
