@@ -14,32 +14,28 @@ from condynsate.utils import format_RGB
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
-                               animation=True)
+                               animation=True,
+                               animation_rate=10.)
     
-    # Load all urdf objects
+    # Load urdf objects
     ground_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
                                tex_path='./cmg_vis/check.png',
                                position=[0., 0., -3.],
-                               wxyz_quaternion=[1., 0., 0., 0],
                                fixed=True,
                                update_vis=False)
     wall_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
                              tex_path='./cmg_vis/concrete.png',
-                             position=[0., 0., 0.],
                              roll=0.5*np.pi,
-                             pitch=0.,
                              yaw=np.pi,
                              fixed=True,
                              update_vis=False)
     cmg_obj = sim.load_urdf(urdf_path='./cmg_vis/cmg.urdf',
                             position=[0., 1.1, 0.],
-                            roll=0.0,
-                            pitch=-1.57,
-                            yaw=0.,
+                            pitch=-0.5*np.pi,
                             fixed=True,
                             update_vis=True)
     
-    # Set link mass
+    # Set the mass of the pendulum of the CMG
     sim.set_link_mass(urdf_obj=cmg_obj,
                       link_name="mass",
                       mass=1.0)
@@ -56,11 +52,6 @@ if __name__ == "__main__":
     sim.set_joint_damping(urdf_obj=cmg_obj,
                           joint_name="outer_to_inner",
                           damping=0.0)
-    
-    # Set the camera scale and orientation
-    sim.transform_camera(scale = [2.25, 2.25, 2.25],
-                         pitch=-0.2,
-                         yaw=0.9)
 
     # Variables to track applied torque
     prev_torque = -1.0
@@ -92,23 +83,20 @@ if __name__ == "__main__":
                                         x_label="Angle [Rad]",
                                         y_label="Momentum [Kg-m/s]",
                                         color="r",
-                                        tail=None,
+                                        tail=500,
                                         x_lim=None,
                                         y_lim=None)
     sim.open_animator()
     
     # Wait for user input
-    print("PRESS ENTER TO RUN")
     while not keyboard.is_pressed("enter"):
         pass
     
     # Run the simulation
-    elapsed_time = 0
     done = False
-    while(not done):        
-        # Collect keyboard IO for termination
-        if keyboard.is_pressed("esc"):
-            done = True
+    mass_momentums = []
+    angles = []
+    while(not done):    
         
         # Collect keyboard IO data for torque
         if keyboard.is_pressed("shift+d"):
@@ -121,7 +109,7 @@ if __name__ == "__main__":
             torque = min_torque / 4.0
         else:
             torque = 0.0
-            
+    
         # Set the torque and link color based on keyboard inputs
         torque = round(torque,2)
         torque_sat = (torque - min_torque) / (max_torque - min_torque)
@@ -134,12 +122,7 @@ if __name__ == "__main__":
         sim.set_link_color(urdf_obj=cmg_obj,
                            link_name='inner',
                            color=torque_color)
-        
-        # Print the current torque
-        if torque != prev_torque:
-            print("Torque: " + str(torque) + " Nm")
-        prev_torque = torque
-        
+    
         # Collect keyboard IO data for mass
         if keyboard.is_pressed('e'):
             mass = mass + 0.005*(max_mass - min_mass)
@@ -149,7 +132,7 @@ if __name__ == "__main__":
             mass = mass - 0.005*(max_mass - min_mass)
             if mass < min_mass:
                 mass = min_mass
-            
+    
         # Set the mass and link color based on keyboard inputs
         mass = round(mass,2)
         mass_sat = (mass - min_mass) / (max_mass - min_mass)
@@ -163,11 +146,6 @@ if __name__ == "__main__":
                            link_name='mass',
                            color=mass_color)
     
-        # Print the current mass
-        if mass != prev_mass:
-            print("Mass: " + str(mass) + " Kg")
-        prev_mass = mass
-    
         # Collect keyboard IO data for wheel vel
         if keyboard.is_pressed('w'):
             vel = vel + 0.005*(max_vel - min_vel)
@@ -177,14 +155,14 @@ if __name__ == "__main__":
             vel = vel - 0.005*(max_vel - min_vel)
             if vel < min_vel:
                 vel = min_vel
-            
+    
         # Set the wheel vel and link color based on keyboard inputs
         vel = round(vel,2)
         vel_sat = (vel - min_vel) / (max_vel - min_vel)
         vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
         vel_color = format_RGB(vel_color,
                                range_to_255=True)
-        
+    
         sim.set_joint_velocity(urdf_obj=cmg_obj,
                               joint_name="inner_to_wheel",
                               velocity=vel)
@@ -192,13 +170,20 @@ if __name__ == "__main__":
                            link_name='wheel',
                            color=vel_color)
     
-        # Print the current wheel velocity
-        if vel != prev_vel:
-            print("Wheel Speed: " + str(vel) + " Rad/s")
-        prev_vel = vel
+        # Set the plot data
+        angle, velocity = sim.get_joint_state(cmg_obj, "world_to_outer")
+        mass_momentum = mass*velocity
+        mass_momentums.append(mass_momentum)
+        angles.append(angle)
+        sim.set_plot_data(plot_ind, angles, mass_momentums)
     
         # Step the sim
         sim.step(real_time=True,
                  update_vis=True,
                  update_ani=True)
+        
+        # Collect keyboard IO for termination
+        if keyboard.is_pressed("esc"):
+            done = True
+            sim.stop()
             

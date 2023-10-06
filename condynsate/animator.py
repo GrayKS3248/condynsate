@@ -9,16 +9,20 @@ functions that are used by it.
 ###############################################################################
 import matplotlib.pyplot as plt
 import numpy as np
+from PyQt5.QtWidgets import QApplication
+from pyqtgraph.Qt import QtGui, QtCore
+import time
 
 
 class Animator():
     """
     Animator manages the real time plotting of states.
     """
-    def __init__(self):
+    def __init__(self, fr):
         self.xs = []
         self.ys = []
         self.tails = []
+        self.lines = []
         
         self.titles = []
         self.x_labels = []
@@ -34,6 +38,11 @@ class Animator():
         self.y_lims = []
     
         self.figure_is_made = False
+        
+        self.fr = fr
+        self.last_step_time = time.time()
+        
+        app = QtGui.QApplication([])
     
     
     def add_plot(self,
@@ -48,6 +57,7 @@ class Animator():
         self.xs.append([])
         self.ys.append([])
         self.tails.append(tail)
+        self.lines.append(None)
         
         # Store the plot labels
         self.titles.append(title)
@@ -91,6 +101,9 @@ class Animator():
             else:
                 min_x = min(np.min(x), x_range[0])
                 max_x = max(np.max(x), x_range[1])
+            if min_x == max_x:
+               min_x = None
+               max_x = None
             self.x_ranges[plot_index] = (min_x, max_x)
         else:
             self.x_ranges[plot_index] = self.x_lims[plot_index]
@@ -104,6 +117,9 @@ class Animator():
             else:
                 min_y = min(np.min(y), y_range[0])
                 max_y = max(np.max(y), y_range[1])
+            if min_y == max_y:
+               min_y = None
+               max_y = None
             self.y_ranges[plot_index] = (min_y, max_y)
         else:
             self.y_ranges[plot_index] = self.y_lims[plot_index]
@@ -122,6 +138,11 @@ class Animator():
         
         # Create the figure and the axes
         if num_plots > 0:
+            # Use the matplotlib backend: QtAgg
+            #plt.ion()
+            plt.switch_backend("TkAgg")
+            
+            # Create the figure and axes
             self.fig, self.axes = plt.subplots(n_rows, n_cols)
             if num_plots > 1:
                 self.axes = self.axes.flatten()
@@ -147,18 +168,24 @@ class Animator():
                 y_lim = self.y_lims[i]
                 axis.set_ylim(y_lim[0],
                               y_lim[1])
+            axis.plot([0.0, 1.0], [0.0, 1.0], alpha=0.0)
             
         # Figure settings
         if num_plots > 0:
             self.fig.tight_layout()
         
         # Flag that the figure has been created
-        plt.show()
+        self.fig.canvas.draw() 
+        self.fig.canvas.flush_events() 
         self.figure_is_made = True
         
         
-    def step(self,
-             pause):
+    def step(self):
+        # Determine if step is to be taken based on set frame rate
+        self.time_since_last_step = time.time() - self.last_step_time
+        if self.time_since_last_step < (1. / self.fr):
+            return
+        
         # Create the figure if it is not already made
         if not self.figure_is_made:
             self.create_figure()
@@ -171,6 +198,7 @@ class Animator():
             # Retrieve the data for each axis
             x = self.xs[i]
             y = self.ys[i]
+            line = self.lines[i]
             x_range = self.x_ranges[i]
             y_range = self.y_ranges[i]
             color = self.colors[i]
@@ -180,15 +208,24 @@ class Animator():
                 axis = self.axes
                 
             # Clear and replot data
-            axis.clear()
-            axis.plot(x, y, color=color)
+            if line == None:
+                line, = axis.plot(x, y, color=color, alpha=1.0)
+                self.lines[i] = line
+            else:
+                line.set_data(x, y)
             axis.set_xlim(x_range[0],
                           x_range[1])
             axis.set_ylim(y_range[0],
                           y_range[1])
             
         # Draw in real time according to the pause duration
-        plt.pause(pause)
+        self.fig.canvas.draw() 
+        self.fig.canvas.flush_events() 
+        self.last_step_time = time.time()
+        
+        
+    def stop(self):
+        plt.close()
 
 
 if __name__ == "__main__":
@@ -201,7 +238,7 @@ if __name__ == "__main__":
     y3 = np.random.rand(40)
     y4 = np.random.rand(50)
     
-    a = Animator()
+    a = Animator(fr=10.)
     
     i1 = a.add_plot(title="1",
                     x_label="$x_{1}$",
@@ -243,6 +280,8 @@ if __name__ == "__main__":
         a.set_plot_data(i3, x=x3, y=y3)
         a.set_plot_data(i4, x=x4, y=y4)
         
-        a.step(0.01)
-
-    plt.show()
+        a.step()
+        
+        time.sleep(0.01)
+        
+    a.stop()

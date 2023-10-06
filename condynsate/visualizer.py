@@ -600,3 +600,4 @@ class Visualizer():
                                        translate=translate,
                                        wxyz_quaternion=wxyz_quaternion)
         self.scene["/Cameras/default"].set_transform(transform)
+        

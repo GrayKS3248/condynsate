@@ -68,6 +68,7 @@ class Simulator:
     def __init__(self,
                  visualization=True,
                  animation=True,
+                 animation_rate = 10.,
                  gravity=[0., 0., -9.81]):
         """
         Initializes an instance of the Simulator class.
@@ -96,7 +97,6 @@ class Simulator:
         
         # Configure physics engine parameters
         self.time = 0.0
-        self.times = [self.time]
         self.dt = 0.01
         self.last_step_time = time.time()
         self.engine.setPhysicsEngineParameter(
@@ -116,7 +116,7 @@ class Simulator:
             
         # Create an animator
         if animation:
-            self.ani = Animator()
+            self.ani = Animator(fr=animation_rate)
         else:
             self.ani=None
         
@@ -1401,26 +1401,11 @@ class Simulator:
              update_vis=True,
              update_ani=True):
         # Calculate suspend time if running in real time
-        time_to_wait = -1.
         if real_time:
             time_since_last_step = time.time() - self.last_step_time
             time_to_wait = self.dt - time_since_last_step
-            
-        # Suspend execution if wait is needed
-        if time_to_wait > 0.:
-            
-            # Update the animator in real time if it exists
-            if update_ani and isinstance(self.ani, Animator):
-                self.ani.step(time_to_wait)
-                
-            # Just pause if no animator exists
-            else:
+            if time_to_wait > 0:
                 time.sleep(time_to_wait)
-            
-        # If not running in real time, update the animator ASAP if it exists
-        else:
-            if update_ani and isinstance(self.ani, Animator):
-                self.ani.step(1e-15)
             
         # Step the physics engine
         self.engine.stepSimulation()
@@ -1428,10 +1413,18 @@ class Simulator:
         # Update the time
         self.last_step_time = time.time()
         self.time = self.time + self.dt
-        self.times.append(self.time)
         
         # Update the visualizer if it exists
         if update_vis and isinstance(self.vis, Visualizer):
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self.update_urdf_visual(urdf_obj)
+                    
+        # Update the animator if it exists
+        if update_ani and isinstance(self.ani, Animator):
+            self.ani.step()
+            
+    
+    def stop(self):
+        self.ani.stop()
+        
