@@ -14,6 +14,7 @@ from pybullet_utils import bullet_client as bc
 from .visualizer import Visualizer
 from .animator import Animator
 from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
+import keyboard
 
 
 ###############################################################################
@@ -68,7 +69,7 @@ class Simulator:
     def __init__(self,
                  visualization=True,
                  animation=True,
-                 animation_rate = 10.,
+                 animation_fr = 10.,
                  gravity=[0., 0., -9.81]):
         """
         Initializes an instance of the Simulator class.
@@ -77,10 +78,13 @@ class Simulator:
         ----------
         visualization : bool, optional
             A boolean flag that indicates whether the simulation will be 
-            visualized in meshcat.
-        visualization : bool, optional
-            A boolean flag that indicates whether plots will be animated
-            in real time.
+            visualized in meshcat. The default is True.
+        animation : bool, optional
+            A boolean flag that indicates whether animated plots are created
+            in real time. The default is True.
+        animation_fr : float, optional:
+            The frame rate (frames per second) at which the animated plots are
+            updated. The default is 10..
         gravity : array-like, shape (3,) optional
             The gravity vectory in m/s^2. The default is [0., 0., -9.81].
 
@@ -116,7 +120,7 @@ class Simulator:
             
         # Create an animator
         if animation:
-            self.ani = Animator(fr=animation_rate)
+            self.ani = Animator(fr=animation_fr)
         else:
             self.ani=None
         
@@ -231,7 +235,7 @@ class Simulator:
                                        useFixedBase=fixed)
         
         # Get the joint and link maps for the urdf object
-        joint_map, link_map = self.make_joint_and_link_maps(urdf_id)
+        joint_map, link_map = self._make_joint_and_link_maps(urdf_id)
         
         # Create urdf_obj and adjust the default state of its joints
         urdf_obj = URDF_Obj(urdf_id, joint_map, link_map, update_vis)
@@ -265,8 +269,8 @@ class Simulator:
 
             # Disable velocity control if the joint is not a base joint
             if joint_map[joint_name]!=-1:
-                self.disable_joint_vel_con(urdf_obj,
-                                           joint_name=joint_name)
+                self._disable_joint_vel_con(urdf_obj,
+                                            joint_name=joint_name)
 
         # Add urdf objects to the visualizer if visualization is occuring
         if isinstance(self.vis, Visualizer):
@@ -278,8 +282,8 @@ class Simulator:
         return urdf_obj
     
     
-    def make_joint_and_link_maps(self,
-                                 urdf_id):
+    def _make_joint_and_link_maps(self,
+                                  urdf_id):
         """
         Creates a joint map and a link map for a urdf.
 
@@ -325,9 +329,9 @@ class Simulator:
         return joint_map, link_map
     
     
-    def disable_joint_vel_con(self,
-                              urdf_obj,
-                              joint_name):
+    def _disable_joint_vel_con(self,
+                               urdf_obj,
+                               joint_name):
         """
         Disable velocity control mode for a joint. In pybullet, all joints are
         initialized with velocity control mode engaged and a target velocity of
@@ -949,7 +953,7 @@ class Simulator:
             return
         
         # Extract the visual data from the urdf object in the simulator
-        paths,names,scales,colors,poss,oris = self.get_urdf_vis_dat(urdf_obj)
+        paths,names,scales,colors,poss,oris = self._get_urdf_vis_dat(urdf_obj)
         
         # Make the URDF name and format the texture path
         urdf_name = str(urdf_obj.urdf_id)
@@ -986,8 +990,8 @@ class Simulator:
                                  wxyz_quaternion=oris[i])
 
     
-    def update_urdf_visual(self,
-                           urdf_obj):
+    def _update_urdf_visual(self,
+                            urdf_obj):
         """
         Updates the positions of dynamic links in the visualizer.
 
@@ -1006,7 +1010,7 @@ class Simulator:
             return
         
         # Collect the visual data and urdf name
-        paths,names,scales,colors,poss,oris = self.get_urdf_vis_dat(urdf_obj)
+        paths,names,scales,colors,poss,oris = self._get_urdf_vis_dat(urdf_obj)
         urdf_name = str(urdf_obj.urdf_id)
         
         # Go through all links in urdf object and update their position
@@ -1019,8 +1023,8 @@ class Simulator:
                                      wxyz_quaternion=oris[i])
     
     
-    def get_urdf_vis_dat(self,
-                         urdf_obj):
+    def _get_urdf_vis_dat(self,
+                          urdf_obj):
         """
         Extracts all relevant visual data from a urdf loaded into the
         simulator.
@@ -1356,9 +1360,44 @@ class Simulator:
                              y_label=None,
                              color=None,
                              tail=None,
-                             x_lim=None,
-                             y_lim=None):
-        
+                             x_lim=[None, None],
+                             y_lim=[None, None]):
+        """
+        Adds a plot to the animator. This function needs to be called to 
+        define a plot before that plot's data can be set or updated
+
+        Parameters
+        ----------
+        title : string, optional
+            The title of the plot. Will be written above the plot when
+            rendered. The default is None.
+        x_label : string, optional
+            The label to apply to the x axis. We be written under the plot when
+            rendered. The default is None.
+        y_label : string, optional
+            The label to apply to the y axis. We be written to the left of the
+            plot when rendered. The default is None.
+        color : matplotlib color string, optional
+            The color of the plot lines. The default is None.
+        tail : int, optional
+            The number of points that are used to draw the line. Only the most 
+            recent data points are kept. A value of None will plot all points
+            in the plot data. The default is None.
+        x_lim : [float, float], optional
+            The limits to apply to the x axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+        y_lim : [float, float], optional
+            The limits to apply to the y axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+
+        Returns
+        -------
+        plot_index : int
+            A unique integer identifier that allows future plot interation.
+
+        """
         # If there is no animator, do not attempt to add a plot to it
         if not isinstance(self.ani, Animator):
             return
@@ -1380,26 +1419,104 @@ class Simulator:
                       plot_index,
                       x,
                       y):
+        """
+        Sets the data to be plotted for an individual plot. 
+
+        Parameters
+        ----------
+        plot_index : int
+            The plot's unique identifier. Provided by add_plot_to_animator().
+        x : array-like
+            An array of the x data.
+        y : array-like
+            An array of the y data.
+
+        Returns
+        -------
+        None.
+
+        """
         # If there is no animator, do not attempt to update it
         if not isinstance(self.ani, Animator):
             return
         
         # Update the plot
-        self.ani.set_plot_data(plot_index,
-                               x,
-                               y)
+        self.ani.set_plot_data(plot_index=plot_index,
+                               x=x,
+                               y=y)
         
         
-    def open_animator(self):
+    def open_animator_gui(self):
+        """
+        Opens the animator GUI with the specified plots. After the animator
+        is open, no more plots can be added; however, the plot data can still
+        be set.
+
+        Returns
+        -------
+        None.
+
+        """
         # Open the animator figure window if it exists
         if isinstance(self.ani, Animator):
             self.ani.create_figure()
         
-            
+        
+    def await_keypress(self,
+                       key="enter"):
+        """
+        Suspends the simulation until a specified keystroke is recieved.
+        When an animator GUI is open, this function must be called to
+        keep the GUI responsive. If a GUI is not present, this function is
+        optional. 
+
+        Parameters
+        ----------
+        key : string, optional
+            The key string identifier. The default is "enter".
+
+        Returns
+        -------
+        None.
+
+        """
+        print("PRESS "+key.upper()+" TO CONTINUE")
+        while not keyboard.is_pressed("enter"):
+            # Ensure so the GUI remains interactive if simulation is suspended
+            if isinstance(self.ani, Animator):
+                self.ani.flush_events()
+        print("CONTINUING...")
+       
+        
     def step(self,
              real_time=True,
              update_vis=True,
              update_ani=True):
+        """
+        Takes a single step of the simulation. In this step, the physics
+        engine, the visualizer (3D visualization of urdfs), and the animator
+        (2D animation of plots) are all updated.
+
+        Parameters
+        ----------
+        real_time : bool, optional
+            A boolean flag that indicates whether or not the step is taken in
+            real time. If True, step() is suspended until the time since the
+            last step is equal to 0.01 seconds (the fixed time step of the
+            physics engine). If False, step() is run as quickly as possible.
+            The default is True.
+        update_vis : bool, optional
+            A boolean flag that indicates whether the visualizer is updated.
+            The default is True.
+        update_ani : bool, optional
+            A boolean flag that indicates whether the animator is updated.
+            The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
         # Calculate suspend time if running in real time
         if real_time:
             time_since_last_step = time.time() - self.last_step_time
@@ -1418,13 +1535,9 @@ class Simulator:
         if update_vis and isinstance(self.vis, Visualizer):
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
-                    self.update_urdf_visual(urdf_obj)
+                    self._update_urdf_visual(urdf_obj)
                     
         # Update the animator if it exists
         if update_ani and isinstance(self.ani, Animator):
             self.ani.step()
-            
-    
-    def stop(self):
-        self.ani.stop()
         

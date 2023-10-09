@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
                                animation=True,
-                               animation_rate=10.)
+                               animation_fr=30.)
     
     # Load urdf objects
     ground_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
@@ -48,10 +48,10 @@ if __name__ == "__main__":
     # Set joint damping
     sim.set_joint_damping(urdf_obj=cmg_obj,
                           joint_name="world_to_outer",
-                          damping=0.0)
+                          damping=0.01)
     sim.set_joint_damping(urdf_obj=cmg_obj,
                           joint_name="outer_to_inner",
-                          damping=0.0)
+                          damping=0.01)
 
     # Variables to track applied torque
     prev_torque = -1.0
@@ -84,13 +84,12 @@ if __name__ == "__main__":
                                         y_label="Momentum [Kg-m/s]",
                                         color="r",
                                         tail=500,
-                                        x_lim=None,
-                                        y_lim=None)
-    sim.open_animator()
+                                        x_lim=[None,None],
+                                        y_lim=[None,None])
+    sim.open_animator_gui()
     
     # Wait for user input
-    while not keyboard.is_pressed("enter"):
-        pass
+    sim.await_keypress(key="enter")
     
     # Run the simulation
     done = False
@@ -178,12 +177,11 @@ if __name__ == "__main__":
         sim.set_plot_data(plot_ind, angles, mass_momentums)
     
         # Step the sim
-        sim.step(real_time=True,
+        sim.step(real_time=False,
                  update_vis=True,
                  update_ani=True)
         
         # Collect keyboard IO for termination
         if keyboard.is_pressed("esc"):
             done = True
-            sim.stop()
             
