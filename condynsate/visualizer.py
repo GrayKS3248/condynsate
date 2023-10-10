@@ -100,7 +100,7 @@ class Visualizer():
         obj_texture = geo.MeshPhongMaterial(map = im_tex)
         
         # Calculate the transform
-        transform = self.get_transform(scale, translate, wxyz_quaternion)
+        transform = self._get_transform(scale, translate, wxyz_quaternion)
 
         # Add and transform the object to its orientation and position
         self.scene[urdf_name][link_name].set_object(obj_geometry, obj_texture)
@@ -167,7 +167,7 @@ class Visualizer():
                                          reflectivity=0.3)
         
         # Calculate the transform
-        transform = self.get_transform(scale, translate, wxyz_quaternion)
+        transform = self._get_transform(scale, translate, wxyz_quaternion)
 
         # Add and transform the link to its orientation and position
         self.scene[urdf_name][link_name].set_object(link_geometry, link_mat)
@@ -224,6 +224,42 @@ class Visualizer():
         self.scene[urdf_name][link_name].set_object(link_geometry, link_mat)
 
 
+    def _get_transform(self,
+                       scale=[1., 1., 1.],
+                       translate=[0., 0., 0.],
+                       wxyz_quaternion=[1., 0., 0., 0.]):
+        """
+        Calculates the spatial transformation matrix that defines a 3D affine
+        transformation inclunding scaling, translating, and rotating.
+
+        Parameters
+        ----------
+        scale : array-like, size (3,), optional
+            The scaling along the three axes. The default is [1., 1., 1.].
+        translate : array-like, size (3,), optional
+            The translation along the three axes. The default is [0., 0., 0.].
+        wxyz_quaternion : array-like, size (4,), optional
+            The wxyz quaternion that defines the rotation. 
+            The default is [1., 0., 0., 0.].
+
+        Returns
+        -------
+        transform : array-like, size (4,4)
+            The resultant 4x4 3D affine transformation matrix.
+
+        """
+        # Get the scaling matrix based on the scale vector
+        # Get the translation matrix based on the translation vector
+        # Get the rotation matrix based on the wxyz quaternion
+        scale_matrix = np.diag(np.concatenate((scale, [1.0])))
+        translate_matrix = tf.translation_matrix(translate)
+        rotation_matrix = tf.quaternion_matrix(wxyz_quaternion)
+        
+        # Calculate and return the total transformation matrix
+        transform =  translate_matrix @ rotation_matrix @ scale_matrix
+        return transform
+
+
     def apply_transform(self,
                         urdf_name,
                         link_name,
@@ -256,46 +292,10 @@ class Visualizer():
         """
         
         # Calculate and apply the transform
-        transform = self.get_transform(scale, translate, wxyz_quaternion)
+        transform = self._get_transform(scale, translate, wxyz_quaternion)
         self.scene[urdf_name][link_name].set_transform(transform)
             
         # Return the transform
-        return transform
-
-
-    def get_transform(self,
-                      scale=[1., 1., 1.],
-                      translate=[0., 0., 0.],
-                      wxyz_quaternion=[1., 0., 0., 0.]):
-        """
-        Calculates the spatial transformation matrix that defines a 3D affine
-        transformation inclunding scaling, translating, and rotating.
-
-        Parameters
-        ----------
-        scale : array-like, size (3,), optional
-            The scaling along the three axes. The default is [1., 1., 1.].
-        translate : array-like, size (3,), optional
-            The translation along the three axes. The default is [0., 0., 0.].
-        wxyz_quaternion : array-like, size (4,), optional
-            The wxyz quaternion that defines the rotation. 
-            The default is [1., 0., 0., 0.].
-
-        Returns
-        -------
-        transform : array-like, size (4,4)
-            The resultant 4x4 3D affine transformation matrix.
-
-        """
-        # Get the scaling matrix based on the scale vector
-        # Get the translation matrix based on the translation vector
-        # Get the rotation matrix based on the wxyz quaternion
-        scale_matrix = np.diag(np.concatenate((scale, [1.0])))
-        translate_matrix = tf.translation_matrix(translate)
-        rotation_matrix = tf.quaternion_matrix(wxyz_quaternion)
-        
-        # Calculate and return the total transformation matrix
-        transform =  translate_matrix @ rotation_matrix @ scale_matrix
         return transform
         
         
@@ -596,7 +596,8 @@ class Visualizer():
             wxyz_quaternion = wxyz_from_euler(roll, pitch, yaw)
         
         # Calculate and apply the transform
-        transform = self.get_transform(scale=scale,
+        transform = self._get_transform(scale=scale,
                                        translate=translate,
                                        wxyz_quaternion=wxyz_quaternion)
         self.scene["/Cameras/default"].set_transform(transform)
+        

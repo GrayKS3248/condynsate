@@ -1,7 +1,6 @@
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-import time
 import keyboard
 from matplotlib import colormaps as cmaps
 import condynsate
@@ -14,17 +13,20 @@ from condynsate.utils import format_RGB
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
-                               gravity=[0., 0., -9.81])
+                               animation=True,
+                               animation_fr=15.)
     
     # Load all objects
     ground_obj = sim.load_urdf(urdf_path='./quadcopter_vis/plane.urdf',
                                 tex_path='./quadcopter_vis/wave.png',
                                 position=[0., 0., -3.],
                                 wxyz_quaternion=[1., 0., 0., 0],
-                                fixed=True)
+                                fixed=True,
+                                update_vis=False)
     quad_obj = sim.load_urdf(urdf_path='./quadcopter_vis/quadcopter.urdf',
                              tex_path='./quadcopter_vis/nametag.png',
-                             fixed=False)
+                             fixed=False,
+                             update_vis=True)
     
     # Apply damping to rotors
     sim.set_joint_damping(urdf_obj=quad_obj,
@@ -42,23 +44,23 @@ if __name__ == "__main__":
     
     # Variables to track applied RPM
     max_torque = 5.
-    prev_torque_1 = 10.
-    prev_torque_2 = 10.
-    prev_torque_3 = 10.
-    prev_torque_4 = 10.
+    
+    # Create desired plots then open the animator
+    pot_engs=[]
+    kin_engs=[]
+    plot_1 = sim.add_plot_to_animator(title="Kinetic vs Potention Energy",
+                                      x_label="Potential Energy [J]",
+                                      y_label="Kinetic Energy [J]",
+                                      color="r")
+    sim.open_animator_gui()
     
     # Wait for user input
-    print("PRESS ENTER TO RUN")
-    while not keyboard.is_pressed("enter"):
-        pass
+    sim.await_keypress(key="enter")
     
     # Run the simulation
     elapsed_time = 0
     done = False
     while(not done):
-        # Keep track of time to run sim in real time
-        start_time = time.time()
-        
         # Collect keyboard IO data for torque 1
         if keyboard.is_pressed("a"):
             torque_1 = max_torque
@@ -153,34 +155,21 @@ if __name__ == "__main__":
                                 link_name='rotor4',
                                 force=[0., 0., 0.05*rotor4_vel])
         
-        # Print torque changes
-        change_1 = torque_1 != prev_torque_1
-        change_2 = torque_2 != prev_torque_2
-        change_3 = torque_3 != prev_torque_3
-        change_4 = torque_4 != prev_torque_4
-        if change_1 or change_2 or change_3 or change_4:
-            str1 = str(torque_1)
-            str2 = str(torque_2)
-            str3 = str(torque_3)
-            str4 = str(torque_4)
-            print("Torque: ["+str1+", "+str2+", "+str3+", "+str4+"] Nm")
-        prev_torque_1 = torque_1
-        prev_torque_2 = torque_2
-        prev_torque_3 = torque_3
-        prev_torque_4 = torque_4
+        # Set the plot data
+        pos, rpy, vel, ang_vel = sim.get_base_state(quad_obj,
+                                                    body_coords=True)
+        pot_eng = 0.1*9.81*(pos[2]+3.)
+        kin_eng = 0.5*0.1*(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2])
+        pot_engs.append(pot_eng)
+        kin_engs.append(kin_eng)
+        sim.set_plot_data(plot_1, pot_engs, kin_engs)
+        
+        # Step the sim
+        sim.step(real_time=True,
+                 update_vis=True,
+                 update_ani=True)
         
         # Collect keyboard IO for termination
         if keyboard.is_pressed("esc"):
             done = True
-            
-        # Step the simulation and update the visualization
-        sim.engine.stepSimulation()
-        sim.update_urdf_visual(quad_obj)
-        sim.update_urdf_visual(ground_obj)
-        
-        # Add sleep to run sim in real time
-        elapsed_time = elapsed_time + sim.dt
-        time_to_wait = sim.dt + start_time - time.time()
-        if time_to_wait > 0.:
-            time.sleep(time_to_wait)
             

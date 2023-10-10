@@ -2,7 +2,6 @@
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
-import time
 import keyboard
 from matplotlib import colormaps as cmaps
 import condynsate
@@ -14,7 +13,9 @@ from condynsate.utils import format_RGB
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
-    sim = condynsate.Simulator(visualization=True)
+    sim = condynsate.Simulator(visualization=True,
+                               animation=True,
+                               animation_fr=15.)
     
     # Load all urdf objects
     station_radius = 19.59
@@ -22,11 +23,13 @@ if __name__ == "__main__":
     station_obj = sim.load_urdf(urdf_path='./segbot_vis/station.urdf',
                                 position=station_center,
                                 roll=np.pi/2.0,
-                                fixed=True)
+                                fixed=True,
+                                update_vis=True)
     segbot_obj = sim.load_urdf(urdf_path='./segbot_vis/segbot.urdf',
                                 position=[0., 0., 0.],
                                 yaw=np.pi,
-                                fixed=False)
+                                fixed=False,
+                                update_vis=True)
     
     # Set the camera scale and orientation
     sim.transform_camera(scale = [1.5, 1.5, 1.5],
@@ -52,27 +55,36 @@ if __name__ == "__main__":
     # Variables to track applied torque
     max_torque = 10.
     min_torque = -10.
-    prev_r_torque = 10.
-    prev_l_torque = 10.
     
     # Variables to track station velocity
     max_vel = 1.
     min_vel = 0.
-    prev_vel = 10.
-    vel = 0.025
+    station_vel = 0.025
+    
+    # Create desired plots then open the animator
+    times=[]
+    torques=[]
+    plot_1 = sim.add_plot_to_animator(title="Torque vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Torque [Nm]",
+                                      color="r",
+                                      tail=500)
+    pitches = []
+    pitch_vels = []
+    plot_2 = sim.add_plot_to_animator(title="Pitch Speed Vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Pitch Velocity [Rad/s]",
+                                      color="b",
+                                      tail=500)
+    sim.open_animator_gui()
     
     # Wait for user input
-    print("PRESS ENTER TO RUN")
-    while not keyboard.is_pressed("enter"):
-        pass
+    sim.await_keypress(key="enter")
     
     # Run the simulation
     elapsed_time = 0
     done = False
     while(not done):
-        # Keep track of time to run sim in real time
-        start_time = time.time()
-        
         # Get the current base position of the robot and change
         # gravity accordingly.
         # This simulates centrifugal gravity from the station
@@ -81,10 +93,6 @@ if __name__ == "__main__":
         dirn = diff / np.linalg.norm(diff)
         grav = 9.81 * dirn
         sim.set_gravity(grav)
-        
-        # Collect keyboard IO for termination
-        if keyboard.is_pressed("esc"):
-            done = True
         
         # Collect keyboard IO data for torque
         if keyboard.is_pressed("shift+w"):
@@ -131,48 +139,44 @@ if __name__ == "__main__":
                             link_name='left_wheel',
                             color=l_color)
         
-        # Print the current torque
-        if r_torque != prev_r_torque or l_torque != prev_l_torque:
-            print("Torque: [" + str(l_torque) + ", " + str(r_torque) + "] Nm")
-        prev_r_torque = r_torque
-        prev_l_torque = l_torque
-        
         # Collect keyboard IO data for station vel
         if keyboard.is_pressed("e"):
-            vel = vel + 0.001*(max_vel - min_vel)
-            if vel > max_vel:
-                vel = max_vel
+            station_vel = station_vel + 0.001*(max_vel - min_vel)
+            if station_vel > max_vel:
+                station_vel = max_vel
         elif keyboard.is_pressed("q"):
-            vel = vel - 0.001*(max_vel - min_vel)
-            if vel < min_vel:
-                vel = min_vel
+            station_vel = station_vel - 0.001*(max_vel - min_vel)
+            if station_vel < min_vel:
+                station_vel = min_vel
            
         # Set the torque and torque colors
-        vel = round(vel,4)
-        vel_sat = (vel - min_vel) / (max_vel - min_vel)
+        station_vel = round(station_vel,4)
+        vel_sat = (station_vel - min_vel) / (max_vel - min_vel)
         vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
         vel_color = format_RGB(vel_color,
                                range_to_255=True)
         sim.set_joint_velocity(urdf_obj=station_obj,
                                joint_name="world_to_station",
-                               velocity=vel)
+                               velocity=station_vel)
         sim.set_link_color(urdf_obj=station_obj,
                            link_name="station",
                            color=vel_color)
         
-        # Print the current station vel
-        if vel != prev_vel:
-            print("Station Vel: " + str(vel) + "RPM")
-        prev_vel = vel
+        # Set the plot data
+        times.append(sim.time)
+        torques.append(r_torque + l_torque)
+        pos, rpy, vel, ang_vel = sim.get_base_state(segbot_obj,
+                                                    body_coords=True)
+        pitch_vels.append(ang_vel[1])
+        sim.set_plot_data(plot_1, times, torques)
+        sim.set_plot_data(plot_2, times, pitch_vels)
         
-        # Step the simulation and update the visualization
-        sim.engine.stepSimulation()
-        sim.update_urdf_visual(station_obj)
-        sim.update_urdf_visual(segbot_obj)
+        # Step the sim
+        sim.step(real_time=True,
+                 update_vis=True,
+                 update_ani=True)
         
-        # Add sleep to run sim in real time
-        elapsed_time = elapsed_time + sim.dt
-        time_to_wait = sim.dt + start_time - time.time()
-        if time_to_wait > 0.:
-            time.sleep(time_to_wait)
+        # Collect keyboard IO for termination
+        if keyboard.is_pressed("esc"):
+            done = True
             

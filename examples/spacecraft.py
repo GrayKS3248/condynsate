@@ -2,7 +2,6 @@
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
-import time
 import keyboard
 from matplotlib import colormaps as cmaps
 import condynsate
@@ -15,11 +14,14 @@ from condynsate.utils import format_RGB
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
+                               animation=True,
+                               animation_fr=15.,
                                gravity=[0., 0., 0.])
     
     # Load the spacecraft
     craft_obj = sim.load_urdf(urdf_path='./spacecraft_vis/spacecraft.urdf',
-                              fixed=False)
+                              fixed=False,
+                              update_vis=True)
     
     # Generate star cartesian coordinates based on their depth and
     # equatorial astronomical coords (right ascension, declination)
@@ -46,7 +48,8 @@ if __name__ == "__main__":
     for base_pos in cartesians:
         urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=base_pos,
-                                fixed=True)
+                                fixed=True,
+                                update_vis=False)
         constellation_objs.append(urdf_id)
     
     # Load random stars
@@ -60,7 +63,8 @@ if __name__ == "__main__":
     for i in range(n_stars):
         urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=positions[i],
-                                fixed=True)
+                                fixed=True,
+                                update_vis=False)
         star_objs.append(urdf_id)
     
     # Set the camera scale and orientation
@@ -85,27 +89,39 @@ if __name__ == "__main__":
     # Variables to track applied torque
     max_torque = 1.
     min_torque = -1.
-    prev_torque_1 = 10.
-    prev_torque_2 = 10.
-    prev_torque_3 = 10.
-    prev_torque_4 = 10.
+    
+    # Create desired plots then open the animator
+    times=[]
+    rolls=[]
+    pitches=[]
+    yaws=[]
+    plot_1 = sim.add_plot_to_animator(title="Roll vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Roll [Rad]",
+                                      color="r",
+                                      tail=500,
+                                      y_lim=[-np.pi,np.pi])
+    plot_2 = sim.add_plot_to_animator(title="Pitch Vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Pitch [Rad]",
+                                      color="g",
+                                      tail=500,
+                                      y_lim=[-np.pi,np.pi])
+    plot_3 = sim.add_plot_to_animator(title="Yaw Vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Yaw [Rad]",
+                                      color="b",
+                                      tail=500,
+                                      y_lim=[-np.pi,np.pi])
+    sim.open_animator_gui()
     
     # Wait for user input
-    print("PRESS ENTER TO RUN")
-    while not keyboard.is_pressed("enter"):
-        pass
+    sim.await_keypress(key="enter")
     
     # Run the simulation
     elapsed_time = 0
     done = False
-    while(not done):
-        # Keep track of time to run sim in real time
-        start_time = time.time()
-        
-        # Collect keyboard IO for termination
-        if keyboard.is_pressed("esc"):
-            done = True
-        
+    while(not done):      
         # Collect keyboard IO data for torque 1
         if keyboard.is_pressed("a"):
             torque_1 = min_torque
@@ -182,29 +198,23 @@ if __name__ == "__main__":
                            link_name='wheel_4',
                            color=torque_4_color)
         
-        # Print torque changes
-        change_1 = torque_1 != prev_torque_1
-        change_2 = torque_2 != prev_torque_2
-        change_3 = torque_3 != prev_torque_3
-        change_4 = torque_4 != prev_torque_4
-        if change_1 or change_2 or change_3 or change_4:
-            str1 = str(torque_1)
-            str2 = str(torque_2)
-            str3 = str(torque_3)
-            str4 = str(torque_4)
-            print("Torque: ["+str1+", "+str2+", "+str3+", "+str4+"] Nm")
-        prev_torque_1 = torque_1
-        prev_torque_2 = torque_2
-        prev_torque_3 = torque_3
-        prev_torque_4 = torque_4
+        # Set the plot data
+        times.append(sim.time)
+        pos, rpy, vel, ang_vel = sim.get_base_state(craft_obj,
+                                                    body_coords=True)
+        rolls.append(rpy[0])
+        pitches.append(rpy[1])
+        yaws.append(rpy[2])
+        sim.set_plot_data(plot_1, times, rolls)
+        sim.set_plot_data(plot_2, times, pitches)
+        sim.set_plot_data(plot_3, times, yaws)
         
-        # Step the simulation and update the visualization
-        sim.engine.stepSimulation()
-        sim.update_urdf_visual(craft_obj)
+        # Step the sim
+        sim.step(real_time=True,
+                 update_vis=True,
+                 update_ani=True)
         
-        # Add sleep to run sim in real time
-        elapsed_time = elapsed_time + sim.dt
-        time_to_wait = sim.dt + start_time - time.time()
-        if time_to_wait > 0.:
-            time.sleep(time_to_wait)
+        # Collect keyboard IO for termination
+        if keyboard.is_pressed("esc"):
+            done = True
             
