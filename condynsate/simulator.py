@@ -82,7 +82,7 @@ class Simulator:
         animation : bool, optional
             A boolean flag that indicates whether animated plots are created
             in real time. The default is True.
-        animation_fr : float, optional:
+        animation_fr : float, optional
             The frame rate (frames per second) at which the animated plots are
             updated. The default is 10..
         gravity : array-like, shape (3,) optional
@@ -1359,6 +1359,8 @@ class Simulator:
                              x_label=None,
                              y_label=None,
                              color=None,
+                             line_width=None,
+                             line_style=None,
                              tail=None,
                              x_lim=[None, None],
                              y_lim=[None, None]):
@@ -1379,6 +1381,12 @@ class Simulator:
             plot when rendered. The default is None.
         color : matplotlib color string, optional
             The color of the plot lines. The default is None.
+        line_width : float, optional
+            The weight of the line that is plotted. The default is None.
+            When set to None, defaults to 1.0.
+        line_style : matplotlib line style string, optional
+            The style of the line that is plotted. The default is None. When 
+            set the None, defaults to solid.
         tail : int, optional
             The number of points that are used to draw the line. Only the most 
             recent data points are kept. A value of None will plot all points
@@ -1407,6 +1415,8 @@ class Simulator:
                                        x_label=x_label,
                                        y_label=y_label,
                                        color=color,
+                                       line_width=line_width,
+                                       line_style=line_style,
                                        tail=tail,
                                        x_lim=x_lim,
                                        y_lim=y_lim)
@@ -1426,9 +1436,9 @@ class Simulator:
         ----------
         plot_index : int
             The plot's unique identifier. Provided by add_plot_to_animator().
-        x : array-like
+        x : array-like, shape(n,)
             An array of the x data.
-        y : array-like
+        y : array-like, shape(n,)
             An array of the y data.
 
         Returns

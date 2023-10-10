@@ -14,7 +14,9 @@ from condynsate.utils import format_RGB
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
-                               gravity=[0., 0., 0.])
+                               gravity=[0., 0., 0.],
+                               animation=True,
+                               animation_fr=20.)
     
     # Load the spacecraft
     craft_obj = sim.load_urdf(urdf_path='./spacecraft_vis/spacecraft.urdf',
@@ -87,10 +89,28 @@ if __name__ == "__main__":
     # Variables to track applied torque
     max_torque = 1.
     min_torque = -1.
-    prev_torque_1 = 10.
-    prev_torque_2 = 10.
-    prev_torque_3 = 10.
-    prev_torque_4 = 10.
+    
+    # Open the animator and create a plot for the torques and phase space
+    times=[]
+    rolls=[]
+    pitches=[]
+    yaws=[]
+    plot_1 = sim.add_plot_to_animator(title="Roll vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Roll [Rad]",
+                                      color="r",
+                                      tail=500)
+    plot_2 = sim.add_plot_to_animator(title="Pitch Vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Pitch [Rad]",
+                                      color="g",
+                                      tail=500)
+    plot_3 = sim.add_plot_to_animator(title="Yaw Vs Time",
+                                      x_label="Time [s]",
+                                      y_label="Yoll [Rad]",
+                                      color="b",
+                                      tail=500)
+    sim.open_animator_gui()
     
     # Wait for user input
     sim.await_keypress(key="enter")
@@ -174,22 +194,6 @@ if __name__ == "__main__":
         sim.set_link_color(urdf_obj=craft_obj,
                            link_name='wheel_4',
                            color=torque_4_color)
-        
-        # Print torque changes
-        change_1 = torque_1 != prev_torque_1
-        change_2 = torque_2 != prev_torque_2
-        change_3 = torque_3 != prev_torque_3
-        change_4 = torque_4 != prev_torque_4
-        if change_1 or change_2 or change_3 or change_4:
-            str1 = str(torque_1)
-            str2 = str(torque_2)
-            str3 = str(torque_3)
-            str4 = str(torque_4)
-            print("Torque: ["+str1+", "+str2+", "+str3+", "+str4+"] Nm")
-        prev_torque_1 = torque_1
-        prev_torque_2 = torque_2
-        prev_torque_3 = torque_3
-        prev_torque_4 = torque_4
         
         # Step the sim
         sim.step(real_time=True,

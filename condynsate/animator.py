@@ -17,6 +17,20 @@ class Animator():
     Animator manages the real time plotting of states.
     """
     def __init__(self, fr):
+        """
+        Initializes a new instance of an animator
+
+        Parameters
+        ----------
+        fr : float
+            The frame rate (frames per second) at which the animated plots are
+            updated.
+
+        Returns
+        -------
+        None.
+
+        """
         # Plot data
         self.xs = []
         self.ys = []
@@ -27,7 +41,11 @@ class Animator():
         self.titles = []
         self.x_labels = []
         self.y_labels = []
+        
+        # Line drawing parameters
         self.colors = []
+        self.line_widths = []
+        self.line_styles = []
         
         # Plot limit options
         self.x_data_ranges = []
@@ -51,9 +69,53 @@ class Animator():
                  x_label=None,
                  y_label=None,
                  color=None,
+                 line_width=None,
+                 line_style=None,
                  tail=None,
                  x_lim=[None, None],
                  y_lim=[None, None]):
+        """
+        Adds a plot to the animator. This function needs to be called to 
+        define a plot before that plot's data can be set or updated
+
+        Parameters
+        ----------
+        title : string, optional
+            The title of the plot. Will be written above the plot when
+            rendered. The default is None.
+        x_label : string, optional
+            The label to apply to the x axis. We be written under the plot when
+            rendered. The default is None.
+        y_label : string, optional
+            The label to apply to the y axis. We be written to the left of the
+            plot when rendered. The default is None.
+        color : matplotlib color string, optional
+            The color of the plot lines. The default is None.
+        line_width : float, optional
+            The weight of the line that is plotted. The default is None.
+            When set to None, defaults to 1.0.
+        line_style : matplotlib line style string, optional
+            The style of the line that is plotted. The default is None. When 
+            set the None, defaults to solid.
+        tail : int, optional
+            The number of points that are used to draw the line. Only the most 
+            recent data points are kept. A value of None will plot all points
+            in the plot data. The default is None.
+        x_lim : [float, float], optional
+            The limits to apply to the x axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+        y_lim : [float, float], optional
+            The limits to apply to the y axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+
+        Returns
+        -------
+        plot_index : int
+            A unique integer identifier that allows future plot interation.
+
+        """
         # Store the plot data
         self.xs.append([])
         self.ys.append([])
@@ -64,7 +126,11 @@ class Animator():
         self.titles.append(title)
         self.x_labels.append(x_label)
         self.y_labels.append(y_label)
+        
+        # Store line drawing parameters
         self.colors.append(color)
+        self.line_widths.append(line_width)
+        self.line_styles.append(line_style)
         
         # Store the limit options
         self.x_data_ranges.append([np.inf, -np.inf])
@@ -83,6 +149,28 @@ class Animator():
                    x,
                    y,
                    tail):
+        """
+        Trims a plot dataset (x,y) to have length tail.
+
+        Parameters
+        ----------
+        x : array-like, shape(n,)
+            An array of the x data.
+        y : array-like, shape(n,)
+            An array of the y data.
+        tail : int
+            The number of points that are used to draw the line. Only the most 
+            recent data points are kept. A value of None will keep all data
+            points.
+
+        Returns
+        -------
+        x : array-like, shape(tail,)
+            An array of the trimmed x data.
+        y : array-like, shape(tail,)
+            An array of the trimmed y data.
+
+        """
         # Trim data to desired length
         if tail != None and len(x) > tail:
             x = x[-tail:]
@@ -94,6 +182,26 @@ class Animator():
                       data,
                       data_range,
                       fixed_plot_lims):
+        """
+        Calculates the plot limits and the current range of data.
+
+        Parameters
+        ----------
+        data : array-like
+            The array of data over which the range is calculated.
+        data_range : array-like, shape(2,)
+            The previously calculated range of data.
+        fixed_plot_lims : array-like, shape(2,)
+            The fixed limits to be applied to the plot axis (if any).
+
+        Returns
+        -------
+        new_data_range : array-like, shape(2,)
+            The newly calculated range of data.
+        plot_limits : array-like, shape(2,)
+            The newly calculated limits to be applied to the plot axis.
+
+        """
         # Variables to hold the calulcated plot limits
         plot_limits = [0., 0.]
         plot_limits[0] = fixed_plot_lims[0]
@@ -125,6 +233,23 @@ class Animator():
                       plot_index,
                       x,
                       y):
+        """
+        Sets the data to be plotted for an individual plot. 
+
+        Parameters
+        ----------
+        plot_index : int
+            The plot's unique identifier.
+        x : array-like, shape(n,)
+            An array of the x data.
+        y : array-like, shape(n,)
+            An array of the y data.
+
+        Returns
+        -------
+        None.
+
+        """
         # Trim data to desired length
         tail = self.tails[plot_index]
         x, y = self._trim_data(x = x,
@@ -155,6 +280,15 @@ class Animator():
 
 
     def _get_n_plots(self):
+        """
+        Calculates how many plots have been set by the user.
+
+        Returns
+        -------
+        n_plots : int
+            The number of plots.
+
+        """
         # Get the length of all plot parameters
         lens = np.zeros(14)
         lens[0] = len(self.xs)
@@ -186,16 +320,31 @@ class Animator():
     
     def _get_subplot_shape(self,
                           n_plots):
-        # Get the number of columns needed
-        n_cols = int(np.ceil(0.5*n_plots))
+        """
+        Calculates the subplot dimensions for the figure given the 
+        total number of plots.
+
+        Parameters
+        ----------
+        n_plots : int
+            The number of plots.
+
+        Returns
+        -------
+        dim : tuple, shape(2)
+            The dimensions of the subplots.
+
+        """
+        # Set the maximum number of rows
+        n_rows_max = 3
         
-        # The number of rows should never exceed 2
-        if n_plots == 0:
-            n_rows = 0
-        elif n_plots == 1:
-            n_rows = 1
-        else:
-            n_rows = 2
+        # The number of rows should never exceed 3
+        n_rows = n_plots
+        if n_rows > n_rows_max:
+            n_rows = n_rows_max
+            
+        # Get the number of columns needed
+        n_cols = int(np.ceil(n_plots / n_rows_max))
             
          # Return the calculated dimension
         dim = (n_rows, n_cols)
@@ -209,24 +358,85 @@ class Animator():
                         y_label,
                         x_plot_lim,
                         y_plot_lim):
-            # Clear the axis
-            axis.clear()
-            
-            # Set the labels
-            axis.set_title(title)
-            axis.set_xlabel(x_label)
-            axis.set_ylabel(y_label)
-            
-            # Set the limits if there are any
-            if x_plot_lim != [None, None]:
-                axis.set_xlim(x_plot_lim[0],
-                              x_plot_lim[1])
-            if y_plot_lim != [None, None]:
-                axis.set_ylim(y_plot_lim[0],
-                              y_plot_lim[1])
+        """
+        Creates a single subplot and sets axis artist setting. Subsequently 
+        renders axis artis updates. Does not update GUI.
+
+        Parameters
+        ----------
+        axis : matplotlib.axes
+            A member of the matplotlib axis class.
+        title : string, optional
+            The title of the plot. Will be written above the plot when
+            rendered. The default is None.
+        x_label : string, optional
+            The label to apply to the x axis. We be written under the plot when
+            rendered. The default is None.
+        y_label : string, optional
+            The label to apply to the y axis. We be written to the left of the
+            plot when rendered. The default is None.
+        x_plot_lim : [float, float], optional
+            The limits to apply to the x axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+        y_plot_lim : [float, float], optional
+            The limits to apply to the y axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+
+        Returns
+        -------
+        None.
+
+        """
+        # Clear the axis
+        axis.clear()
+        
+        # Set the labels
+        axis.set_title(title)
+        axis.set_xlabel(x_label)
+        axis.set_ylabel(y_label)
+        
+        # Set the limits if there are any
+        if x_plot_lim != [None, None]:
+            axis.set_xlim(x_plot_lim[0],
+                          x_plot_lim[1])
+        if y_plot_lim != [None, None]:
+            axis.set_ylim(y_plot_lim[0],
+                          y_plot_lim[1])
+    
+    
+    def _on_resize(self, event):
+        """
+        Sets actions to do to GUI event loop upon resize event.
+
+        Parameters
+        ----------
+        event : matplotlib.backend_bases.ResizeEvent
+            A member of the ResizeEvent class.
+
+        Returns
+        -------
+        None.
+
+        """
+        plt.ion()
+        self.fig.tight_layout()
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events() 
+        plt.ioff()
     
     
     def create_figure(self):
+        """
+        Creates, renders, and draws on GUI a figure containing all specified
+        subsplots.
+
+        Returns
+        -------
+        None.
+
+        """
         # Set the desired backend and matplotlib parameters for interactive
         # plotting
         plt.switch_backend("QtAgg")
@@ -243,6 +453,7 @@ class Animator():
         
         # Calculate the subplot shape and create the figure
         (n_rows, n_cols) = self._get_subplot_shape(self.n_plots)
+        #self.fig = plt.Figure()
         self.fig, self.axes = plt.subplots(n_rows, n_cols)
         if self.n_plots > 1:
             self.axes = self.axes.flatten()
@@ -272,8 +483,12 @@ class Animator():
                                  x_plot_lim=x_plot_lim,
                                  y_plot_lim=y_plot_lim)
             
-        # Set the layout, draw on the figure, and flush the even buffer
+        # Set the layout
         self.fig.tight_layout()
+        
+        self.fig.canvas.mpl_connect('resize_event', self._on_resize)
+        
+        # Manually cycle the GUI loop
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events() 
         
@@ -290,11 +505,49 @@ class Animator():
                       line,
                       axis,
                       color,
+                      line_width,
+                      line_style,
                       x_plot_lim,
                       y_plot_lim):
+        """
+        Rerenders a single subplot. Does not update GUI.
+
+        Parameters
+        ----------
+        x : array-like, shape(n,)
+            An array of the new x data.
+        y : array-like, shape(n,)
+            An array of the new y data.
+        line : matplotlib.lines.Line2D
+            The line artist that belongs to the axis.
+        axis : matplotlib.axes
+            The axis artist that defines the subplot being updated.
+        color : matplotlib color string, optional
+            The color of the plot lines. The default is None.
+        line_width : float, optional
+            The weight of the line that is plotted. The default is None.
+            When set to None, defaults to 1.0.
+        line_style : matplotlib line style string, optional
+            The style of the line that is plotted. The default is None. When 
+            set the None, defaults to solid.
+        x_plot_lim : [float, float], optional
+            The limits to apply to the x axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+        y_plot_lim : [float, float], optional
+            The limits to apply to the y axis of the plots. A value of None
+            will apply automatically updating limits to that bound of the axis.
+            The default is [None, None].
+
+        Returns
+        -------
+        line : matplotlib.lines.Line2D
+            The same line artist that belongs to the axis.
+
+        """
         # Redraw the line data
         if line==None:
-            line, = axis.plot(x, y, c=color)
+            line, = axis.plot(x, y, c=color, lw=line_width, ls=line_style)
         else:
             line.set_data(x, y)
             
@@ -309,6 +562,19 @@ class Animator():
         
         
     def step(self):
+        """
+        Takes a single animator step. If called before redraw period (defined
+        by frame rate), cycle the GUI event loop and return. If called
+        during a redraw period, re-render plots and update GUI. Must be called
+        regularly to keep GUI fresh. If not called regularly, GUI will become 
+        unresponsive. If you wish to suspend the GUI but keep it responsive,
+        call the flush_events() function in a loop.
+
+        Returns
+        -------
+        None.
+
+        """
         # Turn on interactive mode to run the GUI event loop
         plt.ion()
         
@@ -341,6 +607,8 @@ class Animator():
             # Retrieve the line artist for each axis
             line = self.lines[i]
             color = self.colors[i]
+            line_width = self.line_widths[i]
+            line_style = self.line_styles[i]
             
             # Update the plotted data
             if len(x)>1 and len(y)>1:
@@ -349,12 +617,14 @@ class Animator():
                                               line=line,
                                               axis=axis,
                                               color=color,
+                                              line_width=line_width,
+                                              line_style=line_style,
                                               x_plot_lim=x_plot_lim,
                                               y_plot_lim=y_plot_lim)
                 if line==None:
                     self.lines[i] = new_line
-            
-        # Set the draw on the figure, and flush the even buffer
+        
+        # Manually cycle the GUI loop
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events() 
         
@@ -366,65 +636,15 @@ class Animator():
 
 
     def flush_events(self):
+        """
+        Suspends the GUI keeping it responsive. Call regularly when not
+        stepping.
+
+        Returns
+        -------
+        None.
+
+        """
         plt.ion()
         self.fig.canvas.flush_events() 
         plt.ioff()
-
-
-if __name__ == "__main__":
-    x1 = []
-    x2 = np.linspace(0,20,30)
-    x3 = np.linspace(10,15,40)
-    x4 = np.linspace(-5,5,50)
-    y1 = []
-    y2 = np.random.rand(30)
-    y3 = np.random.rand(40)
-    y4 = np.random.rand(50)
-    
-    a = Animator(fr=10.)
-    
-    i1 = a.add_plot(title="1",
-                    x_label="$x_{1}$",
-                    y_label="$x_{1}$",
-                    color='r',
-                    tail=20,
-                    x_lim=[0,10],
-                    y_lim=[0,1])
-    i2 = a.add_plot(title="2",
-                    x_label="$x_{2}$",
-                    y_label="$y_{2}$",
-                    color='g',
-                    x_lim=[0,100])
-    i3 = a.add_plot(title="3",
-                    x_label="$x_{3}$",
-                    y_label="$y_{3}$",
-                    color='b',
-                    y_lim=[0.25,0.75],
-                    tail=20)
-    i4 = a.add_plot(title="4",
-                    x_label="$x_{4}$",
-                    y_label="$y_{4}$",
-                    color='k',
-                    tail=50)
-    
-    a.create_figure()
-    
-    for i in range(100):
-        print(str(i))
-        x1 = np.append(x1, i*0.1)
-        x2 = np.append(x2, 2.*x2[-1]-x2[-2])
-        x3 = np.append(x3, 2.*x3[-1]-x3[-2])
-        x4 = np.append(x4, 2.*x4[-1]-x4[-2])
-        y1 = np.append(y1, np.random.rand())
-        y2 = np.append(y2, i*np.random.rand())
-        y3 = np.append(y3, np.random.rand())
-        y4 = np.append(y4, np.random.rand())
-        
-        a.set_plot_data(i1, x=x1, y=y1)
-        a.set_plot_data(i2, x=x2, y=y2)
-        a.set_plot_data(i3, x=x3, y=y3)
-        a.set_plot_data(i4, x=x4, y=y4)
-        
-        a.step()
-        
-        time.sleep(0.001)

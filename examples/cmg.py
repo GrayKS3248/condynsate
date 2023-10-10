@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
                                animation=True,
-                               animation_fr=30.)
+                               animation_fr=20.)
     
     # Load urdf objects
     ground_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
@@ -84,7 +84,9 @@ if __name__ == "__main__":
     plot_ind = sim.add_plot_to_animator(title="Phase Space",
                                         x_label="Angle [Rad]",
                                         y_label="Momentum $[Kg•m^{2}•s^{-1}]$",
-                                        color="r")
+                                        color="r",
+                                        tail=750,
+                                        line_width=3.0)
     sim.open_animator_gui()
     
     # Wait for user input
