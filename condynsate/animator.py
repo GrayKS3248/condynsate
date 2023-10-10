@@ -98,8 +98,10 @@ class Animator():
         plot_limits = [0., 0.]
         plot_limits[0] = fixed_plot_lims[0]
         plot_limits[1] = fixed_plot_lims[1]
-        data_min = min(np.min(data), data_range[0])
-        data_max = max(np.max(data), data_range[1])
+        data_min = np.min(data)#min(np.min(data), data_range[0])
+        data_max = np.max(data)#max(np.max(data), data_range[1])
+        data_min = 1.1*data_min - 0.1*data_max
+        data_max = 1.1*data_max - 0.1*data_min
         new_data_range = [data_min, data_max]
         
         # If there is no lower hard plot limit, set to min of all data seen

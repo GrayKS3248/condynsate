@@ -79,13 +79,12 @@ if __name__ == "__main__":
     vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
     
     # Open the animator and create a plot for the phase space
+    momentums = []
+    angles = []
     plot_ind = sim.add_plot_to_animator(title="Phase Space",
                                         x_label="Angle [Rad]",
-                                        y_label="Momentum [Kg-m/s]",
-                                        color="r",
-                                        tail=500,
-                                        x_lim=[None,None],
-                                        y_lim=[None,None])
+                                        y_label="Momentum $[Kg•m^{2}•s^{-1}]$",
+                                        color="r")
     sim.open_animator_gui()
     
     # Wait for user input
@@ -93,8 +92,6 @@ if __name__ == "__main__":
     
     # Run the simulation
     done = False
-    mass_momentums = []
-    angles = []
     while(not done):    
         
         # Collect keyboard IO data for torque
@@ -171,13 +168,13 @@ if __name__ == "__main__":
     
         # Set the plot data
         angle, velocity = sim.get_joint_state(cmg_obj, "world_to_outer")
-        mass_momentum = mass*velocity
-        mass_momentums.append(mass_momentum)
+        momentum = mass*velocity
+        momentums.append(momentum)
         angles.append(angle)
-        sim.set_plot_data(plot_ind, angles, mass_momentums)
+        sim.set_plot_data(plot_ind, angles, momentums)
     
         # Step the sim
-        sim.step(real_time=False,
+        sim.step(real_time=True,
                  update_vis=True,
                  update_ani=True)
         

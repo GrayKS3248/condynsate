@@ -1,7 +1,7 @@
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-import time
+import numpy as np
 import keyboard
 from matplotlib import colormaps as cmaps
 import condynsate
@@ -50,9 +50,7 @@ if __name__ == "__main__":
     prev_torque_4 = 10.
     
     # Wait for user input
-    print("PRESS ENTER TO RUN")
-    while not keyboard.is_pressed("enter"):
-        pass
+    sim.await_keypress(key="enter")
     
     # Run the simulation
     elapsed_time = 0
@@ -167,12 +165,13 @@ if __name__ == "__main__":
         prev_torque_2 = torque_2
         prev_torque_3 = torque_3
         prev_torque_4 = torque_4
+            
+        # Step the sim
+        sim.step(real_time=True,
+                 update_vis=True,
+                 update_ani=True)
         
         # Collect keyboard IO for termination
         if keyboard.is_pressed("esc"):
             done = True
-            
-        # Step the sim
-        sim.step(real_time=True,
-                 update_vis=True)
             
