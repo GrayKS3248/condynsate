@@ -52,6 +52,31 @@ def wxyz_to_xyzw(wxyz_quaternion):
     return xyzw_quaternion
 
 
+def xyzw_quat_mult(q1, q2):
+    q1_wxyz = xyzw_to_wxyz(q1)
+    q2_wxyz = xyzw_to_wxyz(q2)
+    q3_wxyz = wxyz_quat_mult(q1_wxyz, q2_wxyz)
+    q3_xyzw = wxyz_to_xyzw(q3_wxyz)
+    return q3_xyzw
+
+
+def wxyz_quat_mult(q1, q2):
+    a1 = q1[0]
+    b1 = q1[1]
+    c1 = q1[2]
+    d1 = q1[3]
+    a2 = q2[0]
+    b2 = q2[1]
+    c2 = q2[2]
+    d2 = q2[3]
+    q3w = a1*a2 - b1*b2 - c1*c2 - d1*d2
+    q3x = a1*b2 + b1*a2 + c1*d2 - d1*c2
+    q3y = a1*c2 - b1*d2 + c1*a2 + d1*b2
+    q3z = a1*d2 + b1*c2 - c1*b2 + d1*a2
+    q3_wxyz = [q3w, q3x, q3y, q3z]
+    return q3_wxyz
+
+
 def wxyz_from_euler(roll, pitch, yaw):
     """
     Converts Euler angles to a Hamilton quaternion (wxyz)
