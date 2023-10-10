@@ -189,7 +189,7 @@ class Simulator:
             loaded urdf is fixed. The default is False.
         update_vis : bool, optional
             A boolean flag that indicates whether this urdf will be updated
-            by the visualizer each time step. The default is True.
+            by the Visualizer each time step. The default is True.
             
         Returns
         -------
@@ -930,15 +930,15 @@ class Simulator:
                                urdf_obj,
                                tex_path='./cmg_vis/check.png'):
         """
-        Adds urdfs to the visualizer. URDFs describe systems assembles from
+        Adds urdfs to the Visualizer. URDFs describe systems assembles from
         .stl and .obj links.
 
         Parameters
         ----------
         vis : Visualizer
-            The visualizer to which the urdf is added.
+            The Visualizer to which the urdf is added.
         urdf_obj : URDF_Obj
-            A URDF_Obj that will be added to the visualizer.
+            A URDF_Obj that will be added to the Visualizer.
         tex_path : string, optional
             The path pointing towards a texture file. This texture is applied
             to all .obj links in the urdf.
@@ -993,7 +993,7 @@ class Simulator:
     def _update_urdf_visual(self,
                             urdf_obj):
         """
-        Updates the positions of dynamic links in the visualizer.
+        Updates the positions of dynamic links in the Visualizer.
 
         Parameters
         ----------
@@ -1117,7 +1117,7 @@ class Simulator:
                          pitch=None,
                          yaw=None):
         """
-        Transforms the position, orientation, and scale of the Visualizer scene
+        Transforms the position, orientation, and scale of the Visualizer's
         camera.
 
         Parameters
@@ -1167,7 +1167,7 @@ class Simulator:
                        top_color = None,
                        bot_color = None):
         """
-        Set the top and bottom colors of the background of the scene.
+        Set the top and bottom colors of the background of the Visualizer.
     
         Parameters
         ----------
@@ -1200,7 +1200,7 @@ class Simulator:
                       intensity = 1.0,
                       distance = 100.):
         """
-        Sets the properties of the spotlight in the scene.
+        Sets the properties of the spotlight in the Visualizer.
 
         Parameters
         ----------
@@ -1234,7 +1234,7 @@ class Simulator:
                           distance = 100.):
         """
         Sets the properties of the point light on the positive x axis
-        in the scene.
+        in the Visualizer.
 
         Parameters
         ----------
@@ -1268,7 +1268,7 @@ class Simulator:
                           distance = 100.):
         """
         Sets the properties of the point light on the negative x axis
-        in the scene.
+        in the Visualizer.
 
         Parameters
         ----------
@@ -1300,7 +1300,7 @@ class Simulator:
                           on = False,
                           intensity = 1.0):
         """
-        Sets the properties of the ambient light of the scene.
+        Sets the properties of the ambient light of the Visualizer.
 
         Parameters
         ----------
@@ -1329,7 +1329,7 @@ class Simulator:
                           on = False,
                           intensity = 1.0):
         """
-        Sets the properties of the fill light in the scene.
+        Sets the properties of the fill light in the Visualizer.
 
         Parameters
         ----------
@@ -1365,7 +1365,7 @@ class Simulator:
                              x_lim=[None, None],
                              y_lim=[None, None]):
         """
-        Adds a plot to the animator. This function needs to be called to 
+        Adds a plot to the Animator. This function needs to be called to 
         define a plot before that plot's data can be set or updated
 
         Parameters
@@ -1458,7 +1458,7 @@ class Simulator:
         
     def open_animator_gui(self):
         """
-        Opens the animator GUI with the specified plots. After the animator
+        Opens the Animator GUI with the specified plots. After the Animator
         is open, no more plots can be added; however, the plot data can still
         be set.
 
@@ -1476,7 +1476,7 @@ class Simulator:
                        key="enter"):
         """
         Suspends the simulation until a specified keystroke is recieved.
-        When an animator GUI is open, this function must be called to
+        When an Animator GUI is open, this function must be called to
         keep the GUI responsive. If a GUI is not present, this function is
         optional. 
 
@@ -1504,7 +1504,7 @@ class Simulator:
              update_ani=True):
         """
         Takes a single step of the simulation. In this step, the physics
-        engine, the visualizer (3D visualization of urdfs), and the animator
+        engine, the Visualizer (3D visualization of urdfs), and the Animator
         (2D animation of plots) are all updated.
 
         Parameters
@@ -1516,10 +1516,10 @@ class Simulator:
             physics engine). If False, step() is run as quickly as possible.
             The default is True.
         update_vis : bool, optional
-            A boolean flag that indicates whether the visualizer is updated.
+            A boolean flag that indicates whether the Visualizer is updated.
             The default is True.
         update_ani : bool, optional
-            A boolean flag that indicates whether the animator is updated.
+            A boolean flag that indicates whether the Animator is updated.
             The default is True.
 
         Returns

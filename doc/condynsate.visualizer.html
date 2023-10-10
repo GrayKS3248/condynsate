@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module condynsate.visualizer</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="condynsate.html"><font color="#ffffff">condynsate</font></a>.visualizer</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:d%3A%5Cgithub_repos%5Ccondynsate%5Ccondynsate%5Cvisualizer.py">d:\github_repos\condynsate\condynsate\visualizer.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;provides&nbsp;the&nbsp;<a href="#Visualizer">Visualizer</a>&nbsp;class.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="meshcat.geometry.html">meshcat.geometry</a><br>
+</td><td width="25%" valign=top><a href="meshcat.html">meshcat</a><br>
+</td><td width="25%" valign=top><a href="numpy.html">numpy</a><br>
+</td><td width="25%" valign=top><a href="meshcat.transformations.html">meshcat.transformations</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="condynsate.visualizer.html#Visualizer">Visualizer</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Visualizer">class <strong>Visualizer</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Visualizer">Visualizer</a>(grid_vis=True,&nbsp;axes_vis=True)<br>
+&nbsp;<br>
+<a href="#Visualizer">Visualizer</a>&nbsp;manages&nbsp;the&nbsp;meshcat&nbsp;based&nbsp;visulation.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Visualizer-__init__"><strong>__init__</strong></a>(self, grid_vis=True, axes_vis=True)</dt><dd><tt>Initializes&nbsp;a&nbsp;new&nbsp;instance&nbsp;of&nbsp;a&nbsp;visualizer<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+grid_vis&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;boolean&nbsp;value&nbsp;to&nbsp;which&nbsp;the&nbsp;visibility&nbsp;of&nbsp;the&nbsp;XY&nbsp;grid&nbsp;is&nbsp;set.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;True.<br>
+axes_vis&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;boolean&nbsp;value&nbsp;to&nbsp;which&nbsp;the&nbsp;visibility&nbsp;of&nbsp;the&nbsp;axes&nbsp;is&nbsp;set.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-add_obj"><strong>add_obj</strong></a>(self, urdf_name, link_name, obj_path, tex_path, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Adds&nbsp;a&nbsp;textured&nbsp;.obj&nbsp;to&nbsp;the&nbsp;visualization.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;urdf&nbsp;to&nbsp;which&nbsp;the&nbsp;.obj&nbsp;is&nbsp;being&nbsp;added&nbsp;as&nbsp;a&nbsp;link.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;URDF&nbsp;objects&nbsp;define&nbsp;robots&nbsp;or&nbsp;assemblies.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link.<br>
+tex_path&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.png&nbsp;file&nbsp;that&nbsp;provides&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;texture.<br>
+scale&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;scaling&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;.obj.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;1.,&nbsp;1.].<br>
+translate&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;translation&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;.obj.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;wxyz&nbsp;quaternion&nbsp;that&nbsp;defines&nbsp;the&nbsp;initial&nbsp;rotation&nbsp;applied&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;.obj.&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;0.,&nbsp;0.,&nbsp;0.].<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-add_stl"><strong>add_stl</strong></a>(self, urdf_name, link_name, stl_path, color=[91, 155, 213], transparent=False, opacity=1.0, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Adds&nbsp;a&nbsp;colored&nbsp;.stl&nbsp;to&nbsp;the&nbsp;visualization.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;urdf&nbsp;to&nbsp;which&nbsp;the&nbsp;.stl&nbsp;is&nbsp;being&nbsp;added&nbsp;as&nbsp;a&nbsp;link.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;URDF&nbsp;objects&nbsp;define&nbsp;robots&nbsp;or&nbsp;assemblies.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link.<br>
+stl_path&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.stl&nbsp;description&nbsp;of&nbsp;the&nbsp;link&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;being&nbsp;added.<br>
+color&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;RGB&nbsp;color&nbsp;of&nbsp;the&nbsp;.stl.&nbsp;The&nbsp;default&nbsp;is&nbsp;[91,&nbsp;155,&nbsp;213].<br>
+transparent&nbsp;:&nbsp;boolean,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;that&nbsp;indicates&nbsp;if&nbsp;the&nbsp;.stl&nbsp;is&nbsp;transparent.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+opacity&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;opacity&nbsp;of&nbsp;the&nbsp;.stl.&nbsp;Can&nbsp;take&nbsp;float&nbsp;values&nbsp;between&nbsp;0.0&nbsp;and&nbsp;1.0.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+scale&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;scaling&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;.stl.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;1.,&nbsp;1.].<br>
+translate&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;translation&nbsp;along&nbsp;the&nbsp;three&nbsp;axes&nbsp;applied&nbsp;to&nbsp;the&nbsp;.stl.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;wxyz&nbsp;quaternion&nbsp;that&nbsp;defines&nbsp;the&nbsp;initial&nbsp;rotation&nbsp;applied&nbsp;to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;.stl.&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;0.,&nbsp;0.,&nbsp;0.].<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+transform&nbsp;:&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-apply_transform"><strong>apply_transform</strong></a>(self, urdf_name, link_name, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><tt>Applies&nbsp;a&nbsp;3D&nbsp;affine&nbsp;transformation&nbsp;inclunding&nbsp;scaling,&nbsp;translating,<br>
+and&nbsp;rotating&nbsp;to&nbsp;a&nbsp;specified&nbsp;link.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;urdf&nbsp;being&nbsp;transformed.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link&nbsp;being&nbsp;transformed.<br>
+scale&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;scaling&nbsp;along&nbsp;the&nbsp;three&nbsp;axes.&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;1.,&nbsp;1.].<br>
+translate&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;translation&nbsp;along&nbsp;the&nbsp;three&nbsp;axes.&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;wxyz&nbsp;quaternion&nbsp;that&nbsp;defines&nbsp;the&nbsp;rotation.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;0.,&nbsp;0.,&nbsp;0.].<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+transform&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,4)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;4x4&nbsp;3D&nbsp;affine&nbsp;transformation&nbsp;matrix&nbsp;applied&nbsp;to&nbsp;the&nbsp;link.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_ambient_light"><strong>set_ambient_light</strong></a>(self, on=False, intensity=1.0)</dt><dd><tt>Sets&nbsp;the&nbsp;properties&nbsp;ambient&nbsp;light&nbsp;of&nbsp;the&nbsp;scene.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+on&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;light&nbsp;is&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+intensity&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;20.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;brightness&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_axes"><strong>set_axes</strong></a>(self, visible=True)</dt><dd><tt>Controls&nbsp;the&nbsp;visibility&nbsp;state&nbsp;of&nbsp;the&nbsp;axes&nbsp;in&nbsp;the&nbsp;visualizer.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+visible&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;boolean&nbsp;value&nbsp;to&nbsp;which&nbsp;the&nbsp;visibility&nbsp;of&nbsp;the&nbsp;axes&nbsp;is&nbsp;set.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_background"><strong>set_background</strong></a>(self, top_color=None, bot_color=None)</dt><dd><tt>Set&nbsp;the&nbsp;top&nbsp;and&nbsp;bottom&nbsp;colors&nbsp;of&nbsp;the&nbsp;background&nbsp;of&nbsp;the&nbsp;scene.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+top_color&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;color&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;top&nbsp;of&nbsp;the&nbsp;background.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;None.&nbsp;If&nbsp;top_color&nbsp;is&nbsp;set&nbsp;to&nbsp;None,&nbsp;top_color<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;not&nbsp;altered.<br>
+bot_color&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;color&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;bottom&nbsp;of&nbsp;the&nbsp;background.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;None.&nbsp;If&nbsp;bot_color&nbsp;is&nbsp;set&nbsp;to&nbsp;None,&nbsp;bot_color<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;not&nbsp;altered.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_fill_light"><strong>set_fill_light</strong></a>(self, on=False, intensity=1.0)</dt><dd><tt>Sets&nbsp;the&nbsp;properties&nbsp;fill&nbsp;light&nbsp;of&nbsp;the&nbsp;scene.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+on&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;light&nbsp;is&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+intensity&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;20.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;brightness&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_grid"><strong>set_grid</strong></a>(self, visible=True)</dt><dd><tt>Controls&nbsp;the&nbsp;visibility&nbsp;state&nbsp;of&nbsp;the&nbsp;XY&nbsp;grid&nbsp;in&nbsp;the&nbsp;visualizer.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+visible&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;boolean&nbsp;value&nbsp;to&nbsp;which&nbsp;the&nbsp;visibility&nbsp;of&nbsp;the&nbsp;XY&nbsp;grid&nbsp;is&nbsp;set.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_link_color"><strong>set_link_color</strong></a>(self, urdf_name, link_name, stl_path, color=[91, 155, 213], transparent=False, opacity=1.0)</dt><dd><tt>Set&nbsp;a&nbsp;link&nbsp;color&nbsp;by&nbsp;deleting&nbsp;it&nbsp;and&nbsp;then&nbsp;adding&nbsp;another&nbsp;copy&nbsp;of&nbsp;it.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;urdf&nbsp;that&nbsp;contains&nbsp;the&nbsp;link&nbsp;being&nbsp;refreshed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;URDF&nbsp;objects&nbsp;define&nbsp;robots&nbsp;or&nbsp;assemblies.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link.<br>
+stl_path&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.stl&nbsp;description&nbsp;of&nbsp;the&nbsp;link&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;being&nbsp;refreshed.<br>
+color&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;RGB&nbsp;color&nbsp;of&nbsp;the&nbsp;link.&nbsp;The&nbsp;default&nbsp;is&nbsp;[91,&nbsp;155,&nbsp;213].<br>
+transparent&nbsp;:&nbsp;boolean,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;that&nbsp;indicates&nbsp;if&nbsp;the&nbsp;link&nbsp;is&nbsp;transparent.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+opacity&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;opacity&nbsp;of&nbsp;the&nbsp;link.&nbsp;Can&nbsp;take&nbsp;float&nbsp;values&nbsp;between&nbsp;0.0&nbsp;and&nbsp;1.0.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_negx_pt_light"><strong>set_negx_pt_light</strong></a>(self, on=False, intensity=1.0, distance=100.0)</dt><dd><tt>Sets&nbsp;the&nbsp;properties&nbsp;of&nbsp;the&nbsp;point&nbsp;light&nbsp;on&nbsp;the&nbsp;negative&nbsp;x&nbsp;axis<br>
+in&nbsp;the&nbsp;scene.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+on&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;light&nbsp;is&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+intensity&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;20.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;brightness&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+distance&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;100.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;distance&nbsp;from&nbsp;the&nbsp;origin&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;100..<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_posx_pt_light"><strong>set_posx_pt_light</strong></a>(self, on=False, intensity=1.0, distance=100.0)</dt><dd><tt>Sets&nbsp;the&nbsp;properties&nbsp;of&nbsp;the&nbsp;point&nbsp;light&nbsp;on&nbsp;the&nbsp;positive&nbsp;x&nbsp;axis<br>
+in&nbsp;the&nbsp;scene.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+on&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;light&nbsp;is&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+intensity&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;20.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;brightness&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+distance&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;100.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;distance&nbsp;from&nbsp;the&nbsp;origin&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;100..<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-set_spotlight"><strong>set_spotlight</strong></a>(self, on=False, intensity=1.0, radius=0.0, distance=100.0)</dt><dd><tt>Sets&nbsp;the&nbsp;properties&nbsp;of&nbsp;the&nbsp;spotlight&nbsp;in&nbsp;the&nbsp;scene.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+on&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;light&nbsp;is&nbsp;on.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+intensity&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;20.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;brightness&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;1.0.<br>
+distance&nbsp;:&nbsp;float&nbsp;(0.&nbsp;to&nbsp;100.),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;distance&nbsp;from&nbsp;the&nbsp;origin&nbsp;of&nbsp;the&nbsp;light.&nbsp;The&nbsp;default&nbsp;is&nbsp;100..<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Visualizer-transform_camera"><strong>transform_camera</strong></a>(self, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0], roll=None, pitch=None, yaw=None)</dt><dd><tt>Transforms&nbsp;the&nbsp;position,&nbsp;orientation,&nbsp;and&nbsp;scale&nbsp;of&nbsp;the&nbsp;camera<br>
+in&nbsp;the&nbsp;scene.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+scale&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;scaling&nbsp;of&nbsp;the&nbsp;camera&nbsp;view&nbsp;about&nbsp;the&nbsp;camera&nbsp;point&nbsp;along&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;three&nbsp;axes.&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;1.,&nbsp;1.].<br>
+translate&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;translation&nbsp;of&nbsp;the&nbsp;camera&nbsp;point&nbsp;along&nbsp;the&nbsp;three&nbsp;axes.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
+wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(4,)&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;wxyz&nbsp;quaternion&nbsp;that&nbsp;describes&nbsp;the&nbsp;intial&nbsp;orientation&nbsp;of&nbsp;camera<br>
+&nbsp;&nbsp;&nbsp;&nbsp;about&nbsp;the&nbsp;camera&nbsp;point.&nbsp;When&nbsp;roll,&nbsp;pitch,&nbsp;and&nbsp;yaw&nbsp;all&nbsp;have&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;type,&nbsp;the&nbsp;quaternion&nbsp;is&nbsp;used.&nbsp;If&nbsp;any&nbsp;roll,&nbsp;pitch,&nbsp;or&nbsp;yaw&nbsp;have&nbsp;non<br>
+&nbsp;&nbsp;&nbsp;&nbsp;None&nbsp;type,&nbsp;the&nbsp;quaternion&nbsp;is&nbsp;ignored.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[1.,&nbsp;0.,&nbsp;0.,&nbsp;0.].<br>
+roll&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;roll&nbsp;of&nbsp;the&nbsp;camera&nbsp;about&nbsp;the&nbsp;camera&nbsp;point.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;None.<br>
+pitch&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;pitch&nbsp;of&nbsp;the&nbsp;camera&nbsp;about&nbsp;the&nbsp;camera&nbsp;point.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;None.<br>
+yaw&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;yaw&nbsp;of&nbsp;the&nbsp;camera&nbsp;about&nbsp;the&nbsp;camera&nbsp;point.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;None.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
