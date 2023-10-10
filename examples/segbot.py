@@ -61,7 +61,7 @@ if __name__ == "__main__":
     min_vel = 0.
     station_vel = 0.025
     
-    # Open the animator and create a plot for the torques and phase space
+    # Create desired plots then open the animator
     times=[]
     torques=[]
     plot_1 = sim.add_plot_to_animator(title="Torque vs Time",

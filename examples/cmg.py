@@ -78,7 +78,7 @@ if __name__ == "__main__":
     vel_sat = (vel - min_vel) / (max_vel - min_vel)
     vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
     
-    # Open the animator and create a plot for the phase space
+    # Create desired plots then open the animator
     momentums = []
     angles = []
     plot_ind = sim.add_plot_to_animator(title="Phase Space",

@@ -90,7 +90,7 @@ if __name__ == "__main__":
     max_torque = 1.
     min_torque = -1.
     
-    # Open the animator and create a plot for the torques and phase space
+    # Create desired plots then open the animator
     times=[]
     rolls=[]
     pitches=[]
