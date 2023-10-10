@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
                                animation=True,
-                               animation_fr=20.)
+                               animation_fr=15.)
     
     # Load all urdf objects
     station_radius = 19.59

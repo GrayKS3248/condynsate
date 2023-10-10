@@ -14,9 +14,9 @@ from condynsate.utils import format_RGB
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
-                               gravity=[0., 0., 0.],
                                animation=True,
-                               animation_fr=20.)
+                               animation_fr=15.,
+                               gravity=[0., 0., 0.])
     
     # Load the spacecraft
     craft_obj = sim.load_urdf(urdf_path='./spacecraft_vis/spacecraft.urdf',
@@ -99,17 +99,20 @@ if __name__ == "__main__":
                                       x_label="Time [s]",
                                       y_label="Roll [Rad]",
                                       color="r",
-                                      tail=500)
+                                      tail=500,
+                                      y_lim=[-np.pi,np.pi])
     plot_2 = sim.add_plot_to_animator(title="Pitch Vs Time",
                                       x_label="Time [s]",
                                       y_label="Pitch [Rad]",
                                       color="g",
-                                      tail=500)
+                                      tail=500,
+                                      y_lim=[-np.pi,np.pi])
     plot_3 = sim.add_plot_to_animator(title="Yaw Vs Time",
                                       x_label="Time [s]",
-                                      y_label="Yoll [Rad]",
+                                      y_label="Yaw [Rad]",
                                       color="b",
-                                      tail=500)
+                                      tail=500,
+                                      y_lim=[-np.pi,np.pi])
     sim.open_animator_gui()
     
     # Wait for user input
@@ -194,6 +197,17 @@ if __name__ == "__main__":
         sim.set_link_color(urdf_obj=craft_obj,
                            link_name='wheel_4',
                            color=torque_4_color)
+        
+        # Set the plot data
+        times.append(sim.time)
+        pos, rpy, vel, ang_vel = sim.get_base_state(craft_obj,
+                                                    body_coords=True)
+        rolls.append(rpy[0])
+        pitches.append(rpy[1])
+        yaws.append(rpy[2])
+        sim.set_plot_data(plot_1, times, rolls)
+        sim.set_plot_data(plot_2, times, pitches)
+        sim.set_plot_data(plot_3, times, yaws)
         
         # Step the sim
         sim.step(real_time=True,

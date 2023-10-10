@@ -14,7 +14,8 @@ from condynsate.utils import format_RGB
 if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
-                               gravity=[0., 0., -9.81])
+                               animation=True,
+                               animation_fr=15.)
     
     # Load all objects
     ground_obj = sim.load_urdf(urdf_path='./quadcopter_vis/plane.urdf',
