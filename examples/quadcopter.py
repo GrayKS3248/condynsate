@@ -49,9 +49,9 @@ if __name__ == "__main__":
     # Create desired plots then open the animator
     pot_engs=[]
     kin_engs=[]
-    plot_1 = sim.add_plot_to_animator(title="Kinetic vs Potention Energy",
-                                      x_label="Potential Energy [J]",
-                                      y_label="Kinetic Energy [J]",
+    plot_1 = sim.add_plot_to_animator(title="Potention Energy vs Kinetic",
+                                      x_label="Kinetic Energy [J]",
+                                      y_label="Potention Energy [J]",
                                       color="r")
     sim.open_animator_gui()
     
@@ -145,16 +145,20 @@ if __name__ == "__main__":
         # Set force based on velocity
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor1',
-                                force=[0., 0., 0.05*rotor1_vel])
+                                force=[0., 0., 0.05*rotor1_vel],
+                                show_arrow=True)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor2',
-                                force=[0., 0., 0.05*rotor2_vel])
+                                force=[0., 0., 0.05*rotor2_vel],
+                                show_arrow=True)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor3',
-                                force=[0., 0., 0.05*rotor3_vel])
+                                force=[0., 0., 0.05*rotor3_vel],
+                                show_arrow=True)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor4',
-                                force=[0., 0., 0.05*rotor4_vel])
+                                force=[0., 0., 0.05*rotor4_vel],
+                                show_arrow=True)
         
         # Set the plot data
         pos, rpy, vel, ang_vel = sim.get_base_state(quad_obj,
@@ -163,7 +167,7 @@ if __name__ == "__main__":
         kin_eng = 0.5*0.1*(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2])
         pot_engs.append(pot_eng)
         kin_engs.append(kin_eng)
-        sim.set_plot_data(plot_1, pot_engs, kin_engs)
+        sim.set_plot_data(plot_1, kin_engs, pot_engs)
         
         # Step the sim
         sim.step(real_time=True,
