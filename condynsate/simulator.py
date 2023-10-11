@@ -115,7 +115,6 @@ class Simulator:
         
         # Keep track of all the arrows loaded into the visualizer
         self.lin_arr_map = {}
-        self.cw_arr_map = {}
         self.ccw_arr_map = {}
         
         # Create a visualizer
@@ -615,7 +614,8 @@ class Simulator:
     def set_joint_torque(self,
                          urdf_obj,
                          joint_name,
-                         torque=0.):
+                         torque=0.,
+                         show_arrow=True):
         """
         Sets the torque of a joint of a urdf.
 
@@ -628,7 +628,9 @@ class Simulator:
             specified in the .urdf file
         torque : float, optional
             The torque in NM to be applied to the joint. The default is 0..
-
+        show_arrow : bool, optional
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied torque.
         Returns
         -------
         None.
@@ -637,6 +639,28 @@ class Simulator:
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
+        
+        # If the arrow isn't meant to be visualized, hide it
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = joint_name in self.ccw_arr_map
+        if (not show_arrow) and vis_exists and arr_exists:
+            arrow_name = str(self.ccw_arr_map[joint_name])
+            self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                    link_name = arrow_name,
+                                    stl_path="../shapes/arrow_ccw.stl", 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    e = 0.0)
+        
+        # Handle torque arrow visualization
+        if show_arrow and isinstance(self.vis, Visualizer):
+            
+            # Get the orientation, in body coordinates, of the arrow based
+            # on direction of force
+            if torque>=0.:
+                arrow_xyzw_in_body = [0., 0., 0., 1.]
+            if torque<0.:
+                arrow_xyzw_in_body = [np.sqrt(2)/2, -np.sqrt(2)/2, 0., 0.]
         
         # Set the joint torque
         if joint_name in joint_map:
@@ -790,6 +814,51 @@ class Simulator:
             self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
         
         
+    def _get_rot_from_vert(self,
+                           vec):
+        """
+        Calculates a quaternion representing the transformation of the
+        the [0., 0., 1.] vector to the vector, vec.
+
+        Parameters
+        ----------
+        vec : array-like, shape(3,)
+            The vector from which transformation is calculated.
+
+        Returns
+        -------
+        xyzw_rot : array-like, shape(4,)
+            The JPL quaternion (xyzw) the takes the [0., 0., 1.] vector to the
+            vec vector (without scaling). vec = xyzw_rot*[0., 0., 1.]
+
+        """
+        # Convert to numpy array
+        arr = np.array(vec)
+        
+        # Calculate the norm of vec
+        mag = np.linalg.norm(arr)
+        
+        # If the magnitude is 0, no rotation has occured
+        if mag== 0.:
+            xyzw_rot = [0., 0., 0., 1.]
+            return xyzw_rot
+        
+        # If the magnitude is not zero, get the direction of vec
+        dirn = arr/mag
+        
+        # If the vec is exactly 180 degrees away, set the 180 deg quaternion
+        if (dirn==[0., 0., -1.]).all():
+            xyzw_rot = [0.5*np.sqrt(2), -0.5*np.sqrt(2), 0., 0.]
+            return xyzw_rot
+        
+        # If the vec is some other relative orientation, calculate it
+        q_xyz = np.cross([0,0,1], dirn)
+        q_w = 1.0 + np.dot(dirn, [0,0,1])
+        xyzw_rot = np.append(q_xyz, q_w).tolist()
+        xyzw_rot = xyzw_rot/np.linalg.norm(xyzw_rot)
+        return xyzw_rot
+            
+        
     def apply_force_to_link(self,
                             urdf_obj,
                             link_name,
@@ -832,7 +901,7 @@ class Simulator:
         arr_exists = link_name in self.lin_arr_map
         if (not show_arrow) and vis_exists and arr_exists:
             arrow_name = str(self.lin_arr_map[link_name])
-            self.vis.set_link_color(urdf_name = "Arrows",
+            self.vis.set_link_color(urdf_name = "Force Arrows",
                                     link_name = arrow_name,
                                     stl_path="../shapes/arrow_lin.stl", 
                                     color = [0, 0, 0],
@@ -844,16 +913,7 @@ class Simulator:
             
             # Get the orientation, in body coordinates, of the arrow based
             # on direction of force
-            force_array = np.array(force)
-            force_mag = np.linalg.norm(force_array)
-            if force_mag < 1e-6:
-                arrow_xyzw_in_body = [0., 0., 0., 1.]
-            else:
-                force_dirn = force_array/force_mag
-                qxyz = np.cross(force_dirn, [0,0,1])
-                qw = 1.0 + np.dot(force_dirn, [0,0,1])
-                xyzw_ori = np.append(qxyz, qw).tolist()
-                arrow_xyzw_in_body = xyzw_ori/np.linalg.norm(xyzw_ori)
+            arrow_xyzw_in_body = self._get_rot_from_vert(force)
             
             # Get the link state
             pos, rpy = self.get_link_state(urdf_obj=urdf_obj,
@@ -864,12 +924,12 @@ class Simulator:
             body_xyzw_in_world = np.array(body_xyzw_in_world)
             
             # Combine the two rotations
-            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
+            xyzw_ori = xyzw_quat_mult(body_xyzw_in_world, arrow_xyzw_in_body)
             wxyz_ori = xyzw_to_wxyz(xyzw_ori)
             
             # Get the scale of the arrow based on the magnitude of the force
             scale = np.array([1., 1., 1.])
-            scale = 0.4*force_mag*scale
+            scale = 0.4*np.linalg.norm(force)*scale
             scale=scale.tolist()
             
             # If the arrow already exists, only update its position and ori
