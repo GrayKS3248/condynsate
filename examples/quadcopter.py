@@ -64,7 +64,7 @@ if __name__ == "__main__":
     while(not done):
         # Collect keyboard IO data for torque 1
         if keyboard.is_pressed("a"):
-            torque_1 = max_torque
+            torque_1 = -max_torque
         else:
             torque_1 = 0.
         torque_1 = round(torque_1,4)
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         
         # Collect keyboard IO data for torque 3
         if keyboard.is_pressed("d"):
-            torque_3 = max_torque
+            torque_3 = -max_torque
         else:
             torque_3 = 0.
         torque_3 = round(torque_3,4)
@@ -113,19 +113,19 @@ if __name__ == "__main__":
                                             joint_name="spar4_to_rotor4")
 
         # Color based on velocity
-        rotor1_sat = rotor1_vel / 100.
+        rotor1_sat = abs(rotor1_vel) / 100.
         rotor1_col = cmaps['Reds'](round(255*rotor1_sat))[0:3]
         rotor1_col = format_RGB(rotor1_col,
                                 range_to_255=True)
-        rotor2_sat = rotor2_vel / 100.
+        rotor2_sat = abs(rotor2_vel) / 100.
         rotor2_col = cmaps['Reds'](round(255*rotor2_sat))[0:3]
         rotor2_col = format_RGB(rotor2_col,
                                 range_to_255=True)
-        rotor3_sat = rotor3_vel / 100.
+        rotor3_sat = abs(rotor3_vel) / 100.
         rotor3_col = cmaps['Reds'](round(255*rotor3_sat))[0:3]
         rotor3_col = format_RGB(rotor3_col,
                                 range_to_255=True)
-        rotor4_sat = rotor4_vel / 100.
+        rotor4_sat = abs(rotor4_vel) / 100.
         rotor4_col = cmaps['Reds'](round(255*rotor4_sat))[0:3]
         rotor4_col = format_RGB(rotor4_col,
                                 range_to_255=True)
@@ -145,19 +145,19 @@ if __name__ == "__main__":
         # Set force based on velocity
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor1',
-                                force=[0., 0., 0.05*rotor1_vel],
+                                force=[0., 0.001*rotor1_vel, -0.05*rotor1_vel],
                                 show_arrow=True)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor2',
-                                force=[0., 0., 0.05*rotor2_vel],
+                                force=[0., 0.001*rotor2_vel, 0.05*rotor2_vel],
                                 show_arrow=True)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor3',
-                                force=[0., 0., 0.05*rotor3_vel],
+                                force=[0., 0.001*rotor3_vel, -0.05*rotor3_vel],
                                 show_arrow=True)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor4',
-                                force=[0., 0., 0.05*rotor4_vel],
+                                force=[0., 0.001*rotor4_vel, 0.05*rotor4_vel],
                                 show_arrow=True)
         
         # Set the plot data

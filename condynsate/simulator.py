@@ -615,7 +615,8 @@ class Simulator:
                          urdf_obj,
                          joint_name,
                          torque=0.,
-                         show_arrow=True):
+                         show_arrow=True,
+                         arrow_scale=0.1):
         """
         Sets the torque of a joint of a urdf.
 
@@ -631,6 +632,10 @@ class Simulator:
         show_arrow : bool, optional
             A boolean flag that indicates whether an arrow will be rendered
             on the link to visualize the applied torque.
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.4.
+            
         Returns
         -------
         None.
@@ -639,6 +644,12 @@ class Simulator:
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
+        
+        # Get the joint_id that defines the joint
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+        else:
+            return
         
         # If the arrow isn't meant to be visualized, hide it
         vis_exists = isinstance(self.vis, Visualizer)
@@ -656,11 +667,61 @@ class Simulator:
         if show_arrow and isinstance(self.vis, Visualizer):
             
             # Get the orientation, in body coordinates, of the arrow based
-            # on direction of force
+            # on direction of torque
             if torque>=0.:
                 arrow_xyzw_in_body = [0., 0., 0., 1.]
-            if torque<0.:
+            elif torque<0.:
                 arrow_xyzw_in_body = [np.sqrt(2)/2, -np.sqrt(2)/2, 0., 0.]
+                
+            # Get the child link of the joint to which torque is applied
+            joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+            link_name = list(urdf_obj.link_map.keys())[joint_index]
+                
+            # Get the link state
+            pos, _, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
+                                            link_name=link_name)
+            body_xyzw_in_world = np.array(body_xyzw_in_world)
+            
+            # Combine the two rotations
+            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
+            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+                
+            # Get the scale of the arrow based on the magnitude of the torque
+            scale = arrow_scale*abs(torque)*np.array([1., 1., 1.])
+            scale = scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if link_name in self.ccw_arr_map:
+                arrow_name = str(self.ccw_arr_map[link_name])
+                self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                        link_name = arrow_name,
+                                        stl_path="../shapes/arrow_ccw.stl", 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                self.vis.apply_transform(urdf_name="Torque Arrows",
+                                         link_name=arrow_name,
+                                         scale=scale,
+                                         translate=pos,
+                                         wxyz_quaternion=wxyz_ori)
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.ccw_arr_map[link_name] = len(self.ccw_arr_map)
+                arrow_name = str(self.ccw_arr_map[link_name])
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Torque Arrows",
+                                 link_name=arrow_name,
+                                 stl_path="../shapes/arrow_ccw.stl",
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=pos,
+                                 wxyz_quaternion=wxyz_ori)
+        
         
         # Set the joint torque
         if joint_name in joint_map:
@@ -863,7 +924,8 @@ class Simulator:
                             urdf_obj,
                             link_name,
                             force,
-                            show_arrow=True):
+                            show_arrow=True,
+                            arrow_scale=0.4):
         """
         Applies an external force the to center of a specified link of a urdf.
 
@@ -880,7 +942,10 @@ class Simulator:
         show_arrow : bool, optional
             A boolean flag that indicates whether an arrow will be rendered
             on the link to visualize the applied force.
-
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.4.
+            
         Returns
         -------
         None.
@@ -890,7 +955,7 @@ class Simulator:
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
         
-        # Set the link mass
+        # Get the joint_id that defines the link
         if link_name in link_map:
             joint_id = link_map[link_name]
         else:
@@ -916,32 +981,28 @@ class Simulator:
             arrow_xyzw_in_body = self._get_rot_from_vert(force)
             
             # Get the link state
-            pos, rpy = self.get_link_state(urdf_obj=urdf_obj,
+            pos, _, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
                                            link_name=link_name)
-            
-            # Get cooridnate transforms for link
-            body_xyzw_in_world = self.engine.getQuaternionFromEuler(rpy)
             body_xyzw_in_world = np.array(body_xyzw_in_world)
             
             # Combine the two rotations
-            xyzw_ori = xyzw_quat_mult(body_xyzw_in_world, arrow_xyzw_in_body)
+            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
             wxyz_ori = xyzw_to_wxyz(xyzw_ori)
             
             # Get the scale of the arrow based on the magnitude of the force
-            scale = np.array([1., 1., 1.])
-            scale = 0.4*np.linalg.norm(force)*scale
+            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
             scale=scale.tolist()
             
             # If the arrow already exists, only update its position and ori
             if link_name in self.lin_arr_map:
                 arrow_name = str(self.lin_arr_map[link_name])
-                self.vis.set_link_color(urdf_name = "Arrows",
+                self.vis.set_link_color(urdf_name = "Force Arrows",
                                         link_name = arrow_name,
                                         stl_path="../shapes/arrow_lin.stl", 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
-                self.vis.apply_transform(urdf_name="Arrows",
+                self.vis.apply_transform(urdf_name="Force Arrows",
                                          link_name=arrow_name,
                                          scale=scale,
                                          translate=pos,
@@ -954,7 +1015,7 @@ class Simulator:
                 arrow_name = str(self.lin_arr_map[link_name])
                 
                 # Add an arrow to the visualizer
-                self.vis.add_stl(urdf_name="Arrows",
+                self.vis.add_stl(urdf_name="Force Arrows",
                                  link_name=arrow_name,
                                  stl_path="../shapes/arrow_lin.stl",
                                  color = [0, 0, 0],
@@ -1093,6 +1154,9 @@ class Simulator:
         rpy : array-like, shape (3,)
             The Euler angles (roll, pitch, yaw) of the base of the urdf
             that define the body's orientation in the world.
+        xyzw_ori : array-like, shape(4,)
+            The JPL quaternion (xyzw) that defines the body's orientation
+            in the world.
 
         """
         # Get object id and link map
@@ -1110,7 +1174,7 @@ class Simulator:
         pos = link_states[0][0]
         xyzw_ori = link_states[0][1]
         rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
-        return pos, rpy
+        return pos, rpy, xyzw_ori
     
     
     def add_urdf_to_visualizer(self,
