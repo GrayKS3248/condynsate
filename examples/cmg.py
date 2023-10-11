@@ -169,7 +169,7 @@ if __name__ == "__main__":
                            color=vel_color)
     
         # Set the plot data
-        angle, velocity = sim.get_joint_state(cmg_obj, "world_to_outer")
+        angle, velocity ,_,_,_ = sim.get_joint_state(cmg_obj, "world_to_outer")
         momentum = mass*velocity
         momentums.append(momentum)
         angles.append(angle)

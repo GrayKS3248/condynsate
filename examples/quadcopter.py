@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
                                animation=True,
-                               animation_fr=15.)
+                               animation_fr=3.)
     
     # Load all objects
     ground_obj = sim.load_urdf(urdf_path='./quadcopter_vis/plane.urdf',
@@ -52,7 +52,8 @@ if __name__ == "__main__":
     plot_1 = sim.add_plot_to_animator(title="Potention Energy vs Kinetic",
                                       x_label="Kinetic Energy [J]",
                                       y_label="Potention Energy [J]",
-                                      color="r")
+                                      color="r",
+                                      tail=50)
     sim.open_animator_gui()
     
     # Wait for user input
@@ -63,54 +64,54 @@ if __name__ == "__main__":
     done = False
     while(not done):
         # Collect keyboard IO data for torque 1
+        torque_1 = 0.
         if keyboard.is_pressed("a"):
             torque_1 = -max_torque
-        else:
-            torque_1 = 0.
-        torque_1 = round(torque_1,4)
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar1_to_rotor1',
-                            torque=torque_1)
+                            torque=torque_1,
+                            show_arrow=True,
+                            arrow_scale=0.1)
         
         # Collect keyboard IO data for torque 2
+        torque_2 = 0.
         if keyboard.is_pressed("s"):
             torque_2 = max_torque
-        else:
-            torque_2 = 0.
-        torque_2 = round(torque_2,4)
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar2_to_rotor2',
-                            torque=torque_2)
+                            torque=torque_2,
+                            show_arrow=True,
+                            arrow_scale=0.1)
         
         # Collect keyboard IO data for torque 3
+        torque_3 = 0.
         if keyboard.is_pressed("d"):
             torque_3 = -max_torque
-        else:
-            torque_3 = 0.
-        torque_3 = round(torque_3,4)
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar3_to_rotor3',
-                            torque=torque_3)
+                            torque=torque_3,
+                            show_arrow=True,
+                            arrow_scale=0.1)
         
         # Collect keyboard IO data for torque 4
+        torque_4 = 0.
         if keyboard.is_pressed("f"):
             torque_4 = max_torque
-        else:
-            torque_4 = 0.
-        torque_4 = round(torque_4,4)
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar4_to_rotor4',
-                            torque=torque_4)
+                            torque=torque_4,
+                            show_arrow=True,
+                            arrow_scale=0.1)
         
         # Retrieve the joint states for coloring and force
-        _, rotor1_vel = sim.get_joint_state(urdf_obj=quad_obj,
-                                            joint_name="spar1_to_rotor1")
-        _, rotor2_vel = sim.get_joint_state(urdf_obj=quad_obj,
-                                            joint_name="spar2_to_rotor2")
-        _, rotor3_vel = sim.get_joint_state(urdf_obj=quad_obj,
-                                            joint_name="spar3_to_rotor3")
-        _, rotor4_vel = sim.get_joint_state(urdf_obj=quad_obj,
-                                            joint_name="spar4_to_rotor4")
+        _,rotor1_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                                  joint_name="spar1_to_rotor1")
+        _,rotor2_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                                 joint_name="spar2_to_rotor2")
+        _,rotor3_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                                 joint_name="spar3_to_rotor3")
+        _,rotor4_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                                 joint_name="spar4_to_rotor4")
 
         # Color based on velocity
         rotor1_sat = abs(rotor1_vel) / 100.
@@ -146,19 +147,23 @@ if __name__ == "__main__":
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor1',
                                 force=[0., 0.001*rotor1_vel, -0.05*rotor1_vel],
-                                show_arrow=True)
+                                show_arrow=True,
+                                arrow_scale=0.40)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor2',
                                 force=[0., 0.001*rotor2_vel, 0.05*rotor2_vel],
-                                show_arrow=True)
+                                show_arrow=True,
+                                arrow_scale=0.40)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor3',
                                 force=[0., 0.001*rotor3_vel, -0.05*rotor3_vel],
-                                show_arrow=True)
+                                show_arrow=True,
+                                arrow_scale=0.40)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor4',
                                 force=[0., 0.001*rotor4_vel, 0.05*rotor4_vel],
-                                show_arrow=True)
+                                show_arrow=True,
+                                arrow_scale=0.40)
         
         # Set the plot data
         pos, rpy, vel, ang_vel = sim.get_base_state(quad_obj,

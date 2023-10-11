@@ -634,7 +634,7 @@ class Simulator:
             on the link to visualize the applied torque.
         arrow_scale : float, optional
             The scaling factor that determines the size of the arrow. The
-            default is 0.4.
+            default is 0.1.
             
         Returns
         -------
@@ -678,8 +678,8 @@ class Simulator:
             link_name = list(urdf_obj.link_map.keys())[joint_index]
                 
             # Get the link state
-            pos, _, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
-                                            link_name=link_name)
+            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
+                                                          link_name=link_name)
             body_xyzw_in_world = np.array(body_xyzw_in_world)
             
             # Combine the two rotations
@@ -981,8 +981,8 @@ class Simulator:
             arrow_xyzw_in_body = self._get_rot_from_vert(force)
             
             # Get the link state
-            pos, _, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
-                                           link_name=link_name)
+            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
+                                                          link_name=link_name)
             body_xyzw_in_world = np.array(body_xyzw_in_world)
             
             # Combine the two rotations
@@ -1110,11 +1110,25 @@ class Simulator:
 
         Returns
         -------
-        ang : float
-            The angle, in rads, of the joint.
+        pos : float
+            The position value of this joint.
         vel : float
-            The angular velocity, in rads/s, of the joint.
-
+            The velocity value of this joint.
+        rxn_force : array-like, shape(3,)
+            These are the joint reaction forces. If a torque sensor is enabled
+            for this joint it is [Fx, Fy, Fz]. Without torque sensor, it is
+            [0., 0., 0.].
+        rxn_torque : array-like, shape(3,)
+            These are the joint reaction torques. If a torque sensor is enabled
+            for this joint it is [Mx, My, Mz]. Without torque sensor, it is
+            [0., 0., 0.].
+        applied_torque : float
+            This is the motor torque applied during the last stepSimulation.
+            Note that this only applies in VELOCITY_CONTROL and
+            POSITION_CONTROL. If you use TORQUE_CONTROL then the
+            applied joint motor torque is exactly what you provide, so there is
+            no need to report it separately.
+            
         """
         # Get object id and joint id
         urdf_id = urdf_obj.urdf_id
@@ -1128,9 +1142,14 @@ class Simulator:
         
         # Retrieve the joint states
         states = self.engine.getJointStates(urdf_id, joint_id)
-        ang = states[0][0]
-        vel = states[0][1]
-        return ang, vel
+        states = states[0]
+        pos = states[0]
+        vel = states[1]
+        rxn = states[2]
+        rxn_force = [rxn[0], rxn[1], rxn[2]]
+        rxn_torque = [rxn[3], rxn[4], rxn[5]]
+        applied_torque = states[3]
+        return pos, vel, rxn_force, rxn_torque, applied_torque
     
     
     def get_link_state(self,
@@ -1149,14 +1168,10 @@ class Simulator:
 
         Returns
         -------
-        pos : array-like, shape (3,)
-            The (x,y,z) world coordinates of the base of the urdf.
-        rpy : array-like, shape (3,)
-            The Euler angles (roll, pitch, yaw) of the base of the urdf
-            that define the body's orientation in the world.
-        xyzw_ori : array-like, shape(4,)
-            The JPL quaternion (xyzw) that defines the body's orientation
-            in the world.
+        pos_in_world : array-like, shape (3,)
+            Cartesian position of center of mass.
+        ori_in_world : array-like, shape(4,)
+            Cartesian orientation of center of mass, in quaternion [x,y,z,w]
 
         """
         # Get object id and link map
@@ -1171,10 +1186,10 @@ class Simulator:
         
         # Retrieve the link states
         link_states = self.engine.getLinkStates(urdf_id, link_id)
-        pos = link_states[0][0]
-        xyzw_ori = link_states[0][1]
-        rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
-        return pos, rpy, xyzw_ori
+        link_states = link_states[0]
+        pos_in_world = link_states[0]
+        ori_in_world = link_states[1]
+        return pos, xyzw_ori
     
     
     def add_urdf_to_visualizer(self,
