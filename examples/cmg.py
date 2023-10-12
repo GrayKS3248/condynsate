@@ -103,14 +103,12 @@ if __name__ == "__main__":
         # Set the torque
         sim.set_joint_torque(urdf_obj=cmg_obj,
                              joint_name="outer_to_inner",
-                             torque=torque)
-        
-        # Set the color
-        sim.set_color_from_torque(urdf_obj=cmg_obj,
-                                  joint_name='outer_to_inner',
-                                  torque=torque,
-                                  min_torque=min_torque,
-                                  max_torque=max_torque)
+                             torque=torque,
+                             show_arrow=True,
+                             arrow_scale=2.5,
+                             color=True,
+                             min_torque=min_torque,
+                             max_torque=max_torque)
     
         # Collect keyboard IO data for mass
         if keyboard.is_pressed('e'):
@@ -122,12 +120,12 @@ if __name__ == "__main__":
             if mass < min_mass:
                 mass = min_mass
     
-        # Set the mass mass
+        # Set the mass's mass
         sim.set_link_mass(urdf_obj=cmg_obj,
                           link_name='mass',
                           mass = mass)
         
-        # Set the mass color
+        # Set the mass's color
         sim.set_color_from_mass(urdf_obj=cmg_obj,
                                 link_name='mass',
                                 mass=mass,

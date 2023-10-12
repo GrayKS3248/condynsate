@@ -13,10 +13,6 @@
     <color rgba = "0.96078431 0.50980392 0.11764706 1" />
   </material>
 
-  <material name = "forest-green">
-    <color rgba = "0.2156862 0.309803 0.184313725 1" />
-  </material>
-
   <link name="world"/>
 
   <link name="outer">

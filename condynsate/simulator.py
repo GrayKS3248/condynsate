@@ -263,20 +263,26 @@ class Simulator:
                                           contact_stiffness=-1.0)
             
             # Set the linear and angular damping to 0 (eliminate drag)
-            self.set_joint_lin_ang_damp(urdf_obj,
+            self.set_joint_lin_ang_damp(urdf_obj=urdf_obj,
                                         joint_name=joint_name,
                                         linear_damping=0.,
                                         angular_damping=0.)
             
             # Set damping of joints to 0 (eliminate joint friction)
-            self.set_joint_damping(urdf_obj,
+            self.set_joint_damping(urdf_obj=urdf_obj,
                                    joint_name=joint_name,
                                    damping=0.)
 
-            # Disable velocity control if the joint is not a base joint
+            # If not a base joint
             if joint_map[joint_name]!=-1:
-                self._disable_joint_vel_con(urdf_obj,
+                # Disable velocity control
+                self._disable_joint_vel_con(urdf_obj=urdf_obj,
                                             joint_name=joint_name)
+
+                # Enable the force and torque sensor
+                self.set_joint_force_sensor(urdf_obj=urdf_obj,
+                                            joint_name=joint_name,
+                                            enable_sensor=True)
 
         # Add urdf objects to the visualizer if visualization is occuring
         if isinstance(self.vis, Visualizer):
@@ -369,6 +375,41 @@ class Simulator:
                                                   joint_id,
                                                   mode,
                                                   forces=[0])
+    
+    
+    def set_joint_force_sensor(self,
+                               urdf_obj,
+                               joint_name,
+                               enable_sensor):
+        """
+        Enables reaction force, moment, and applied torque to be calculated
+        for a joint.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint for which the sensor is set.
+        joint_name : string
+            The name of the joint whose sensor is set.
+        enable_sensor : bool
+            A boolean flag that indicates whether to enable or disable the
+            force sensor.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Set the joint velocity
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+            self.engine.enableJointForceTorqueSensor(urdf_id,
+                                                     joint_id,
+                                                     enable_sensor)
     
     
     def set_joint_lin_ang_damp(self,
@@ -612,12 +653,100 @@ class Simulator:
                                                   targetVelocities=velocity)
     
     
+    def _get_joint_axis(self,
+                        urdf_obj,
+                        joint_name):
+        """
+        Get the joint axis in local frame.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose axis is found.
+        joint_name : string
+            The name of the joint axis is returned.
+
+        Returns
+        -------
+        axis : array-like, shape(3,)
+            The joint axis in local frame.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Set the joint velocity
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+            info = self.engine.getJointInfo(urdf_id,
+                                            joint_id)
+            axis = info[13]
+            axis=np.array(axis).tolist()
+            return axis
+    
+    
+    def _get_rot_from_2_vecs(self,
+                             vec1,
+                             vec2):
+        """
+        Calculates a quaternion representing the transformation of the
+        the vec1 vector to the vec2 vector.
+
+        Parameters
+        ----------
+        vec1 : array-like, shape(3,)
+            The initial vector.
+        vec2 : array-like, shape(3,)
+            The vector to which the transformation is calculated.
+            
+        Returns
+        -------
+        xyzw_rot : array-like, shape(4,)
+            The JPL quaternion (xyzw) the takes the vec1 vector to the
+            vec2 vector (without scaling). vec2 = xyzw_rot*vec1
+
+        """
+        # Convert to numpy array
+        arr1 = np.array(vec1)
+        arr2 = np.array(vec2)
+        
+        # Calculate the norm of vec
+        mag1 = np.linalg.norm(arr1)
+        mag2 = np.linalg.norm(arr2)
+        
+        # If either magnitude is 0, no rotation can be found.
+        if mag1==0. or mag2==0.:
+            xyzw_rot = [0., 0., 0., 1.]
+            return xyzw_rot
+        
+        # If the magnitude is not zero, get the direction of vec
+        dirn1 = arr1/mag1
+        dirn2 = arr2/mag2
+        
+        # If the vec is exactly 180 degrees away, set the 180 deg quaternion
+        if (dirn2==-1*dirn1).all():
+            xyzw_rot = [0.5*np.sqrt(2), -0.5*np.sqrt(2), 0., 0.]
+            return xyzw_rot
+        
+        # If the vec is some other relative orientation, calculate it
+        q_xyz = np.cross(dirn1, dirn2)
+        q_w = 1.0 + np.dot(dirn1, dirn2)
+        xyzw_rot = np.append(q_xyz, q_w).tolist()
+        xyzw_rot = xyzw_rot/np.linalg.norm(xyzw_rot)
+        return xyzw_rot
+    
+    
+    
     def set_joint_torque(self,
                          urdf_obj,
                          joint_name,
                          torque=0.,
-                         show_arrow=True,
-                         arrow_scale=0.1):
+                         show_arrow=False,
+                         arrow_scale=0.1,
+                         color=False,
+                         min_torque=-1.,
+                         max_torque=1.):
         """
         Sets the torque of a joint of a urdf.
 
@@ -632,10 +761,19 @@ class Simulator:
             The torque in NM to be applied to the joint. The default is 0..
         show_arrow : bool, optional
             A boolean flag that indicates whether an arrow will be rendered
-            on the link to visualize the applied torque.
+            on the link to visualize the applied torque. The default is False.
         arrow_scale : float, optional
             The scaling factor that determines the size of the arrow. The
             default is 0.1.
+        color : bool, optional
+            A boolean flag that indicates whether the child link will be
+            colored based on the applied torque. The default is False.
+        min_torque : float, optional
+            The minimum value of torque that can be applied. Used for link
+            coloring. Does nothing if color is not enabled. The default is -1..
+        max_torque : float, optional
+            The maximum value of torque that can be applied. Used for link
+            coloring. Does nothing if color is not enabled. The default is 1..
             
         Returns
         -------
@@ -666,13 +804,14 @@ class Simulator:
         
         # Handle torque arrow visualization
         if show_arrow and isinstance(self.vis, Visualizer):
-            
             # Get the orientation, in body coordinates, of the arrow based
             # on direction of torque
+            axis = self._get_joint_axis(urdf_obj=urdf_obj,
+                                        joint_name=joint_name)
             if torque>=0.:
-                arrow_xyzw_in_body = [0., 0., 0., 1.]
-            elif torque<0.:
-                arrow_xyzw_in_body = [np.sqrt(2)/2, -np.sqrt(2)/2, 0., 0.]
+                arrow_xyzw_in_body = self._get_rot_from_2_vecs([0,0,1], axis)
+            else:
+                arrow_xyzw_in_body = self._get_rot_from_2_vecs([0,0,-1], axis)
                 
             # Get the child link of the joint to which torque is applied
             joint_index = list(urdf_obj.link_map.values()).index(joint_id)
@@ -722,6 +861,14 @@ class Simulator:
                                  scale=scale,
                                  translate=pos,
                                  wxyz_quaternion=wxyz_ori)
+        
+        # Set the link color based on applied torque if option is selected.
+        if color and isinstance(self.vis, Visualizer):
+            self.set_color_from_torque(urdf_obj=urdf_obj,
+                                       joint_name=joint_name,
+                                       torque=torque,
+                                       min_torque=min_torque,
+                                       max_torque=max_torque)
         
         
         # Set the joint torque
@@ -1072,51 +1219,6 @@ class Simulator:
         self.set_link_color(urdf_obj=urdf_obj,
                             link_name=link_name,
                             color=col)
-        
-        
-    def _get_rot_from_vert(self,
-                           vec):
-        """
-        Calculates a quaternion representing the transformation of the
-        the [0., 0., 1.] vector to the vector, vec.
-
-        Parameters
-        ----------
-        vec : array-like, shape(3,)
-            The vector from which transformation is calculated.
-
-        Returns
-        -------
-        xyzw_rot : array-like, shape(4,)
-            The JPL quaternion (xyzw) the takes the [0., 0., 1.] vector to the
-            vec vector (without scaling). vec = xyzw_rot*[0., 0., 1.]
-
-        """
-        # Convert to numpy array
-        arr = np.array(vec)
-        
-        # Calculate the norm of vec
-        mag = np.linalg.norm(arr)
-        
-        # If the magnitude is 0, no rotation has occured
-        if mag== 0.:
-            xyzw_rot = [0., 0., 0., 1.]
-            return xyzw_rot
-        
-        # If the magnitude is not zero, get the direction of vec
-        dirn = arr/mag
-        
-        # If the vec is exactly 180 degrees away, set the 180 deg quaternion
-        if (dirn==[0., 0., -1.]).all():
-            xyzw_rot = [0.5*np.sqrt(2), -0.5*np.sqrt(2), 0., 0.]
-            return xyzw_rot
-        
-        # If the vec is some other relative orientation, calculate it
-        q_xyz = np.cross([0,0,1], dirn)
-        q_w = 1.0 + np.dot(dirn, [0,0,1])
-        xyzw_rot = np.append(q_xyz, q_w).tolist()
-        xyzw_rot = xyzw_rot/np.linalg.norm(xyzw_rot)
-        return xyzw_rot
             
         
     def apply_force_to_link(self,
@@ -1177,7 +1279,7 @@ class Simulator:
             
             # Get the orientation, in body coordinates, of the arrow based
             # on direction of force
-            arrow_xyzw_in_body = self._get_rot_from_vert(force)
+            arrow_xyzw_in_body = self._get_rot_from_2_vecs([0,0,1], force)
             
             # Get the link state
             pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
