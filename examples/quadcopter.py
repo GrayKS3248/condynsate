@@ -151,8 +151,8 @@ if __name__ == "__main__":
                                 arrow_scale=0.40)
         
         # Set the plot data
-        pos, rpy, vel, ang_vel = sim.get_base_state(quad_obj,
-                                                    body_coords=True)
+        pos,_,vel,_ = sim.get_base_state(quad_obj,
+                                         body_coords=False)
         pot_eng = 0.1*9.81*(pos[2]+3.)
         kin_eng = 0.5*0.1*(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2])
         pot_engs.append(pot_eng)

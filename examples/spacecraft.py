@@ -42,18 +42,15 @@ if __name__ == "__main__":
         cart_coords.append(cart_coord)
     
     # Load the constellation
-    constellation_objs = []
     for base_pos in cart_coords:
         urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=base_pos,
                                 fixed=True,
                                 update_vis=False)
-        constellation_objs.append(urdf_id)
     
     # Load random stars
     np.random.seed(10)
-    star_objs = []
-    n_stars = 75
+    n_stars = 50
     rand_depths = depth + (np.random.rand(n_stars)*0.2-0.1)*depth
     positions = np.random.randn(n_stars,3)
     positions = positions / np.linalg.norm(positions,axis=1).reshape(n_stars,1)
@@ -63,24 +60,18 @@ if __name__ == "__main__":
                                 position=positions[i],
                                 fixed=True,
                                 update_vis=False)
-        star_objs.append(urdf_id)
-    
-    # Set the camera scale and orientation
-    sim.transform_camera(scale = [4., 4., 4.],
-                         yaw=-2.5,
-                         pitch=-0.1)
     
     # Set background and lighting properties
     sim.set_background(top_color=[10,10,10],
                        bot_color=[20, 20, 40])
-    sim.set_spotlight(on = False)
+    sim.set_spotlight(on=False)
     sim.set_fill_light(on=False)
-    sim.set_posx_pt_light(on = True,
-                          intensity = 0.5,
-                          distance = 10.)
-    sim.set_negx_pt_light(on = True,
-                          intensity = 0.5,
-                          distance = 10.)
+    sim.set_posx_pt_light(on=True,
+                          intensity=0.5,
+                          distance=10.)
+    sim.set_negx_pt_light(on=True,
+                          intensity=0.5,
+                          distance=10.)
     sim.set_ambient_light(on=True,
                           intensity=0.65)
 
@@ -117,7 +108,6 @@ if __name__ == "__main__":
     sim.await_keypress(key="enter")
     
     # Run the simulation
-    elapsed_time = 0
     done = False
     while(not done):      
         # Collect keyboard IO data for torques
@@ -182,8 +172,8 @@ if __name__ == "__main__":
         
         # Set the plot data
         times.append(sim.time)
-        pos, rpy, vel, ang_vel = sim.get_base_state(craft_obj,
-                                                    body_coords=True)
+        _,rpy,_,_ = sim.get_base_state(urdf_obj=craft_obj,
+                                       body_coords=True)
         rolls.append(rpy[0])
         pitches.append(rpy[1])
         yaws.append(rpy[2])
