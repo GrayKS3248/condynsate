@@ -14,7 +14,9 @@ from pybullet_utils import bullet_client as bc
 from .visualizer import Visualizer
 from .animator import Animator
 from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
+from .utils import xyzw_quat_mult
 import keyboard
+from matplotlib import colormaps as cmaps
 
 
 ###############################################################################
@@ -111,6 +113,10 @@ class Simulator:
         
         # Keep track of all urdfs loaded to simulator
         self.urdf_objs = []
+        
+        # Keep track of all the arrows loaded into the visualizer
+        self.lin_arr_map = {}
+        self.ccw_arr_map = {}
         
         # Create a visualizer
         if visualization:
@@ -609,7 +615,9 @@ class Simulator:
     def set_joint_torque(self,
                          urdf_obj,
                          joint_name,
-                         torque=0.):
+                         torque=0.,
+                         show_arrow=True,
+                         arrow_scale=0.1):
         """
         Sets the torque of a joint of a urdf.
 
@@ -622,7 +630,13 @@ class Simulator:
             specified in the .urdf file
         torque : float, optional
             The torque in NM to be applied to the joint. The default is 0..
-
+        show_arrow : bool, optional
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied torque.
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.1.
+            
         Returns
         -------
         None.
@@ -631,6 +645,84 @@ class Simulator:
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
+        
+        # Get the joint_id that defines the joint
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+        else:
+            return
+        
+        # If the arrow isn't meant to be visualized, hide it
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = joint_name in self.ccw_arr_map
+        if (not show_arrow) and vis_exists and arr_exists:
+            arrow_name = str(self.ccw_arr_map[joint_name])
+            self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                    link_name = arrow_name,
+                                    stl_path="../shapes/arrow_ccw.stl", 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    e = 0.0)
+        
+        # Handle torque arrow visualization
+        if show_arrow and isinstance(self.vis, Visualizer):
+            
+            # Get the orientation, in body coordinates, of the arrow based
+            # on direction of torque
+            if torque>=0.:
+                arrow_xyzw_in_body = [0., 0., 0., 1.]
+            elif torque<0.:
+                arrow_xyzw_in_body = [np.sqrt(2)/2, -np.sqrt(2)/2, 0., 0.]
+                
+            # Get the child link of the joint to which torque is applied
+            joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+            link_name = list(urdf_obj.link_map.keys())[joint_index]
+                
+            # Get the link state
+            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
+                                                          link_name=link_name)
+            body_xyzw_in_world = np.array(body_xyzw_in_world)
+            
+            # Combine the two rotations
+            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
+            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+                
+            # Get the scale of the arrow based on the magnitude of the torque
+            scale = arrow_scale*abs(torque)*np.array([1., 1., 1.])
+            scale = scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if link_name in self.ccw_arr_map:
+                arrow_name = str(self.ccw_arr_map[link_name])
+                self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                        link_name = arrow_name,
+                                        stl_path="../shapes/arrow_ccw.stl", 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                self.vis.apply_transform(urdf_name="Torque Arrows",
+                                         link_name=arrow_name,
+                                         scale=scale,
+                                         translate=pos,
+                                         wxyz_quaternion=wxyz_ori)
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.ccw_arr_map[link_name] = len(self.ccw_arr_map)
+                arrow_name = str(self.ccw_arr_map[link_name])
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Torque Arrows",
+                                 link_name=arrow_name,
+                                 stl_path="../shapes/arrow_ccw.stl",
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=pos,
+                                 wxyz_quaternion=wxyz_ori)
+        
         
         # Set the joint torque
         if joint_name in joint_map:
@@ -643,44 +735,39 @@ class Simulator:
                                                   forces=torque)
             
             
-    def reset_joint(self,
-                    urdf_obj,
-                    joint_name,
-                    position=0.,
-                    velocity=0.):
+    def set_link_mass(self,
+                      urdf_obj,
+                      link_name,
+                      mass=0.):
         """
-        Resets a joint to a desired position and velocity.
-    
+        Sets the mass of a link in a urdf.
+
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj that contains that joint whose torque is being set.
-        joint_name : string
-            The name of the joint whose torque is set. The joint name is
-            specified in the .urdf file.
-        position : float, optional
-            The position to which the joint is reset. The default is 0..
-        velocity : float, optional
-            The velocity to which the joint is reset. The default is 0..
-    
+            A URDF_Obj that contains that link whose mass is being set.
+        link_name : string
+            The name of the link whose mass is set. The link name is
+            specified in the .urdf file unless the link is the base link of the
+            urdf, then its name is always 'base'.
+        mass : float, optional
+            The mass to set in kg. The default is 0..
+
         Returns
         -------
         None.
-    
+
         """
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
-        joint_map = urdf_obj.joint_map
+        link_map = urdf_obj.link_map
         
-        # Set the joint torque
-        if joint_name in joint_map:
-            joint_id = joint_map[joint_name]
-            self.engine.resetJointState(urdf_id,
-                                        joint_id,
-                                        position,
-                                        velocity)
+        # Set the link mass
+        if link_name in link_map:
+            joint_id = link_map[link_name]
+            self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
 
-            
+
     def set_link_color(self,
                           urdf_obj,
                           link_name,
@@ -749,25 +836,28 @@ class Simulator:
                                    color = color,
                                    transparent = transparent,
                                    opacity = opacity)
-        
-        
-    def set_link_mass(self,
-                      urdf_obj,
-                      link_name,
-                      mass=0.):
+
+
+    def set_color_from_pos(self,
+                           urdf_obj,
+                           joint_name,
+                           min_pos,
+                           max_pos):
         """
-        Sets the mass of a link in a urdf.
+        Sets the color of the child link of a specified joint based on the 
+        position of the joint.
 
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link whose mass is being set.
-        link_name : string
-            The name of the link whose mass is set. The link name is
-            specified in the .urdf file unless the link is the base link of the
-            urdf, then its name is always 'base'.
-        mass : float, optional
-            The mass to set in kg. The default is 0..
+            A URDF_Obj that contains that joint whose position is measured.
+        joint_name : string
+            The name of the joint whose position is used to set the link color.
+            The joint name is specified in the .urdf file.
+        min_pos : float
+            The minimum possible position of the given joint.
+        max_pos : float
+            The maximum possible position of the given joint.
 
         Returns
         -------
@@ -775,19 +865,266 @@ class Simulator:
 
         """
         # Gather information from urdf_obj
-        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+    
+        # If the joint is invalid, do nothing
+        if (joint_name in joint_map):
+            joint_id = joint_map[joint_name]
+        else:
+            return
+        
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # Get the joint position
+        pos,_,_,_,_ = self.get_joint_state(urdf_obj=urdf_obj,
+                                           joint_name=joint_name)
+        
+        # Calculate the position saturation and get the associated color
+        sat = np.clip((pos - min_pos) / (max_pos - min_pos), 0.0, 1.0)
+        col = cmaps['coolwarm'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
+        
+        # Get the child link of the joint from which pos is measured
+        joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+        link_name = list(urdf_obj.link_map.keys())[joint_index]
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
+        
+        
+    def set_color_from_vel(self,
+                           urdf_obj,
+                           joint_name,
+                           min_vel=-100.,
+                           max_vel=100.):
+        """
+        Sets the color of the child link of a specified joint based on the 
+        velocity of the joint.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose velocity is measured.
+        joint_name : string
+            The name of the joint whose velocity is used to set the link color.
+            The joint name is specified in the .urdf file.
+        min_vel : float, optional
+            The minimum possible velocity of the given joint. The default is
+            -100.. Unless otherwise set, PyBullet does not allow joint
+            velocities to exceed a magnitude of 100.
+        max_vel : float, optional
+            The maximum possible velocity of the given joint. The default is
+            100.. Unless otherwise set, PyBullet does not allow joint
+            velocities to exceed a magnitude of 100.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        joint_map = urdf_obj.joint_map
+    
+        # If the joint is invalid, do nothing
+        if (joint_name in joint_map):
+            joint_id = joint_map[joint_name]
+        else:
+            return
+        
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # Get the joint velocity
+        _,vel,_,_,_ = self.get_joint_state(urdf_obj=urdf_obj,
+                                           joint_name=joint_name)
+        
+        # Calculate the velocity saturation and get the associated color
+        sat = np.clip((vel - min_vel) / (max_vel - min_vel), 0.0, 1.0)
+        col = cmaps['coolwarm'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
+        
+        # Get the child link of the joint from which vel is measured
+        joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+        link_name = list(urdf_obj.link_map.keys())[joint_index]
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
+    
+    
+    def set_color_from_torque(self,
+                              urdf_obj,
+                              joint_name,
+                              torque,
+                              min_torque=-1.,
+                              max_torque=1.):
+        """
+        Sets the color of the child link of a specified joint based on the 
+        torque applied to the joint.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose torque is measured.
+        joint_name : string
+            The name of the joint whose torque is used to set the link color.
+            The joint name is specified in the .urdf file.
+        torque : float
+            The torque applied to the joint.
+        min_torque : float, optional
+            The minimum possible torque to apply to the joint. The default is
+            -1..
+        max_torque : float, optional
+            The maximum possible torque to apply to the joint. The default is
+            
+            1..
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        joint_map = urdf_obj.joint_map
+    
+        # If the joint is invalid, do nothing
+        if (joint_name in joint_map):
+            joint_id = joint_map[joint_name]
+        else:
+            return
+        
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # Calculate the torque saturation and get the associated color
+        sat = (torque - min_torque) / (max_torque - min_torque)
+        sat = np.clip(sat, 0.0, 1.0)
+        col = cmaps['coolwarm'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
+        
+        # Get the child link of the joint from which torque is measured
+        joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+        link_name = list(urdf_obj.link_map.keys())[joint_index]
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
+        
+        
+    def set_color_from_mass(self,
+                            urdf_obj,
+                            link_name,
+                            mass,
+                            min_mass,
+                            max_mass):
+        """
+        Sets the color of a link based on its mass.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose torque is measured.
+        link_name : string
+            The name of the link whose mass is used to set the link color.
+            The link name is specified in the .urdf file.
+        mass : float
+            The mass of the link.
+        min_mass : float, optional
+            The minimum possible mass of the link.
+        max_mass : float, optional
+            The maximum possible mass of the link.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
         link_map = urdf_obj.link_map
+    
+        # If the link is invalid, do nothing
+        if not (link_name in link_map):
+            return
         
-        # Set the link mass
-        if link_name in link_map:
-            joint_id = link_map[link_name]
-            self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
         
+        # Calculate the mass saturation and get the associated color
+        sat = (mass - min_mass) / (max_mass - min_mass)
+        sat = np.clip(sat, 0.0, 1.0)
+        col = cmaps['binary'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
+        
+        
+    def _get_rot_from_vert(self,
+                           vec):
+        """
+        Calculates a quaternion representing the transformation of the
+        the [0., 0., 1.] vector to the vector, vec.
+
+        Parameters
+        ----------
+        vec : array-like, shape(3,)
+            The vector from which transformation is calculated.
+
+        Returns
+        -------
+        xyzw_rot : array-like, shape(4,)
+            The JPL quaternion (xyzw) the takes the [0., 0., 1.] vector to the
+            vec vector (without scaling). vec = xyzw_rot*[0., 0., 1.]
+
+        """
+        # Convert to numpy array
+        arr = np.array(vec)
+        
+        # Calculate the norm of vec
+        mag = np.linalg.norm(arr)
+        
+        # If the magnitude is 0, no rotation has occured
+        if mag== 0.:
+            xyzw_rot = [0., 0., 0., 1.]
+            return xyzw_rot
+        
+        # If the magnitude is not zero, get the direction of vec
+        dirn = arr/mag
+        
+        # If the vec is exactly 180 degrees away, set the 180 deg quaternion
+        if (dirn==[0., 0., -1.]).all():
+            xyzw_rot = [0.5*np.sqrt(2), -0.5*np.sqrt(2), 0., 0.]
+            return xyzw_rot
+        
+        # If the vec is some other relative orientation, calculate it
+        q_xyz = np.cross([0,0,1], dirn)
+        q_w = 1.0 + np.dot(dirn, [0,0,1])
+        xyzw_rot = np.append(q_xyz, q_w).tolist()
+        xyzw_rot = xyzw_rot/np.linalg.norm(xyzw_rot)
+        return xyzw_rot
+            
         
     def apply_force_to_link(self,
                             urdf_obj,
                             link_name,
-                            force=[0., 0., 0.]):
+                            force,
+                            show_arrow=True,
+                            arrow_scale=0.4):
         """
         Applies an external force the to center of a specified link of a urdf.
 
@@ -799,10 +1136,15 @@ class Simulator:
             The name of the link to which the force is applied.
             The link name is specified in the .urdf file unless the link is
             the base link of the urdf, then its name is always 'base'.
-        force : array-like, shape (3,), optional
+        force : array-like, shape (3,)
             The force vector in body coordinates to apply to the link.
-            The default is [0., 0., 0.].
-
+        show_arrow : bool, optional
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied force.
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.4.
+            
         Returns
         -------
         None.
@@ -812,11 +1154,75 @@ class Simulator:
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
         
-        # Set the link mass
+        # Get the joint_id that defines the link
         if link_name in link_map:
             joint_id = link_map[link_name]
         else:
             return
+        
+        # If the arrow isn't meant to be visualized, hide it
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = link_name in self.lin_arr_map
+        if (not show_arrow) and vis_exists and arr_exists:
+            arrow_name = str(self.lin_arr_map[link_name])
+            self.vis.set_link_color(urdf_name = "Force Arrows",
+                                    link_name = arrow_name,
+                                    stl_path="../shapes/arrow_lin.stl", 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    opacity = 0.0)
+        
+        # Handle force arrow visualization
+        if show_arrow and isinstance(self.vis, Visualizer):
+            
+            # Get the orientation, in body coordinates, of the arrow based
+            # on direction of force
+            arrow_xyzw_in_body = self._get_rot_from_vert(force)
+            
+            # Get the link state
+            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
+                                                          link_name=link_name)
+            body_xyzw_in_world = np.array(body_xyzw_in_world)
+            
+            # Combine the two rotations
+            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
+            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+            
+            # Get the scale of the arrow based on the magnitude of the force
+            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
+            scale=scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if link_name in self.lin_arr_map:
+                arrow_name = str(self.lin_arr_map[link_name])
+                self.vis.set_link_color(urdf_name = "Force Arrows",
+                                        link_name = arrow_name,
+                                        stl_path="../shapes/arrow_lin.stl", 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                self.vis.apply_transform(urdf_name="Force Arrows",
+                                         link_name=arrow_name,
+                                         scale=scale,
+                                         translate=pos,
+                                         wxyz_quaternion=wxyz_ori)
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.lin_arr_map[link_name] = len(self.lin_arr_map)
+                arrow_name = str(self.lin_arr_map[link_name])
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Force Arrows",
+                                 link_name=arrow_name,
+                                 stl_path="../shapes/arrow_lin.stl",
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=pos,
+                                 wxyz_quaternion=wxyz_ori)
         
         # Apply the external force
         self.engine.applyExternalForce(urdf_id,
@@ -903,11 +1309,25 @@ class Simulator:
 
         Returns
         -------
-        ang : float
-            The angle, in rads, of the joint.
+        pos : float
+            The position value of this joint.
         vel : float
-            The angular velocity, in rads/s, of the joint.
-
+            The velocity value of this joint.
+        rxn_force : array-like, shape(3,)
+            These are the joint reaction forces. If a torque sensor is enabled
+            for this joint it is [Fx, Fy, Fz]. Without torque sensor, it is
+            [0., 0., 0.].
+        rxn_torque : array-like, shape(3,)
+            These are the joint reaction torques. If a torque sensor is enabled
+            for this joint it is [Mx, My, Mz]. Without torque sensor, it is
+            [0., 0., 0.].
+        applied_torque : float
+            This is the motor torque applied during the last stepSimulation.
+            Note that this only applies in VELOCITY_CONTROL and
+            POSITION_CONTROL. If you use TORQUE_CONTROL then the
+            applied joint motor torque is exactly what you provide, so there is
+            no need to report it separately.
+            
         """
         # Get object id and joint id
         urdf_id = urdf_obj.urdf_id
@@ -921,9 +1341,54 @@ class Simulator:
         
         # Retrieve the joint states
         states = self.engine.getJointStates(urdf_id, joint_id)
-        ang = states[0][0]
-        vel = states[0][1]
-        return ang, vel
+        states = states[0]
+        pos = states[0]
+        vel = states[1]
+        rxn = states[2]
+        rxn_force = [rxn[0], rxn[1], rxn[2]]
+        rxn_torque = [rxn[3], rxn[4], rxn[5]]
+        applied_torque = states[3]
+        return pos, vel, rxn_force, rxn_torque, applied_torque
+    
+    
+    def get_link_state(self,
+                       urdf_obj,
+                       link_name):
+        """
+        Gets the rigid body position and orientation of a link in world
+        cooridinates.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contrains the link whose state is being measured.
+        link_name : string
+            The name of the link to measure.
+
+        Returns
+        -------
+        pos_in_world : array-like, shape (3,)
+            Cartesian position of center of mass.
+        ori_in_world : array-like, shape(4,)
+            Cartesian orientation of center of mass, in quaternion [x,y,z,w]
+
+        """
+        # Get object id and link map
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Get the link id
+        if link_name in link_map:
+            link_id = [link_map[link_name]]
+        else:
+            return
+        
+        # Retrieve the link states
+        link_states = self.engine.getLinkStates(urdf_id, link_id)
+        link_states = link_states[0]
+        pos_in_world = link_states[0]
+        ori_in_world = link_states[1]
+        return pos_in_world, ori_in_world
     
     
     def add_urdf_to_visualizer(self,

@@ -52,6 +52,67 @@ def wxyz_to_xyzw(wxyz_quaternion):
     return xyzw_quaternion
 
 
+def xyzw_quat_mult(q1, q2):
+    """
+    Gets the resultant JPL quaternion (xyzw) that arises from first 
+    applying the q1 (xyzw) rotation then applying the q2 (xyzw) rotation.
+
+    Parameters
+    ----------
+    q1 : array-like, shape(4,)
+        The first xyzw quaternion applied.
+    q2 : array-like, shape(4,)
+        The second xyzw quaternion applied.
+
+    Returns
+    -------
+    q3_xyzw : array-like, shape(4,)
+        The resultant transformation from first doing the q1 transformation
+        then doing the q2 transformation. Given in JPL form (xyzw).
+
+    """
+    q1_wxyz = xyzw_to_wxyz(q1)
+    q2_wxyz = xyzw_to_wxyz(q2)
+    q3_wxyz = wxyz_quat_mult(q1_wxyz, q2_wxyz)
+    q3_xyzw = wxyz_to_xyzw(q3_wxyz)
+    return q3_xyzw
+
+
+def wxyz_quat_mult(q1, q2):
+    """
+    Gets the resultant Hamilton quaternion (wxyz) that arises from first 
+    applying the q1 (wxyz) rotation then applying the q2 (wxyz) rotation.
+
+    Parameters
+    ----------
+    q1 : array-like, shape(4,)
+        The first wxyz quaternion applied.
+    q2 : array-like, shape(4,)
+        The second wxyz quaternion applied.
+
+    Returns
+    -------
+    q3_wxyz : array-like, shape(4,)
+        The resultant transformation from first doing the q1 transformation
+        then doing the q2 transformation. Given in Hamilton form (wxyz).
+
+    """
+    a1 = q1[0]
+    b1 = q1[1]
+    c1 = q1[2]
+    d1 = q1[3]
+    a2 = q2[0]
+    b2 = q2[1]
+    c2 = q2[2]
+    d2 = q2[3]
+    q3w = a2*a1 - b2*b1 - c2*c1 - d2*d1
+    q3x = a2*b1 + b2*a1 + c2*d1 - d2*c1
+    q3y = a2*c1 - b2*d1 + c2*a1 + d2*b1
+    q3z = a2*d1 + b2*c1 - c2*b1 + d2*a1
+    q3_wxyz = [q3w, q3x, q3y, q3z]
+    return q3_wxyz
+
+
 def wxyz_from_euler(roll, pitch, yaw):
     """
     Converts Euler angles to a Hamilton quaternion (wxyz)

@@ -3,9 +3,7 @@
 ###############################################################################
 import numpy as np
 import keyboard
-from matplotlib import colormaps as cmaps
 import condynsate
-from condynsate.utils import format_RGB
 
 
 ###############################################################################
@@ -57,7 +55,7 @@ if __name__ == "__main__":
     min_torque = -10.
     
     # Variables to track station velocity
-    max_vel = 1.
+    max_vel = 0.05
     min_vel = 0.
     station_vel = 0.025
     
@@ -114,53 +112,51 @@ if __name__ == "__main__":
             l_torque = l_torque + 0.25*max_torque
         if keyboard.is_pressed("a"):
             r_torque = r_torque + 0.25*max_torque
-           
-        # Set the torque and torque colors
-        r_torque = round(r_torque,2)
-        r_torque_sat = (r_torque - min_torque) / (max_torque - min_torque)
-        r_color = cmaps['coolwarm'](round(255*r_torque_sat))[0:3]
-        r_color = format_RGB(r_color,
-                             range_to_255=True)
-        l_torque = round(l_torque,2)
-        l_torque_sat = (l_torque - min_torque) / (max_torque - min_torque)
-        l_color = cmaps['coolwarm'](round(255*l_torque_sat))[0:3]
-        l_color = format_RGB(l_color,
-                             range_to_255=True)
+        
+        # Set wheel torque
         sim.set_joint_torque(urdf_obj=segbot_obj,
                              joint_name='chassis_to_right_wheel',
-                             torque=r_torque)
-        sim.set_link_color(urdf_obj=segbot_obj,
-                            link_name='right_wheel',
-                            color=r_color)
+                             torque=r_torque,
+                             show_arrow=True,
+                             arrow_scale=0.1)
         sim.set_joint_torque(urdf_obj=segbot_obj,
                              joint_name='chassis_to_left_wheel',
-                             torque=l_torque)
-        sim.set_link_color(urdf_obj=segbot_obj,
-                            link_name='left_wheel',
-                            color=l_color)
+                             torque=l_torque,
+                             show_arrow=True,
+                             arrow_scale=0.1)
+        
+        # Set wheel color from torque
+        sim.set_color_from_torque(urdf_obj=segbot_obj,
+                                  joint_name='chassis_to_right_wheel',
+                                  torque=r_torque,
+                                  min_torque=min_torque,
+                                  max_torque=max_torque)
+        sim.set_color_from_torque(urdf_obj=segbot_obj,
+                                  joint_name='chassis_to_left_wheel',
+                                  torque=l_torque,
+                                  min_torque=min_torque,
+                                  max_torque=max_torque)
         
         # Collect keyboard IO data for station vel
         if keyboard.is_pressed("e"):
-            station_vel = station_vel + 0.001*(max_vel - min_vel)
+            station_vel = station_vel + 0.005*(max_vel - min_vel)
             if station_vel > max_vel:
                 station_vel = max_vel
         elif keyboard.is_pressed("q"):
-            station_vel = station_vel - 0.001*(max_vel - min_vel)
+            station_vel = station_vel - 0.005*(max_vel - min_vel)
             if station_vel < min_vel:
                 station_vel = min_vel
-           
-        # Set the torque and torque colors
-        station_vel = round(station_vel,4)
-        vel_sat = (station_vel - min_vel) / (max_vel - min_vel)
-        vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
-        vel_color = format_RGB(vel_color,
-                               range_to_255=True)
+        
+        # Set station velocity
         sim.set_joint_velocity(urdf_obj=station_obj,
                                joint_name="world_to_station",
                                velocity=station_vel)
-        sim.set_link_color(urdf_obj=station_obj,
-                           link_name="station",
-                           color=vel_color)
+        
+        # Set station color
+        sim.set_color_from_vel(urdf_obj=station_obj,
+                               joint_name='world_to_station',
+                               min_vel=min_vel,
+                               max_vel=max_vel)
         
         # Set the plot data
         times.append(sim.time)
