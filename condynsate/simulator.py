@@ -877,17 +877,17 @@ class Simulator:
         if not isinstance(self.vis, Visualizer):
             return    
         
-        # Get the joint velocity
+        # Get the joint position
         pos,_,_,_,_ = self.get_joint_state(urdf_obj=urdf_obj,
                                            joint_name=joint_name)
         
-        # Calculate the velocity saturation and get the associated color
+        # Calculate the position saturation and get the associated color
         sat = np.clip((pos - min_pos) / (max_pos - min_pos), 0.0, 1.0)
         col = cmaps['coolwarm'](round(255*sat))[0:3]
         col = format_RGB(col,
                          range_to_255=True)
         
-        # Get the child link of the joint from which vel is measured
+        # Get the child link of the joint from which pos is measured
         joint_index = list(urdf_obj.link_map.values()).index(joint_id)
         link_name = list(urdf_obj.link_map.keys())[joint_index]
         
@@ -1012,9 +1012,61 @@ class Simulator:
         col = format_RGB(col,
                          range_to_255=True)
         
-        # Get the child link of the joint from which vel is measured
+        # Get the child link of the joint from which torque is measured
         joint_index = list(urdf_obj.link_map.values()).index(joint_id)
         link_name = list(urdf_obj.link_map.keys())[joint_index]
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
+        
+        
+    def set_color_from_mass(self,
+                            urdf_obj,
+                            link_name,
+                            mass,
+                            min_mass,
+                            max_mass):
+        """
+        Sets the color of a link based on its mass.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose torque is measured.
+        link_name : string
+            The name of the link whose mass is used to set the link color.
+            The link name is specified in the .urdf file.
+        mass : float
+            The mass of the link.
+        min_mass : float, optional
+            The minimum possible mass of the link.
+        max_mass : float, optional
+            The maximum possible mass of the link.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        link_map = urdf_obj.link_map
+    
+        # If the link is invalid, do nothing
+        if not (link_name in link_map):
+            return
+        
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # Calculate the mass saturation and get the associated color
+        sat = (mass - min_mass) / (max_mass - min_mass)
+        sat = np.clip(sat, 0.0, 1.0)
+        col = cmaps['binary'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
         
         # Set link color
         self.set_link_color(urdf_obj=urdf_obj,

@@ -3,9 +3,7 @@
 ###############################################################################
 import numpy as np
 import keyboard
-from matplotlib import colormaps as cmaps
 import condynsate
-from condynsate.utils import format_RGB
 
 
 ###############################################################################
@@ -124,17 +122,17 @@ if __name__ == "__main__":
             if mass < min_mass:
                 mass = min_mass
     
-        # Set the mass and link color based on keyboard inputs
-        mass_sat = (mass - min_mass) / (max_mass - min_mass)
-        mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
-        mass_color = format_RGB(mass_color,
-                                range_to_255=True)
+        # Set the mass mass
         sim.set_link_mass(urdf_obj=cmg_obj,
                           link_name='mass',
                           mass = mass)
-        sim.set_link_color(urdf_obj=cmg_obj,
-                           link_name='mass',
-                           color=mass_color)
+        
+        # Set the mass color
+        sim.set_color_from_mass(urdf_obj=cmg_obj,
+                                link_name='mass',
+                                mass=mass,
+                                min_mass=min_mass,
+                                max_mass=max_mass)
     
         # Collect keyboard IO data for wheel vel
         if keyboard.is_pressed('w'):
