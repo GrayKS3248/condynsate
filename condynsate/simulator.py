@@ -320,7 +320,7 @@ class Simulator:
 
         # Check if the urdf object has a base link
         data = self.engine.getVisualShapeData(urdf_id)
-        if data[0][1] == -1:
+        if data[0][1] == -1:        
             joint_map['base'] = -1
             link_map['base'] = -1
         
@@ -578,7 +578,10 @@ class Simulator:
     def set_joint_position(self,
                            urdf_obj,
                            joint_name,
-                           position=0.):
+                           position=0.,
+                           color=False,
+                           min_pos=None,
+                           max_pos=None):
         """
         Sets the position of a joint of a urdf .
 
@@ -592,6 +595,17 @@ class Simulator:
         position : float, optional
             The position in rad to be applied to the joint.
             The default is 0..
+        color : bool, optional
+            A boolean flag that indicates whether to color the joint based on
+            its position. The default is False.
+        min_pos : float
+            The minimum possible position. Used only for coloring. Value is 
+            ignored if color is False. The default is None. Must be set to 
+            a float value for coloring to be applied.
+        max_pos : float
+            The maximum possible position. Used only for coloring. Value is 
+            ignored if color is False. The default is None. Must be set to 
+            a float value for coloring to be applied.
 
         Returns
         -------
@@ -612,12 +626,22 @@ class Simulator:
                                                   mode,
                                                   forces=[1000.],
                                                   targetPositions=position)
-    
+           
+            # Color the link based on the position
+            if color and min_pos!=None and max_pos!=None:
+                self.set_color_from_pos(urdf_obj=urdf_obj,
+                                        joint_name=joint_name,
+                                        min_pos=min_pos, 
+                                        max_pos=max_pos)
+                
     
     def set_joint_velocity(self,
                           urdf_obj,
                           joint_name,
-                          velocity=0.):
+                          velocity=0.,
+                          color=False,
+                          min_vel=-100.,
+                          max_vel=100.):
         """
         Sets the velocity of a joint of a urdf.
 
@@ -631,7 +655,16 @@ class Simulator:
         velocity : float, optional
             The velocity in rad/s to be applied to the joint.
             The default is 0..
-
+        color : bool, optional
+            A boolean flag that indicates whether to color the joint based on
+            its velocity. The default is False.
+        min_vel : float
+            The minimum possible velocity. Used only for coloring. Value is 
+            ignored if color is False. The default is -100..
+        max_vel : float
+            The maximum possible velocity. Used only for coloring. Value is 
+            ignored if color is False. The default is 100..
+            
         Returns
         -------
         None.
@@ -651,6 +684,13 @@ class Simulator:
                                                   mode,
                                                   forces=[1000.],
                                                   targetVelocities=velocity)
+            
+            # Color the link based on the velocity
+            if color:
+                self.set_color_from_vel(urdf_obj=urdf_obj,
+                                        joint_name=joint_name,
+                                        min_vel=min_vel, 
+                                        max_vel=max_vel)
     
     
     def _get_joint_axis(self,
@@ -882,10 +922,49 @@ class Simulator:
                                                   forces=torque)
             
             
+    def get_link_mass(self,
+                      urdf_obj,
+                      link_name):
+        """
+        Gets the current mass of a link.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link whose mass is measured.
+        link_name : string
+            The name of the link whose mass is measured. The link name is
+            specified in the .urdf file unless the link is the base link of the
+            urdf, then its name is always 'base'.
+
+        Returns
+        -------
+        mass : float
+            The mass of the link in Kg. If link is not found, returns none.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Ensure the link exists
+        if not (link_name in link_map):
+           return None
+            
+        # Get the mass
+        link_id = link_map[link_name]
+        info = self.engine.getDynamicsInfo(urdf_id,link_id)
+        mass = info[0]
+        return mass
+            
+            
     def set_link_mass(self,
                       urdf_obj,
                       link_name,
-                      mass=0.):
+                      mass=0.,
+                      color=False,
+                      min_mass=None,
+                      max_mass=None):
         """
         Sets the mass of a link in a urdf.
 
@@ -899,7 +978,18 @@ class Simulator:
             urdf, then its name is always 'base'.
         mass : float, optional
             The mass to set in kg. The default is 0..
-
+        color : bool, optional
+            A boolean flag that indicates whether to color the joint based on
+            its velocity. The default is False.
+        min_mass : float
+            The minimum possible mass. Used only for coloring. Value is 
+            ignored if color is False. The default is None. Must be set to 
+            a float value for coloring to be applied.
+        max_mass : float
+            The maximum possible mass. Used only for coloring. Value is 
+            ignored if color is False. The default is None. Must be set to 
+            a float value for coloring to be applied.
+            
         Returns
         -------
         None.
@@ -913,6 +1003,13 @@ class Simulator:
         if link_name in link_map:
             joint_id = link_map[link_name]
             self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
+            
+            # Color the link based on the position
+            if color and min_mass!=None and max_mass!=None:
+                self.set_color_from_mass(urdf_obj=urdf_obj,
+                                         link_name=link_name,
+                                         min_mass=min_mass, 
+                                         max_mass=max_mass)
 
 
     def set_link_color(self,
@@ -1172,7 +1269,6 @@ class Simulator:
     def set_color_from_mass(self,
                             urdf_obj,
                             link_name,
-                            mass,
                             min_mass,
                             max_mass):
         """
@@ -1185,8 +1281,6 @@ class Simulator:
         link_name : string
             The name of the link whose mass is used to set the link color.
             The link name is specified in the .urdf file.
-        mass : float
-            The mass of the link.
         min_mass : float, optional
             The minimum possible mass of the link.
         max_mass : float, optional
@@ -1207,6 +1301,10 @@ class Simulator:
         # If there is no visualizer, do not color
         if not isinstance(self.vis, Visualizer):
             return    
+        
+        # Get the mass
+        mass = self.get_link_mass(urdf_obj=urdf_obj,
+                                  link_name=link_name)
         
         # Calculate the mass saturation and get the associated color
         sat = (mass - min_mass) / (max_mass - min_mass)

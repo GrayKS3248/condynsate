@@ -16,10 +16,8 @@ if __name__ == "__main__":
                                animation_fr=15.)
     
     # Load all urdf objects
-    station_radius = 19.59
-    station_center = np.array([0., 0., 19.355])
     station_obj = sim.load_urdf(urdf_path='./segbot_vis/station.urdf',
-                                position=station_center,
+                                position=[0., 0., 19.355],
                                 roll=np.pi/2.0,
                                 fixed=True,
                                 update_vis=True)
@@ -28,11 +26,6 @@ if __name__ == "__main__":
                                 yaw=np.pi,
                                 fixed=False,
                                 update_vis=True)
-    
-    # Set the camera scale and orientation
-    sim.transform_camera(scale = [1.5, 1.5, 1.5],
-                         pitch=-0.2,
-                         yaw = 0.3)
     
     # Set the chassis and wheel weights
     sim.set_link_mass(urdf_obj=segbot_obj,
@@ -45,19 +38,14 @@ if __name__ == "__main__":
                       link_name="left_wheel",
                       mass=20.)
     
-    # Set the camera scale and orientation
-    sim.transform_camera(scale = [1.5, 1.5, 1.5],
-                         pitch=-0.1,
-                         yaw=-1.3)
-    
     # Variables to track applied torque
     max_torque = 10.
     min_torque = -10.
     
     # Variables to track station velocity
-    max_vel = 0.05
-    min_vel = 0.
-    station_vel = 0.025
+    max_stat_vel = 0.05
+    min_stat_vel = 0.
+    stat_vel = 0.5 * (min_stat_vel + max_stat_vel)
     
     # Create desired plots then open the animator
     times=[]
@@ -80,17 +68,8 @@ if __name__ == "__main__":
     sim.await_keypress(key="enter")
     
     # Run the simulation
-    elapsed_time = 0
     done = False
     while(not done):
-        # Get the current base position of the robot and change
-        # gravity accordingly.
-        # This simulates centrifugal gravity from the station
-        seg_pos, _, _, _ = np.array(sim.get_base_state(segbot_obj))
-        diff = seg_pos - station_center
-        dirn = diff / np.linalg.norm(diff)
-        grav = 9.81 * dirn
-        sim.set_gravity(grav)
         
         # Collect keyboard IO data for torque
         if keyboard.is_pressed("shift+w"):
@@ -113,7 +92,17 @@ if __name__ == "__main__":
         if keyboard.is_pressed("a"):
             r_torque = r_torque + 0.25*max_torque
         
-        # Set wheel torque
+        # Collect keyboard IO data for station vel
+        if keyboard.is_pressed("e"):
+            stat_vel = stat_vel + 0.005*(max_stat_vel - min_stat_vel)
+            if stat_vel > max_stat_vel:
+                stat_vel = max_stat_vel
+        elif keyboard.is_pressed("q"):
+            stat_vel = stat_vel - 0.005*(max_stat_vel - min_stat_vel)
+            if stat_vel < min_stat_vel:
+                stat_vel = min_stat_vel
+        
+        # Set wheel torques
         sim.set_joint_torque(urdf_obj=segbot_obj,
                              joint_name='chassis_to_right_wheel',
                              torque=r_torque,
@@ -131,33 +120,30 @@ if __name__ == "__main__":
                              min_torque=min_torque,
                              max_torque=max_torque)
         
-        # Collect keyboard IO data for station vel
-        if keyboard.is_pressed("e"):
-            station_vel = station_vel + 0.005*(max_vel - min_vel)
-            if station_vel > max_vel:
-                station_vel = max_vel
-        elif keyboard.is_pressed("q"):
-            station_vel = station_vel - 0.005*(max_vel - min_vel)
-            if station_vel < min_vel:
-                station_vel = min_vel
-        
         # Set station velocity
         sim.set_joint_velocity(urdf_obj=station_obj,
                                joint_name="world_to_station",
-                               velocity=station_vel)
+                               velocity=stat_vel,
+                               color=True,
+                               min_vel=min_stat_vel,
+                               max_vel=max_stat_vel)
         
-        # Set station color
-        sim.set_color_from_vel(urdf_obj=station_obj,
-                               joint_name='world_to_station',
-                               min_vel=min_vel,
-                               max_vel=max_vel)
+        # Get the rigid body states of the segbot and station
+        seg_pos,_,_,seg_ang_vel = sim.get_base_state(urdf_obj=segbot_obj,
+                                                     body_coords=True)
+        stat_pos,_,_,_ = sim.get_base_state(urdf_obj=station_obj,
+                                            body_coords=False)
+        
+        # This simulates centrifugal gravity from the station
+        seg_relative_pos = np.array(seg_pos) - np.array(stat_pos)
+        seg_relative_dirn = seg_relative_pos / np.linalg.norm(seg_relative_pos)
+        gravity = 9.81 * seg_relative_dirn
+        sim.set_gravity(gravity=gravity)
         
         # Set the plot data
         times.append(sim.time)
-        torques.append(r_torque + l_torque)
-        pos, rpy, vel, ang_vel = sim.get_base_state(segbot_obj,
-                                                    body_coords=True)
-        pitch_vels.append(ang_vel[1])
+        torques.append(0.5*(r_torque + l_torque))
+        pitch_vels.append(seg_ang_vel[1])
         sim.set_plot_data(plot_1, times, torques)
         sim.set_plot_data(plot_2, times, pitch_vels)
         
