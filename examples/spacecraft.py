@@ -3,9 +3,7 @@
 ###############################################################################
 import numpy as np
 import keyboard
-from matplotlib import colormaps as cmaps
 import condynsate
-from condynsate.utils import format_RGB
 
 
 ###############################################################################
@@ -26,26 +24,26 @@ if __name__ == "__main__":
     # Generate star cartesian coordinates based on their depth and
     # equatorial astronomical coords (right ascension, declination)
     depth = 55.
-    equatorials = np.array([[-0.06, -0.09],
-                            [ 0.00, -0.09],
-                            [ 0.06, -0.09],
-                            [ 0.00, -0.03],
-                            [ 0.00,  0.03],
-                            [-0.06,  0.09],
-                            [ 0.00,  0.09],
-                            [ 0.06,  0.09]])
-    cartesians = []
-    for equatorial in equatorials:
-        s_a = np.sin(equatorial[0])
-        c_a = np.cos(equatorial[0])
-        s_d = np.sin(equatorial[1])
-        c_d = np.cos(equatorial[1])
-        cartesian = np.array([c_a*c_d, s_a*c_d, s_d]) * depth
-        cartesians.append(cartesian)
+    eqi_coords = np.array([[-0.06, -0.09],
+                           [ 0.00, -0.09],
+                           [ 0.06, -0.09],
+                           [ 0.00, -0.03],
+                           [ 0.00,  0.03],
+                           [-0.06,  0.09],
+                           [ 0.00,  0.09],
+                           [ 0.06,  0.09]])
+    cart_coords = []
+    for coord in eqi_coords:
+        s_a = np.sin(coord[0])
+        c_a = np.cos(coord[0])
+        s_d = np.sin(coord[1])
+        c_d = np.cos(coord[1])
+        cart_coord = np.array([c_a*c_d, s_a*c_d, s_d]) * depth
+        cart_coords.append(cart_coord)
     
     # Load the constellation
     constellation_objs = []
-    for base_pos in cartesians:
+    for base_pos in cart_coords:
         urdf_id = sim.load_urdf(urdf_path='./spacecraft_vis/sphere.urdf',
                                 position=base_pos,
                                 fixed=True,
@@ -122,81 +120,67 @@ if __name__ == "__main__":
     elapsed_time = 0
     done = False
     while(not done):      
-        # Collect keyboard IO data for torque 1
+        # Collect keyboard IO data for torques
         if keyboard.is_pressed("a"):
             torque_1 = min_torque
         elif keyboard.is_pressed("q"):
             torque_1 = max_torque
         else:
             torque_1 = 0.0
-        torque_1 = round(torque_1,4)
-        torque_1_sat = (torque_1 - min_torque) / (max_torque - min_torque)
-        torque_1_color = cmaps['coolwarm'](round(255*torque_1_sat))[0:3]
-        torque_1_color = format_RGB(torque_1_color,
-                                    range_to_255=True)
-        sim.set_joint_torque(urdf_obj=craft_obj,
-                            joint_name='bus_to_wheel_1',
-                            torque=torque_1)
-        sim.set_link_color(urdf_obj=craft_obj,
-                           link_name='wheel_1',
-                           color=torque_1_color)
-        
-        # Collect keyboard IO data for torque 2
         if keyboard.is_pressed("s"):
             torque_2 = min_torque
         elif keyboard.is_pressed("w"):
             torque_2 = max_torque
         else:
             torque_2 = 0.0
-        torque_2 = round(torque_2,4)
-        torque_2_sat = (torque_2 - min_torque) / (max_torque - min_torque)
-        torque_2_color = cmaps['coolwarm'](round(255*torque_2_sat))[0:3]
-        torque_2_color = format_RGB(torque_2_color,
-                                    range_to_255=True)
-        sim.set_joint_torque(urdf_obj=craft_obj,
-                            joint_name='bus_to_wheel_2',
-                            torque=torque_2)
-        sim.set_link_color(urdf_obj=craft_obj,
-                           link_name='wheel_2',
-                           color=torque_2_color)
-        
-        # Collect keyboard IO data for torque 3
         if keyboard.is_pressed("d"):
             torque_3 = min_torque
         elif keyboard.is_pressed("e"):
             torque_3 = max_torque
         else:
             torque_3 = 0.0
-        torque_3 = round(torque_3,4)
-        torque_3_sat = (torque_3 - min_torque) / (max_torque - min_torque)
-        torque_3_color = cmaps['coolwarm'](round(255*torque_3_sat))[0:3]
-        torque_3_color = format_RGB(torque_3_color,
-                                    range_to_255=True)
-        sim.set_joint_torque(urdf_obj=craft_obj,
-                            joint_name='bus_to_wheel_3',
-                            torque=torque_3)
-        sim.set_link_color(urdf_obj=craft_obj,
-                           link_name='wheel_3',
-                           color=torque_3_color)
-        
-        # Collect keyboard IO data for torque 4
         if keyboard.is_pressed("f"):
             torque_4 = min_torque
         elif keyboard.is_pressed("r"):
             torque_4 = max_torque
         else:
             torque_4 = 0.0
-        torque_4 = round(torque_4,4)
-        torque_4_sat = (torque_4 - min_torque) / (max_torque - min_torque)
-        torque_4_color = cmaps['coolwarm'](round(255*torque_4_sat))[0:3]
-        torque_4_color = format_RGB(torque_4_color,
-                                    range_to_255=True)
+
+        # Set wheel torques
+        sim.set_joint_torque(urdf_obj=craft_obj,
+                            joint_name='bus_to_wheel_1',
+                            torque=torque_1)
+        sim.set_joint_torque(urdf_obj=craft_obj,
+                            joint_name='bus_to_wheel_2',
+                            torque=torque_2)
+        sim.set_joint_torque(urdf_obj=craft_obj,
+                            joint_name='bus_to_wheel_3',
+                            torque=torque_3)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_4',
                             torque=torque_4)
-        sim.set_link_color(urdf_obj=craft_obj,
-                           link_name='wheel_4',
-                           color=torque_4_color)
+        
+        # Set wheel colors
+        sim.set_color_from_torque(urdf_obj=craft_obj,
+                                  joint_name='bus_to_wheel_1',
+                                  torque=torque_1,
+                                  min_torque=min_torque,
+                                  max_torque=max_torque)
+        sim.set_color_from_torque(urdf_obj=craft_obj,
+                                  joint_name='bus_to_wheel_2',
+                                  torque=torque_2,
+                                  min_torque=min_torque,
+                                  max_torque=max_torque)
+        sim.set_color_from_torque(urdf_obj=craft_obj,
+                                  joint_name='bus_to_wheel_3',
+                                  torque=torque_3,
+                                  min_torque=min_torque,
+                                  max_torque=max_torque)
+        sim.set_color_from_torque(urdf_obj=craft_obj,
+                                  joint_name='bus_to_wheel_4',
+                                  torque=torque_4,
+                                  min_torque=min_torque,
+                                  max_torque=max_torque)
         
         # Set the plot data
         times.append(sim.time)

@@ -59,24 +59,18 @@ if __name__ == "__main__":
     max_torque = 0.5
     min_torque = -0.5
     torque = 0.5*(max_torque + min_torque)
-    torque_sat = (torque - min_torque) / (max_torque - min_torque)
-    inner_color = cmaps['coolwarm'](round(255*torque_sat))[0:3]
     
     # Variables to track mass
     prev_mass = 0.0
     max_mass = 2.0
     min_mass = 0.0
     mass = 0.5*(max_mass + min_mass)
-    mass_sat = (mass - min_mass) / (max_mass - min_mass)
-    mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
     
     # Variables to track wheel velocity
     prev_vel = 0.0
     max_vel = 100.0
     min_vel = 0.0
     vel = 0.5 * (max_vel + min_vel)
-    vel_sat = (vel - min_vel) / (max_vel - min_vel)
-    vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
     
     # Create desired plots then open the animator
     momentums = []
@@ -108,18 +102,17 @@ if __name__ == "__main__":
         else:
             torque = 0.0
     
-        # Set the torque and link color based on keyboard inputs
-        torque = round(torque,2)
-        torque_sat = (torque - min_torque) / (max_torque - min_torque)
-        torque_color = cmaps['coolwarm'](round(255*torque_sat))[0:3]
-        torque_color = format_RGB(torque_color,
-                                  range_to_255=True)
+        # Set the torque
         sim.set_joint_torque(urdf_obj=cmg_obj,
                              joint_name="outer_to_inner",
                              torque=torque)
-        sim.set_link_color(urdf_obj=cmg_obj,
-                           link_name='inner',
-                           color=torque_color)
+        
+        # Set the color
+        sim.set_color_from_torque(urdf_obj=cmg_obj,
+                                  joint_name='outer_to_inner',
+                                  torque=torque,
+                                  min_torque=min_torque,
+                                  max_torque=max_torque)
     
         # Collect keyboard IO data for mass
         if keyboard.is_pressed('e'):
@@ -132,7 +125,6 @@ if __name__ == "__main__":
                 mass = min_mass
     
         # Set the mass and link color based on keyboard inputs
-        mass = round(mass,2)
         mass_sat = (mass - min_mass) / (max_mass - min_mass)
         mass_color = cmaps['binary'](round(255*mass_sat))[0:3]
         mass_color = format_RGB(mass_color,
@@ -154,19 +146,16 @@ if __name__ == "__main__":
             if vel < min_vel:
                 vel = min_vel
     
-        # Set the wheel vel and link color based on keyboard inputs
-        vel = round(vel,2)
-        vel_sat = (vel - min_vel) / (max_vel - min_vel)
-        vel_color = cmaps['Reds'](round(255*vel_sat))[0:3]
-        vel_color = format_RGB(vel_color,
-                               range_to_255=True)
-    
+        # Set the wheel vel
         sim.set_joint_velocity(urdf_obj=cmg_obj,
                               joint_name="inner_to_wheel",
                               velocity=vel)
-        sim.set_link_color(urdf_obj=cmg_obj,
-                           link_name='wheel',
-                           color=vel_color)
+        
+        # Set the wheel color
+        sim.set_color_from_vel(urdf_obj=cmg_obj,
+                               joint_name='inner_to_wheel',
+                               min_vel=-100.,
+                               max_vel=100.)
     
         # Set the plot data
         angle, velocity ,_,_,_ = sim.get_joint_state(cmg_obj, "world_to_outer")

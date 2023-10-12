@@ -16,6 +16,7 @@ from .animator import Animator
 from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
 from .utils import xyzw_quat_mult
 import keyboard
+from matplotlib import colormaps as cmaps
 
 
 ###############################################################################
@@ -734,44 +735,39 @@ class Simulator:
                                                   forces=torque)
             
             
-    def reset_joint(self,
-                    urdf_obj,
-                    joint_name,
-                    position=0.,
-                    velocity=0.):
+    def set_link_mass(self,
+                      urdf_obj,
+                      link_name,
+                      mass=0.):
         """
-        Resets a joint to a desired position and velocity.
-    
+        Sets the mass of a link in a urdf.
+
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj that contains that joint whose torque is being set.
-        joint_name : string
-            The name of the joint whose torque is set. The joint name is
-            specified in the .urdf file.
-        position : float, optional
-            The position to which the joint is reset. The default is 0..
-        velocity : float, optional
-            The velocity to which the joint is reset. The default is 0..
-    
+            A URDF_Obj that contains that link whose mass is being set.
+        link_name : string
+            The name of the link whose mass is set. The link name is
+            specified in the .urdf file unless the link is the base link of the
+            urdf, then its name is always 'base'.
+        mass : float, optional
+            The mass to set in kg. The default is 0..
+
         Returns
         -------
         None.
-    
+
         """
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
-        joint_map = urdf_obj.joint_map
+        link_map = urdf_obj.link_map
         
-        # Set the joint torque
-        if joint_name in joint_map:
-            joint_id = joint_map[joint_name]
-            self.engine.resetJointState(urdf_id,
-                                        joint_id,
-                                        position,
-                                        velocity)
+        # Set the link mass
+        if link_name in link_map:
+            joint_id = link_map[link_name]
+            self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
 
-            
+
     def set_link_color(self,
                           urdf_obj,
                           link_name,
@@ -840,25 +836,28 @@ class Simulator:
                                    color = color,
                                    transparent = transparent,
                                    opacity = opacity)
-        
-        
-    def set_link_mass(self,
-                      urdf_obj,
-                      link_name,
-                      mass=0.):
+
+
+    def set_color_from_pos(self,
+                           urdf_obj,
+                           joint_name,
+                           min_pos,
+                           max_pos):
         """
-        Sets the mass of a link in a urdf.
+        Sets the color of the child link of a specified joint based on the 
+        position of the joint.
 
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link whose mass is being set.
-        link_name : string
-            The name of the link whose mass is set. The link name is
-            specified in the .urdf file unless the link is the base link of the
-            urdf, then its name is always 'base'.
-        mass : float, optional
-            The mass to set in kg. The default is 0..
+            A URDF_Obj that contains that joint whose position is measured.
+        joint_name : string
+            The name of the joint whose position is used to set the link color.
+            The joint name is specified in the .urdf file.
+        min_pos : float
+            The minimum possible position of the given joint.
+        max_pos : float
+            The maximum possible position of the given joint.
 
         Returns
         -------
@@ -866,13 +865,161 @@ class Simulator:
 
         """
         # Gather information from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        link_map = urdf_obj.link_map
+        joint_map = urdf_obj.joint_map
+    
+        # If the joint is invalid, do nothing
+        if (joint_name in joint_map):
+            joint_id = joint_map[joint_name]
+        else:
+            return
         
-        # Set the link mass
-        if link_name in link_map:
-            joint_id = link_map[link_name]
-            self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # Get the joint velocity
+        pos,_,_,_,_ = self.get_joint_state(urdf_obj=urdf_obj,
+                                           joint_name=joint_name)
+        
+        # Calculate the velocity saturation and get the associated color
+        sat = np.clip((pos - min_pos) / (max_pos - min_pos), 0.0, 1.0)
+        col = cmaps['coolwarm'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
+        
+        # Get the child link of the joint from which vel is measured
+        joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+        link_name = list(urdf_obj.link_map.keys())[joint_index]
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
+        
+        
+    def set_color_from_vel(self,
+                           urdf_obj,
+                           joint_name,
+                           min_vel=-100.,
+                           max_vel=100.):
+        """
+        Sets the color of the child link of a specified joint based on the 
+        velocity of the joint.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose velocity is measured.
+        joint_name : string
+            The name of the joint whose velocity is used to set the link color.
+            The joint name is specified in the .urdf file.
+        min_vel : float, optional
+            The minimum possible velocity of the given joint. The default is
+            -100.. Unless otherwise set, PyBullet does not allow joint
+            velocities to exceed a magnitude of 100.
+        max_vel : float, optional
+            The maximum possible velocity of the given joint. The default is
+            100.. Unless otherwise set, PyBullet does not allow joint
+            velocities to exceed a magnitude of 100.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        joint_map = urdf_obj.joint_map
+    
+        # If the joint is invalid, do nothing
+        if (joint_name in joint_map):
+            joint_id = joint_map[joint_name]
+        else:
+            return
+        
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # Get the joint velocity
+        _,vel,_,_,_ = self.get_joint_state(urdf_obj=urdf_obj,
+                                           joint_name=joint_name)
+        
+        # Calculate the velocity saturation and get the associated color
+        sat = np.clip((vel - min_vel) / (max_vel - min_vel), 0.0, 1.0)
+        col = cmaps['coolwarm'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
+        
+        # Get the child link of the joint from which vel is measured
+        joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+        link_name = list(urdf_obj.link_map.keys())[joint_index]
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
+    
+    
+    def set_color_from_torque(self,
+                              urdf_obj,
+                              joint_name,
+                              torque,
+                              min_torque=-1.,
+                              max_torque=1.):
+        """
+        Sets the color of the child link of a specified joint based on the 
+        torque applied to the joint.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose torque is measured.
+        joint_name : string
+            The name of the joint whose torque is used to set the link color.
+            The joint name is specified in the .urdf file.
+        torque : float
+            The torque applied to the joint.
+        min_torque : float, optional
+            The minimum possible torque to apply to the joint. The default is
+            -1..
+        max_torque : float, optional
+            The maximum possible torque to apply to the joint. The default is
+            
+            1..
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        joint_map = urdf_obj.joint_map
+    
+        # If the joint is invalid, do nothing
+        if (joint_name in joint_map):
+            joint_id = joint_map[joint_name]
+        else:
+            return
+        
+        # If there is no visualizer, do not color
+        if not isinstance(self.vis, Visualizer):
+            return    
+        
+        # Calculate the torque saturation and get the associated color
+        sat = (torque - min_torque) / (max_torque - min_torque)
+        sat = np.clip(sat, 0.0, 1.0)
+        col = cmaps['coolwarm'](round(255*sat))[0:3]
+        col = format_RGB(col,
+                         range_to_255=True)
+        
+        # Get the child link of the joint from which vel is measured
+        joint_index = list(urdf_obj.link_map.values()).index(joint_id)
+        link_name = list(urdf_obj.link_map.keys())[joint_index]
+        
+        # Set link color
+        self.set_link_color(urdf_obj=urdf_obj,
+                            link_name=link_name,
+                            color=col)
         
         
     def _get_rot_from_vert(self,
@@ -1189,7 +1336,7 @@ class Simulator:
         link_states = link_states[0]
         pos_in_world = link_states[0]
         ori_in_world = link_states[1]
-        return pos, xyzw_ori
+        return pos_in_world, ori_in_world
     
     
     def add_urdf_to_visualizer(self,

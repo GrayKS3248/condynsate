@@ -1,11 +1,8 @@
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-
 import keyboard
-from matplotlib import colormaps as cmaps
 import condynsate
-from condynsate.utils import format_RGB
 
 
 ###############################################################################
@@ -103,65 +100,53 @@ if __name__ == "__main__":
                             show_arrow=True,
                             arrow_scale=0.1)
         
-        # Retrieve the joint states for coloring and force
-        _,rotor1_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                                  joint_name="spar1_to_rotor1")
-        _,rotor2_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                                 joint_name="spar2_to_rotor2")
-        _,rotor3_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                                 joint_name="spar3_to_rotor3")
-        _,rotor4_vel,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                                 joint_name="spar4_to_rotor4")
-
         # Color based on velocity
-        rotor1_sat = abs(rotor1_vel) / 100.
-        rotor1_col = cmaps['Reds'](round(255*rotor1_sat))[0:3]
-        rotor1_col = format_RGB(rotor1_col,
-                                range_to_255=True)
-        rotor2_sat = abs(rotor2_vel) / 100.
-        rotor2_col = cmaps['Reds'](round(255*rotor2_sat))[0:3]
-        rotor2_col = format_RGB(rotor2_col,
-                                range_to_255=True)
-        rotor3_sat = abs(rotor3_vel) / 100.
-        rotor3_col = cmaps['Reds'](round(255*rotor3_sat))[0:3]
-        rotor3_col = format_RGB(rotor3_col,
-                                range_to_255=True)
-        rotor4_sat = abs(rotor4_vel) / 100.
-        rotor4_col = cmaps['Reds'](round(255*rotor4_sat))[0:3]
-        rotor4_col = format_RGB(rotor4_col,
-                                range_to_255=True)
-        sim.set_link_color(urdf_obj=quad_obj,
-                           link_name='rotor1',
-                           color=rotor1_col)
-        sim.set_link_color(urdf_obj=quad_obj,
-                           link_name='rotor2',
-                           color=rotor2_col)
-        sim.set_link_color(urdf_obj=quad_obj,
-                           link_name='rotor3',
-                           color=rotor3_col)
-        sim.set_link_color(urdf_obj=quad_obj,
-                           link_name='rotor4',
-                           color=rotor4_col)
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                               joint_name='spar1_to_rotor1',
+                               min_vel=-100.,
+                               max_vel=100.)
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                               joint_name='spar2_to_rotor2',
+                               min_vel=-100.,
+                               max_vel=100.)
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                               joint_name='spar3_to_rotor3',
+                               min_vel=-100.,
+                               max_vel=100.)
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                               joint_name='spar4_to_rotor4',
+                               min_vel=-100.,
+                               max_vel=100.)
+        
+        # Retrieve the joint states for force calculation
+        _,vel_1,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar1_to_rotor1")
+        _,vel_2,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar2_to_rotor2")
+        _,vel_3,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar3_to_rotor3")
+        _,vel_4,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar4_to_rotor4")
         
         # Set force based on velocity
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor1',
-                                force=[0., 0.001*rotor1_vel, -0.05*rotor1_vel],
+                                force=[0., 0.001*vel_1, -0.05*vel_1],
                                 show_arrow=True,
                                 arrow_scale=0.40)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor2',
-                                force=[0., 0.001*rotor2_vel, 0.05*rotor2_vel],
+                                force=[0., 0.001*vel_2, 0.05*vel_2],
                                 show_arrow=True,
                                 arrow_scale=0.40)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor3',
-                                force=[0., 0.001*rotor3_vel, -0.05*rotor3_vel],
+                                force=[0., 0.001*vel_3, -0.05*vel_3],
                                 show_arrow=True,
                                 arrow_scale=0.40)
         sim.apply_force_to_link(urdf_obj=quad_obj,
                                 link_name='rotor4',
-                                force=[0., 0.001*rotor4_vel, 0.05*rotor4_vel],
+                                force=[0., 0.001*vel_4, 0.05*vel_4],
                                 show_arrow=True,
                                 arrow_scale=0.40)
         
