@@ -118,24 +118,18 @@ if __name__ == "__main__":
                              joint_name='chassis_to_right_wheel',
                              torque=r_torque,
                              show_arrow=True,
-                             arrow_scale=0.1)
+                             arrow_scale=0.1,
+                             color=True,
+                             min_torque=min_torque,
+                             max_torque=max_torque)
         sim.set_joint_torque(urdf_obj=segbot_obj,
                              joint_name='chassis_to_left_wheel',
                              torque=l_torque,
                              show_arrow=True,
-                             arrow_scale=0.1)
-        
-        # Set wheel color from torque
-        sim.set_color_from_torque(urdf_obj=segbot_obj,
-                                  joint_name='chassis_to_right_wheel',
-                                  torque=r_torque,
-                                  min_torque=min_torque,
-                                  max_torque=max_torque)
-        sim.set_color_from_torque(urdf_obj=segbot_obj,
-                                  joint_name='chassis_to_left_wheel',
-                                  torque=l_torque,
-                                  min_torque=min_torque,
-                                  max_torque=max_torque)
+                             arrow_scale=0.1,
+                             color=True,
+                             min_torque=min_torque,
+                             max_torque=max_torque)
         
         # Collect keyboard IO data for station vel
         if keyboard.is_pressed("e"):

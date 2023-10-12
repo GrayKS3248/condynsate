@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Load random stars
     np.random.seed(10)
     star_objs = []
-    n_stars = 100
+    n_stars = 75
     rand_depths = depth + (np.random.rand(n_stars)*0.2-0.1)*depth
     positions = np.random.randn(n_stars,3)
     positions = positions / np.linalg.norm(positions,axis=1).reshape(n_stars,1)
@@ -149,38 +149,36 @@ if __name__ == "__main__":
         # Set wheel torques
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_1',
-                            torque=torque_1)
+                            torque=torque_1,
+                            show_arrow=True,
+                            arrow_scale=2.,
+                            color=True,
+                            min_torque=min_torque,
+                            max_torque=max_torque)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_2',
-                            torque=torque_2)
+                            torque=torque_2,
+                            show_arrow=True,
+                            arrow_scale=2.,
+                            color=True,
+                            min_torque=min_torque,
+                            max_torque=max_torque)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_3',
-                            torque=torque_3)
+                            torque=torque_3,
+                            show_arrow=True,
+                            arrow_scale=2.,
+                            color=True,
+                            min_torque=min_torque,
+                            max_torque=max_torque)
         sim.set_joint_torque(urdf_obj=craft_obj,
                             joint_name='bus_to_wheel_4',
-                            torque=torque_4)
-        
-        # Set wheel colors
-        sim.set_color_from_torque(urdf_obj=craft_obj,
-                                  joint_name='bus_to_wheel_1',
-                                  torque=torque_1,
-                                  min_torque=min_torque,
-                                  max_torque=max_torque)
-        sim.set_color_from_torque(urdf_obj=craft_obj,
-                                  joint_name='bus_to_wheel_2',
-                                  torque=torque_2,
-                                  min_torque=min_torque,
-                                  max_torque=max_torque)
-        sim.set_color_from_torque(urdf_obj=craft_obj,
-                                  joint_name='bus_to_wheel_3',
-                                  torque=torque_3,
-                                  min_torque=min_torque,
-                                  max_torque=max_torque)
-        sim.set_color_from_torque(urdf_obj=craft_obj,
-                                  joint_name='bus_to_wheel_4',
-                                  torque=torque_4,
-                                  min_torque=min_torque,
-                                  max_torque=max_torque)
+                            torque=torque_4,
+                            show_arrow=True,
+                            arrow_scale=2.,
+                            color=True,
+                            min_torque=min_torque,
+                            max_torque=max_torque)
         
         # Set the plot data
         times.append(sim.time)

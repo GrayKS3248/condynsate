@@ -60,45 +60,45 @@ if __name__ == "__main__":
     elapsed_time = 0
     done = False
     while(not done):
-        # Collect keyboard IO data for torque 1
+        # Collect keyboard IO data for torques
         torque_1 = 0.
         if keyboard.is_pressed("a"):
             torque_1 = -max_torque
+        torque_2 = 0.
+        if keyboard.is_pressed("s"):
+            torque_2 = max_torque
+        torque_3 = 0.
+        if keyboard.is_pressed("d"):
+            torque_3 = -max_torque
+        torque_4 = 0.
+        if keyboard.is_pressed("f"):
+            torque_4 = max_torque
+
+        # Set torques
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar1_to_rotor1',
                             torque=torque_1,
                             show_arrow=True,
-                            arrow_scale=0.1)
-        
-        # Collect keyboard IO data for torque 2
-        torque_2 = 0.
-        if keyboard.is_pressed("s"):
-            torque_2 = max_torque
+                            arrow_scale=0.1,
+                            color=False)
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar2_to_rotor2',
                             torque=torque_2,
                             show_arrow=True,
-                            arrow_scale=0.1)
-        
-        # Collect keyboard IO data for torque 3
-        torque_3 = 0.
-        if keyboard.is_pressed("d"):
-            torque_3 = -max_torque
+                            arrow_scale=0.1,
+                            color=False)
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar3_to_rotor3',
                             torque=torque_3,
                             show_arrow=True,
-                            arrow_scale=0.1)
-        
-        # Collect keyboard IO data for torque 4
-        torque_4 = 0.
-        if keyboard.is_pressed("f"):
-            torque_4 = max_torque
+                            arrow_scale=0.1,
+                            color=False)
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar4_to_rotor4',
                             torque=torque_4,
                             show_arrow=True,
-                            arrow_scale=0.1)
+                            arrow_scale=0.1,
+                            color=False)
         
         # Color based on velocity
         sim.set_color_from_vel(urdf_obj=quad_obj,
