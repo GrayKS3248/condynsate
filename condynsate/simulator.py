@@ -14,7 +14,7 @@ from pybullet_utils import bullet_client as bc
 from .visualizer import Visualizer
 from .animator import Animator
 from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
-from .utils import xyzw_quat_mult
+from .utils import xyzw_quat_mult, get_rot_from_2_vecs
 import keyboard
 from matplotlib import colormaps as cmaps
 
@@ -131,6 +131,9 @@ class Simulator:
             self.ani=None
         
     
+    ###########################################################################
+    #PHYSICS ENGINE PROPERTY SETTERS
+    ###########################################################################
     def set_gravity(self,
                     gravity):
         """
@@ -152,6 +155,9 @@ class Simulator:
                                gravity[2])
     
         
+    ###########################################################################
+    #PHYSICS URDF LOADING
+    ###########################################################################
     def load_urdf(self,
                   urdf_path,
                   tex_path='./examples/cmg_vis/check.png',
@@ -378,8 +384,11 @@ class Simulator:
                                                   joint_id,
                                                   mode,
                                                   forces=[0])
-    
-    
+            
+            
+    ###########################################################################
+    #JOINT SETTERS
+    ###########################################################################
     def set_joint_force_sensor(self,
                                urdf_obj,
                                joint_name,
@@ -696,91 +705,6 @@ class Simulator:
                                         max_vel=max_vel)
     
     
-    def _get_joint_axis(self,
-                        urdf_obj,
-                        joint_name):
-        """
-        Get the joint axis in local frame.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contains that joint whose axis is found.
-        joint_name : string
-            The name of the joint axis is returned.
-
-        Returns
-        -------
-        axis : array-like, shape(3,)
-            The joint axis in local frame.
-
-        """
-        # Gather information from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        joint_map = urdf_obj.joint_map
-        
-        # Set the joint velocity
-        if joint_name in joint_map:
-            joint_id = joint_map[joint_name]
-            info = self.engine.getJointInfo(urdf_id,
-                                            joint_id)
-            axis = info[13]
-            axis=np.array(axis).tolist()
-            return axis
-    
-    
-    def _get_rot_from_2_vecs(self,
-                             vec1,
-                             vec2):
-        """
-        Calculates a quaternion representing the transformation of the
-        the vec1 vector to the vec2 vector.
-
-        Parameters
-        ----------
-        vec1 : array-like, shape(3,)
-            The initial vector.
-        vec2 : array-like, shape(3,)
-            The vector to which the transformation is calculated.
-            
-        Returns
-        -------
-        xyzw_rot : array-like, shape(4,)
-            The JPL quaternion (xyzw) the takes the vec1 vector to the
-            vec2 vector (without scaling). vec2 = xyzw_rot*vec1
-
-        """
-        # Convert to numpy array
-        arr1 = np.array(vec1)
-        arr2 = np.array(vec2)
-        
-        # Calculate the norm of vec
-        mag1 = np.linalg.norm(arr1)
-        mag2 = np.linalg.norm(arr2)
-        
-        # If either magnitude is 0, no rotation can be found.
-        if mag1==0. or mag2==0.:
-            xyzw_rot = [0., 0., 0., 1.]
-            return xyzw_rot
-        
-        # If the magnitude is not zero, get the direction of vec
-        dirn1 = arr1/mag1
-        dirn2 = arr2/mag2
-        
-        # If the vec is exactly 180 degrees away, set the 180 deg quaternion
-        if (dirn2==-1*dirn1).all():
-            xyzw_rot = [0.5*np.sqrt(2), -0.5*np.sqrt(2), 0., 0.]
-            return xyzw_rot
-        
-        # If the vec is some other relative orientation, calculate it
-        q_xyz = np.cross(dirn1, dirn2)
-        q_w = 1.0 + np.dot(dirn1, dirn2)
-        xyzw_rot = np.append(q_xyz, q_w).tolist()
-        xyzw_rot = xyzw_rot/np.linalg.norm(xyzw_rot)
-        return xyzw_rot
-    
-    
-    
     def set_joint_torque(self,
                          urdf_obj,
                          joint_name,
@@ -849,12 +773,12 @@ class Simulator:
         if show_arrow and isinstance(self.vis, Visualizer):
             # Get the orientation, in body coordinates, of the arrow based
             # on direction of torque
-            axis = self._get_joint_axis(urdf_obj=urdf_obj,
-                                        joint_name=joint_name)
+            axis = self.get_joint_axis(urdf_obj=urdf_obj,
+                                       joint_name=joint_name)
             if torque>=0.:
-                arrow_xyzw_in_body = self._get_rot_from_2_vecs([0,0,1], axis)
+                arrow_xyzw_in_body = get_rot_from_2_vecs([0,0,1], axis)
             else:
-                arrow_xyzw_in_body = self._get_rot_from_2_vecs([0,0,-1], axis)
+                arrow_xyzw_in_body = get_rot_from_2_vecs([0,0,-1], axis)
                 
             # Get the child link of the joint to which torque is applied
             joint_index = list(urdf_obj.link_map.values()).index(joint_id)
@@ -924,91 +848,103 @@ class Simulator:
                                                   mode,
                                                   forces=torque)
             
-            
-    def get_center_of_mass(self,
-                           urdf_obj):
+    ###########################################################################
+    #JOINT GETTERS
+    ###########################################################################
+    def get_joint_state(self,
+                        urdf_obj,
+                        joint_name):
         """
-        Get the center of mass of a body .
+        Gets the state of a joint (angle and velocity for continuous joints).
 
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj whose center of mass is calculated.
-
-        Returns
-        -------
-        com : array-like, shape(3,)
-            The cartesian coordinates of the center of mass of the body in
-            world coordinates.
-
-        """
-        # Gather information from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        link_map = urdf_obj.link_map
-        
-        # Go through each link and update body com
-        weighted_pos = np.array([0., 0., 0.])
-        total_mass = 0.
-        for link_name in link_map:
-            link_id = link_map[link_name]
-            
-            # Get the mass of each link
-            mass = self.engine.getDynamicsInfo(urdf_id,link_id)[0]
-            
-            # Get the center of mass of each link
-            if link_id==-1:
-                pos = self.engine.getBasePositionAndOrientation(urdf_id)[0]
-            else:
-                pos = self.engine.getLinkState(urdf_id, link_id)[0]
-            pos = np.array(pos)
-            
-            # Update the center of mass parametersd
-            weighted_pos = weighted_pos + mass*pos
-            total_mass = total_mass + mass
-            
-        # Calculate the com
-        if total_mass > 0.:
-            com = weighted_pos / total_mass
-        else:
-            com = np.array([0., 0., 0.])
-        return com
-            
-            
-    def get_link_mass(self,
-                      urdf_obj,
-                      link_name):
-        """
-        Gets the current mass of a link.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link whose mass is measured.
-        link_name : string
-            The name of the link whose mass is measured. The link name is
+            A URDF_Obj whose joint state is being measured.
+        joint_name : string
+            The name of the joint whose state is measured. The joint name is
             specified in the .urdf file.
 
         Returns
         -------
-        mass : float
-            The mass of the link in Kg. If link is not found, returns none.
+        pos : float
+            The position value of this joint.
+        vel : float
+            The velocity value of this joint.
+        rxn_force : array-like, shape(3,)
+            These are the joint reaction forces. If a torque sensor is enabled
+            for this joint it is [Fx, Fy, Fz]. Without torque sensor, it is
+            [0., 0., 0.].
+        rxn_torque : array-like, shape(3,)
+            These are the joint reaction torques. If a torque sensor is enabled
+            for this joint it is [Mx, My, Mz]. Without torque sensor, it is
+            [0., 0., 0.].
+        applied_torque : float
+            This is the motor torque applied during the last stepSimulation.
+            Note that this only applies in VELOCITY_CONTROL and
+            POSITION_CONTROL. If you use TORQUE_CONTROL then the
+            applied joint motor torque is exactly what you provide, so there is
+            no need to report it separately.
+            
+        """
+        # Get object id and joint id
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Get the joint id
+        if joint_name in joint_map:
+            joint_id = [joint_map[joint_name]]
+        else:
+            return
+        
+        # Retrieve the joint states
+        states = self.engine.getJointStates(urdf_id, joint_id)
+        states = states[0]
+        pos = states[0]
+        vel = states[1]
+        rxn = states[2]
+        rxn_force = [rxn[0], rxn[1], rxn[2]]
+        rxn_torque = [rxn[3], rxn[4], rxn[5]]
+        applied_torque = states[3]
+        return pos, vel, rxn_force, rxn_torque, applied_torque
+    
+    
+    def get_joint_axis(self,
+                        urdf_obj,
+                        joint_name):
+        """
+        Get the joint axis in local frame.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose axis is found.
+        joint_name : string
+            The name of the joint axis is returned.
+
+        Returns
+        -------
+        axis : array-like, shape(3,)
+            The joint axis in local frame.
 
         """
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
-        link_map = urdf_obj.link_map
+        joint_map = urdf_obj.joint_map
         
-        # Ensure the link exists
-        if not (link_name in link_map):
-           return None
+        # Set the joint velocity
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+            info = self.engine.getJointInfo(urdf_id,
+                                            joint_id)
+            axis = info[13]
+            axis=np.array(axis).tolist()
+            return axis
             
-        # Get the mass
-        link_id = link_map[link_name]
-        info = self.engine.getDynamicsInfo(urdf_id,link_id)
-        mass = info[0]
-        return mass
             
-            
+    ###########################################################################
+    #LINK SETTERS
+    ###########################################################################
     def set_link_mass(self,
                       urdf_obj,
                       link_name,
@@ -1060,8 +996,640 @@ class Simulator:
                                          link_name=link_name,
                                          min_mass=min_mass, 
                                          max_mass=max_mass)
+                
+                    
+    ###########################################################################
+    #LINK GETTERS
+    ###########################################################################
+    def get_link_state(self,
+                       urdf_obj,
+                       link_name):
+        """
+        Gets the rigid body position and orientation of a link in world
+        cooridinates.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contrains the link whose state is being measured.
+        link_name : string
+            The name of the link to measure.
+
+        Returns
+        -------
+        pos_in_world : array-like, shape (3,)
+            Cartesian position of center of mass.
+        ori_in_world : array-like, shape(4,)
+            Cartesian orientation of center of mass, in quaternion [x,y,z,w]
+
+        """
+        # Get object id and link map
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Get the link id
+        if link_name in link_map:
+            link_id = [link_map[link_name]]
+        else:
+            return
+        
+        # Retrieve the link states
+        link_states = self.engine.getLinkStates(urdf_id, link_id)
+        link_states = link_states[0]
+        pos_in_world = link_states[0]
+        ori_in_world = link_states[1]
+        return pos_in_world, ori_in_world
+    
+    
+    def get_link_mass(self,
+                      urdf_obj,
+                      link_name):
+        """
+        Gets the current mass of a link.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link whose mass is measured.
+        link_name : string
+            The name of the link whose mass is measured. The link name is
+            specified in the .urdf file.
+
+        Returns
+        -------
+        mass : float
+            The mass of the link in Kg. If link is not found, returns none.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Ensure the link exists
+        if not (link_name in link_map):
+           return None
+            
+        # Get the mass
+        link_id = link_map[link_name]
+        info = self.engine.getDynamicsInfo(urdf_id,link_id)
+        mass = info[0]
+        return mass
 
 
+    ###########################################################################
+    #BODY GETTERS
+    ###########################################################################
+    def get_base_state(self,
+                       urdf_obj,
+                       body_coords=False):
+        """
+        Gets the rigid body states (position, orientation, linear velocity, and
+        angular velocitiy) of the base of a given urdf. 
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose state is being measured.
+        body_coords : bool, optional
+            A boolean flag that indicates whether the velocity and angular 
+            velocity is given in world coords (False) or body coords (True).
+            The default is False.
+
+        Returns
+        -------
+        pos : array-like, shape (3,)
+            The (x,y,z) world coordinates of the base of the urdf.
+        rpy : array-like, shape (3,)
+            The Euler angles (roll, pitch, yaw) of the base of the urdf
+            that define the body's orientation in the world.
+        vel : array-like, shape (3,)
+            The linear velocity of the base of the urdf in either world 
+            coords or body coords.
+        ang_vel : array-like, shape (3,)
+            The angular velocity of the base of the urdf in either world 
+            coords or body coords.
+
+        """
+        # Get object id
+        urdf_id = urdf_obj.urdf_id
+        
+        # Retrieve pos, rpy, and vel (in world coordinates) data
+        pos, xyzw_ori = self.engine.getBasePositionAndOrientation(urdf_id)
+        rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
+        vel_world, ang_vel_world = self.engine.getBaseVelocity(urdf_id)
+        
+        # Format the base state data
+        pos = np.array(pos)
+        rpy = np.array(rpy)
+        vel_world = np.array(vel_world)
+        ang_vel_world = np.array(ang_vel_world)
+        
+        if body_coords:
+            # Get the rotation matrix of the body in the world
+            R_body_to_world = self.engine.getMatrixFromQuaternion(xyzw_ori)
+            R_body_to_world = np.array(R_body_to_world)
+            R_body_to_world = np.reshape(R_body_to_world, (3,3))
+            
+            # Get the body velocities in body coordinates
+            R_world_to_body = R_body_to_world.T
+            vel_body = R_world_to_body @ vel_world
+            ang_vel_body =  R_world_to_body @ ang_vel_world
+            
+            return pos, rpy, vel_body, ang_vel_body
+        
+        return pos, rpy, vel_world, ang_vel_world
+    
+    
+    def get_center_of_mass(self,
+                           urdf_obj):
+        """
+        Get the center of mass of a body .
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose center of mass is calculated.
+
+        Returns
+        -------
+        com : array-like, shape(3,)
+            The cartesian coordinates of the center of mass of the body in
+            world coordinates.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Go through each link and update body com
+        weighted_pos = np.array([0., 0., 0.])
+        total_mass = 0.
+        for link_name in link_map:
+            link_id = link_map[link_name]
+            
+            # Get the mass of each link
+            mass = self.engine.getDynamicsInfo(urdf_id,link_id)[0]
+            
+            # Get the center of mass of each link
+            if link_id==-1:
+                pos = self.engine.getBasePositionAndOrientation(urdf_id)[0]
+            else:
+                pos = self.engine.getLinkState(urdf_id, link_id)[0]
+            pos = np.array(pos)
+            
+            # Update the center of mass parametersd
+            weighted_pos = weighted_pos + mass*pos
+            total_mass = total_mass + mass
+            
+        # Calculate the com
+        if total_mass > 0.:
+            com = weighted_pos / total_mass
+        else:
+            com = np.array([0., 0., 0.])
+        return com
+    
+    
+    ###########################################################################
+    #EXTERNAL FORCE AND TORQUE APPLICATION
+    ###########################################################################   
+    def apply_force_to_link(self,
+                            urdf_obj,
+                            link_name,
+                            force,
+                            show_arrow=False,
+                            arrow_scale=0.4):
+        """
+        Applies an external force the to center of a specified link of a urdf.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link to which the force is applied.
+        link_name : string
+            The name of the link to which the force is applied.
+            The link name is specified in the .urdf file.
+        force : array-like, shape (3,)
+            The force vector in body coordinates to apply to the link.
+        show_arrow : bool, optional
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied force. The default is False.
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.4.
+            
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Get the joint_id that defines the link
+        if link_name in link_map:
+            joint_id = link_map[link_name]
+        else:
+            return
+        
+        # Draw the force arrow
+        self._apply_force_arrow(urdf_obj=urdf_obj,
+                                link_name=link_name,
+                                force=force,
+                                show_arrow=show_arrow,
+                                arrow_scale=arrow_scale)
+        
+        # Apply the external force
+        self.engine.applyExternalForce(urdf_id,
+                                       joint_id,
+                                       force,
+                                       [0., 0., 0.],
+                                       flags=self.engine.LINK_FRAME)
+                
+        
+    def apply_force_to_com(self,
+                           urdf_obj,
+                           force,
+                           show_arrow=False,
+                           arrow_scale=0.4):
+        """
+        Applies an external force to the center of mass of the body.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj to which the force is applied.
+        force : array-like, shape (3,)
+            The force vector in world coordinates to apply to the body.
+        show_arrow : bool, optional
+            A boolean flag that indicates whether an arrow will be rendered
+            on the com to visualize the applied force. The default is False.
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.4.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Get the highest link in the body tree
+        highest_link_id = min(link_map.values())
+        
+        # Get the center of mass of the body in world cooridnates
+        com = self.get_center_of_mass(urdf_obj)
+        
+        # If the arrow isn't meant to be visualized, hide it
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = 'COM' in self.lin_arr_map
+        if (not show_arrow) and vis_exists and arr_exists:
+            arrow_name = str(self.lin_arr_map['COM'])
+            self.vis.set_link_color(urdf_name = "Force Arrows",
+                                    link_name = arrow_name,
+                                    stl_path="../shapes/arrow_lin.stl", 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    opacity = 0.0)
+        
+        # Handle force arrow visualization
+        if show_arrow and isinstance(self.vis, Visualizer):
+            # Get the orientation of the force arrow
+            xyzw_ori = get_rot_from_2_vecs([0,0,1], force)
+            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+            
+            # Get the scale of the arrow based on the magnitude of the force
+            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
+            scale=scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if 'COM' in self.lin_arr_map:
+                arrow_name = str(self.lin_arr_map['COM'])
+                self.vis.set_link_color(urdf_name = "Force Arrows",
+                                        link_name = arrow_name,
+                                        stl_path="../shapes/arrow_lin.stl", 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                self.vis.apply_transform(urdf_name="Force Arrows",
+                                         link_name=arrow_name,
+                                         scale=scale,
+                                         translate=com,
+                                         wxyz_quaternion=wxyz_ori)
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.lin_arr_map['COM'] = len(self.lin_arr_map)
+                arrow_name = str(self.lin_arr_map['COM'])
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Force Arrows",
+                                 link_name=arrow_name,
+                                 stl_path="../shapes/arrow_lin.stl",
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=com,
+                                 wxyz_quaternion=wxyz_ori)
+        
+        # Apply a force to the highest link at the center of mass of the body
+        self.engine.applyExternalForce(urdf_id,
+                                       highest_link_id,
+                                       force,
+                                       com,
+                                       flags=self.engine.WORLD_FRAME)
+        
+        
+    def _apply_force_arrow(self,
+                           urdf_obj,
+                           link_name,
+                           force,
+                           show_arrow,
+                           arrow_scale):
+        """
+        Draws a body coordinate force arrow based on force applied to a link.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link to which the force is applied.
+        link_name : string
+            The name of the link to which the force is applied.
+            The link name is specified in the .urdf file.
+        force : array-like, shape (3,)
+            The force vector in body coordinates to apply to the link.
+        show_arrow : bool
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied force
+        arrow_scale : float
+            The scaling factor that determines the size of the arrow.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If the arrow isn't meant to be visualized, hide it
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = link_name in self.lin_arr_map
+        if (not show_arrow) and vis_exists and arr_exists:
+            arrow_name = str(self.lin_arr_map[link_name])
+            self.vis.set_link_color(urdf_name = "Force Arrows",
+                                    link_name = arrow_name,
+                                    stl_path="../shapes/arrow_lin.stl", 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    opacity = 0.0)
+        
+        # Handle force arrow visualization
+        if show_arrow and isinstance(self.vis, Visualizer):
+            
+            # Get the orientation, in body coordinates, of the arrow based
+            # on direction of force
+            arrow_xyzw_in_body = get_rot_from_2_vecs([0,0,1], force)
+            
+            # Get the link state
+            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
+                                                          link_name=link_name)
+            body_xyzw_in_world = np.array(body_xyzw_in_world)
+            
+            # Combine the two rotations
+            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
+            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+            
+            # Get the scale of the arrow based on the magnitude of the force
+            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
+            scale=scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if link_name in self.lin_arr_map:
+                arrow_name = str(self.lin_arr_map[link_name])
+                self.vis.set_link_color(urdf_name = "Force Arrows",
+                                        link_name = arrow_name,
+                                        stl_path="../shapes/arrow_lin.stl", 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                self.vis.apply_transform(urdf_name="Force Arrows",
+                                         link_name=arrow_name,
+                                         scale=scale,
+                                         translate=pos,
+                                         wxyz_quaternion=wxyz_ori)
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.lin_arr_map[link_name] = len(self.lin_arr_map)
+                arrow_name = str(self.lin_arr_map[link_name])
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Force Arrows",
+                                 link_name=arrow_name,
+                                 stl_path="../shapes/arrow_lin.stl",
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=pos,
+                                 wxyz_quaternion=wxyz_ori)
+                
+                
+    ###########################################################################
+    #URDF VISUALIZATION MANIPULATION
+    ###########################################################################
+    def add_urdf_to_visualizer(self,
+                               urdf_obj,
+                               tex_path='./cmg_vis/check.png'):
+        """
+        Adds urdfs to the Visualizer. URDFs describe systems assembles from
+        .stl and .obj links.
+
+        Parameters
+        ----------
+        vis : Visualizer
+            The Visualizer to which the urdf is added.
+        urdf_obj : URDF_Obj
+            A URDF_Obj that will be added to the Visualizer.
+        tex_path : string, optional
+            The path pointing towards a texture file. This texture is applied
+            to all .obj links in the urdf.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Extract the visual data from the urdf object in the simulator
+        paths,names,scales,colors,poss,oris = self._get_urdf_vis_dat(urdf_obj)
+        
+        # Make the URDF name and format the texture path
+        urdf_name = str(urdf_obj.urdf_id)
+        tex_path = format_path(tex_path)
+        
+        # Loop through all the links
+        for i in range(len(paths)):
+            
+            # If the current link is defined by an .obj file
+            if paths[i][-4:] == ".obj":
+                self.vis.add_obj(urdf_name=urdf_name,
+                                 link_name=names[i],
+                                 obj_path=paths[i],
+                                 tex_path=tex_path,
+                                 scale=scales[i],
+                                 translate=poss[i],
+                                 wxyz_quaternion=oris[i])
+                
+            # If the current link is defined by an .stl file
+            elif paths[i][-4:] == ".stl":
+                link_name = names[i]
+                rgb = format_RGB(colors[i][0:3],
+                                  range_to_255=True)
+                opacity = colors[i][3]
+                transparent = opacity != 1.0
+                self.vis.add_stl(urdf_name=urdf_name,
+                                 link_name=link_name,
+                                 stl_path=paths[i],
+                                 color=rgb,
+                                 transparent=transparent,
+                                 opacity=opacity,
+                                 scale=scales[i],
+                                 translate=poss[i],
+                                 wxyz_quaternion=oris[i])
+
+    
+    def _update_urdf_visual(self,
+                            urdf_obj):
+        """
+        Updates the positions of dynamic links in the Visualizer.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj, optional
+            A URDF_Obj whose links are being updated.
+
+        Returns
+        -------
+        None.
+
+        """
+        # If there is no visualizer, do not attempt to update it
+        if not isinstance(self.vis, Visualizer):
+            return
+        
+        # Collect the visual data and urdf name
+        paths,names,scales,colors,poss,oris = self._get_urdf_vis_dat(urdf_obj)
+        urdf_name = str(urdf_obj.urdf_id)
+        
+        # Go through all links in urdf object and update their position
+        for i in range(len(paths)):
+            link_name = names[i]
+            self.vis.apply_transform(urdf_name=urdf_name,
+                                     link_name=link_name,
+                                     scale=scales[i],
+                                     translate=poss[i],
+                                     wxyz_quaternion=oris[i])
+    
+    
+    def _get_urdf_vis_dat(self,
+                          urdf_obj):
+        """
+        Extracts all relevant visual data from a urdf loaded into the
+        simulator.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose visual data is being extracted.
+
+        Returns
+        -------
+        paths : list of strings
+            A list containing the paths to the files containing urdf or link
+            geometries.
+        link_names : list of strings
+            A list containing the name of all links in the urdf.
+        scales : list of lists (3,)
+            A list containing the scale data for the urdf or all links
+            in the urdf .
+        colors : list of lists (4,)
+            A list containing the RGBA data for the urdf or all links
+            in the urdf.
+        positions : list of lists (3,)
+            A list containing the position data for the urdf of all
+            links in the urdf.
+        orientations : list of lists (4,)
+            A list containing the wxyz quaternion(s) for the urdf or all
+            links in the urdf.
+
+        """
+        # Create placeholders for all visual data collected
+        paths = []
+        link_names = []
+        scales = []
+        colors = []
+        positions = []
+        orientations = []
+    
+        # Determine the urdf id of the object
+        urdf_id = urdf_obj.urdf_id
+        
+        # Get the visual data of the urdf object
+        vis_data = self.engine.getVisualShapeData(urdf_id)
+        for vis_datum in vis_data:
+            path = vis_datum[4].decode('UTF-8')
+            path = format_path(path)
+            paths.append(path)
+            scale = list(vis_datum[3])
+            scales.append(scale)
+            color = list(vis_datum[7])
+            colors.append(color)
+            
+            # Extract link id
+            link_id = vis_datum[1]
+            
+            # Link id of -1 implies that the current link is the base
+            # of a robot
+            if link_id == -1:
+                base_link_name = self.engine.getBodyInfo(urdf_id)[0]
+                base_link_name = base_link_name.decode('UTF-8')
+                link_names.append(base_link_name)
+                pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
+                position = list(pos_ori[0])
+                positions.append(position)
+                orientation = list(xyzw_to_wxyz(pos_ori[1]))
+                orientations.append(orientation)
+                
+            # If the link id is not -1, then the current link is not the base.
+            # Therefore, position and orientation data is extracted from the
+            # joint state and link state
+            else:
+                # Collect link name
+                joint_data = self.engine.getJointInfo(urdf_id, link_id)
+                link_name = joint_data[12].decode('UTF-8')
+                link_names.append(link_name)
+                
+                # Extract link positions and orientations
+                link_state = self.engine.getLinkState(urdf_id, link_id)
+                position = list(link_state[4])
+                positions.append(position)
+                orientation = list(xyzw_to_wxyz(link_state[5]))
+                orientations.append(orientation)
+                
+        return paths, link_names, scales, colors, positions, orientations
+    
+    
+    ###########################################################################
+    #VISUALIZATION COLOR MANIPULATION
+    ###########################################################################
     def set_link_color(self,
                           urdf_obj,
                           link_name,
@@ -1368,597 +1936,9 @@ class Simulator:
                             color=col)
         
         
-    def apply_force_to_com(self,
-                           urdf_obj,
-                           force,
-                           show_arrow=False,
-                           arrow_scale=0.4):
-        """
-        Applies an external force to the center of mass of the body.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj to which the force is applied.
-        force : array-like, shape (3,)
-            The force vector in world coordinates to apply to the body.
-        show_arrow : bool, optional
-            A boolean flag that indicates whether an arrow will be rendered
-            on the com to visualize the applied force. The default is False.
-        arrow_scale : float, optional
-            The scaling factor that determines the size of the arrow. The
-            default is 0.4.
-
-        Returns
-        -------
-        None.
-
-        """
-        # Gather information from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        link_map = urdf_obj.link_map
-        
-        # Get the highest link in the body tree
-        highest_link_id = min(link_map.values())
-        
-        # Get the center of mass of the body in world cooridnates
-        com = self.get_center_of_mass(urdf_obj)
-        
-        # If the arrow isn't meant to be visualized, hide it
-        vis_exists = isinstance(self.vis, Visualizer)
-        arr_exists = 'COM' in self.lin_arr_map
-        if (not show_arrow) and vis_exists and arr_exists:
-            arrow_name = str(self.lin_arr_map['COM'])
-            self.vis.set_link_color(urdf_name = "Force Arrows",
-                                    link_name = arrow_name,
-                                    stl_path="../shapes/arrow_lin.stl", 
-                                    color = [0, 0, 0],
-                                    transparent = True,
-                                    opacity = 0.0)
-        
-        # Handle force arrow visualization
-        if show_arrow and isinstance(self.vis, Visualizer):
-            # Get the orientation of the force arrow
-            xyzw_ori = self._get_rot_from_2_vecs([0,0,1], force)
-            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
-            
-            # Get the scale of the arrow based on the magnitude of the force
-            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
-            scale=scale.tolist()
-            
-            # If the arrow already exists, only update its position and ori
-            if 'COM' in self.lin_arr_map:
-                arrow_name = str(self.lin_arr_map['COM'])
-                self.vis.set_link_color(urdf_name = "Force Arrows",
-                                        link_name = arrow_name,
-                                        stl_path="../shapes/arrow_lin.stl", 
-                                        color = [0, 0, 0],
-                                        transparent = False,
-                                        opacity = 1.0)
-                self.vis.apply_transform(urdf_name="Force Arrows",
-                                         link_name=arrow_name,
-                                         scale=scale,
-                                         translate=com,
-                                         wxyz_quaternion=wxyz_ori)
-            
-            # If the arrow is not already created, add it to the visualizer
-            else:
-                # Add the arrow to the linear arrow map
-                self.lin_arr_map['COM'] = len(self.lin_arr_map)
-                arrow_name = str(self.lin_arr_map['COM'])
-                
-                # Add an arrow to the visualizer
-                self.vis.add_stl(urdf_name="Force Arrows",
-                                 link_name=arrow_name,
-                                 stl_path="../shapes/arrow_lin.stl",
-                                 color = [0, 0, 0],
-                                 transparent=False,
-                                 opacity = 1.0,
-                                 scale=scale,
-                                 translate=com,
-                                 wxyz_quaternion=wxyz_ori)
-        
-        # Apply a force to the highest link at the center of mass of the body
-        self.engine.applyExternalForce(urdf_id,
-                                       highest_link_id,
-                                       force,
-                                       com,
-                                       flags=self.engine.WORLD_FRAME)
-        
-        
-    def _apply_force_arrow(self,
-                           urdf_obj,
-                           link_name,
-                           force,
-                           show_arrow,
-                           arrow_scale):
-        """
-        Draws a body coordinate force arrow based on force applied to a link.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link to which the force is applied.
-        link_name : string
-            The name of the link to which the force is applied.
-            The link name is specified in the .urdf file.
-        force : array-like, shape (3,)
-            The force vector in body coordinates to apply to the link.
-        show_arrow : bool
-            A boolean flag that indicates whether an arrow will be rendered
-            on the link to visualize the applied force
-        arrow_scale : float
-            The scaling factor that determines the size of the arrow.
-
-        Returns
-        -------
-        None.
-
-        """
-        # If the arrow isn't meant to be visualized, hide it
-        vis_exists = isinstance(self.vis, Visualizer)
-        arr_exists = link_name in self.lin_arr_map
-        if (not show_arrow) and vis_exists and arr_exists:
-            arrow_name = str(self.lin_arr_map[link_name])
-            self.vis.set_link_color(urdf_name = "Force Arrows",
-                                    link_name = arrow_name,
-                                    stl_path="../shapes/arrow_lin.stl", 
-                                    color = [0, 0, 0],
-                                    transparent = True,
-                                    opacity = 0.0)
-        
-        # Handle force arrow visualization
-        if show_arrow and isinstance(self.vis, Visualizer):
-            
-            # Get the orientation, in body coordinates, of the arrow based
-            # on direction of force
-            arrow_xyzw_in_body = self._get_rot_from_2_vecs([0,0,1], force)
-            
-            # Get the link state
-            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
-                                                          link_name=link_name)
-            body_xyzw_in_world = np.array(body_xyzw_in_world)
-            
-            # Combine the two rotations
-            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
-            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
-            
-            # Get the scale of the arrow based on the magnitude of the force
-            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
-            scale=scale.tolist()
-            
-            # If the arrow already exists, only update its position and ori
-            if link_name in self.lin_arr_map:
-                arrow_name = str(self.lin_arr_map[link_name])
-                self.vis.set_link_color(urdf_name = "Force Arrows",
-                                        link_name = arrow_name,
-                                        stl_path="../shapes/arrow_lin.stl", 
-                                        color = [0, 0, 0],
-                                        transparent = False,
-                                        opacity = 1.0)
-                self.vis.apply_transform(urdf_name="Force Arrows",
-                                         link_name=arrow_name,
-                                         scale=scale,
-                                         translate=pos,
-                                         wxyz_quaternion=wxyz_ori)
-            
-            # If the arrow is not already created, add it to the visualizer
-            else:
-                # Add the arrow to the linear arrow map
-                self.lin_arr_map[link_name] = len(self.lin_arr_map)
-                arrow_name = str(self.lin_arr_map[link_name])
-                
-                # Add an arrow to the visualizer
-                self.vis.add_stl(urdf_name="Force Arrows",
-                                 link_name=arrow_name,
-                                 stl_path="../shapes/arrow_lin.stl",
-                                 color = [0, 0, 0],
-                                 transparent=False,
-                                 opacity = 1.0,
-                                 scale=scale,
-                                 translate=pos,
-                                 wxyz_quaternion=wxyz_ori)
-        
-        
-    def apply_force_to_link(self,
-                            urdf_obj,
-                            link_name,
-                            force,
-                            show_arrow=False,
-                            arrow_scale=0.4):
-        """
-        Applies an external force the to center of a specified link of a urdf.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link to which the force is applied.
-        link_name : string
-            The name of the link to which the force is applied.
-            The link name is specified in the .urdf file.
-        force : array-like, shape (3,)
-            The force vector in body coordinates to apply to the link.
-        show_arrow : bool, optional
-            A boolean flag that indicates whether an arrow will be rendered
-            on the link to visualize the applied force. The default is False.
-        arrow_scale : float, optional
-            The scaling factor that determines the size of the arrow. The
-            default is 0.4.
-            
-        Returns
-        -------
-        None.
-
-        """
-        # Gather information from urdf_obj
-        urdf_id = urdf_obj.urdf_id
-        link_map = urdf_obj.link_map
-        
-        # Get the joint_id that defines the link
-        if link_name in link_map:
-            joint_id = link_map[link_name]
-        else:
-            return
-        
-        # Draw the force arrow
-        self._apply_force_arrow(urdf_obj=urdf_obj,
-                                link_name=link_name,
-                                force=force,
-                                show_arrow=show_arrow,
-                                arrow_scale=arrow_scale)
-        
-        # Apply the external force
-        self.engine.applyExternalForce(urdf_id,
-                                       joint_id,
-                                       force,
-                                       [0., 0., 0.],
-                                       flags=self.engine.LINK_FRAME)
-           
-        
-    def get_base_state(self,
-                       urdf_obj,
-                       body_coords=False):
-        """
-        Gets the rigid body states (position, orientation, linear velocity, and
-        angular velocitiy) of the base of a given urdf. 
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj whose state is being measured.
-        body_coords : bool, optional
-            A boolean flag that indicates whether the velocity and angular 
-            velocity is given in world coords (False) or body coords (True).
-            The default is False.
-
-        Returns
-        -------
-        pos : array-like, shape (3,)
-            The (x,y,z) world coordinates of the base of the urdf.
-        rpy : array-like, shape (3,)
-            The Euler angles (roll, pitch, yaw) of the base of the urdf
-            that define the body's orientation in the world.
-        vel : array-like, shape (3,)
-            The linear velocity of the base of the urdf in either world 
-            coords or body coords.
-        ang_vel : array-like, shape (3,)
-            The angular velocity of the base of the urdf in either world 
-            coords or body coords.
-
-        """
-        # Get object id
-        urdf_id = urdf_obj.urdf_id
-        
-        # Retrieve pos, rpy, and vel (in world coordinates) data
-        pos, xyzw_ori = self.engine.getBasePositionAndOrientation(urdf_id)
-        rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
-        vel_world, ang_vel_world = self.engine.getBaseVelocity(urdf_id)
-        
-        # Format the base state data
-        pos = np.array(pos)
-        rpy = np.array(rpy)
-        vel_world = np.array(vel_world)
-        ang_vel_world = np.array(ang_vel_world)
-        
-        if body_coords:
-            # Get the rotation matrix of the body in the world
-            R_body_to_world = self.engine.getMatrixFromQuaternion(xyzw_ori)
-            R_body_to_world = np.array(R_body_to_world)
-            R_body_to_world = np.reshape(R_body_to_world, (3,3))
-            
-            # Get the body velocities in body coordinates
-            R_world_to_body = R_body_to_world.T
-            vel_body = R_world_to_body @ vel_world
-            ang_vel_body =  R_world_to_body @ ang_vel_world
-            
-            return pos, rpy, vel_body, ang_vel_body
-        
-        return pos, rpy, vel_world, ang_vel_world
-    
-    
-    def get_joint_state(self,
-                        urdf_obj,
-                        joint_name):
-        """
-        Gets the state of a joint (angle and velocity for continuous joints).
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj whose joint state is being measured.
-        joint_name : string
-            The name of the joint whose state is measured. The joint name is
-            specified in the .urdf file.
-
-        Returns
-        -------
-        pos : float
-            The position value of this joint.
-        vel : float
-            The velocity value of this joint.
-        rxn_force : array-like, shape(3,)
-            These are the joint reaction forces. If a torque sensor is enabled
-            for this joint it is [Fx, Fy, Fz]. Without torque sensor, it is
-            [0., 0., 0.].
-        rxn_torque : array-like, shape(3,)
-            These are the joint reaction torques. If a torque sensor is enabled
-            for this joint it is [Mx, My, Mz]. Without torque sensor, it is
-            [0., 0., 0.].
-        applied_torque : float
-            This is the motor torque applied during the last stepSimulation.
-            Note that this only applies in VELOCITY_CONTROL and
-            POSITION_CONTROL. If you use TORQUE_CONTROL then the
-            applied joint motor torque is exactly what you provide, so there is
-            no need to report it separately.
-            
-        """
-        # Get object id and joint id
-        urdf_id = urdf_obj.urdf_id
-        joint_map = urdf_obj.joint_map
-        
-        # Get the joint id
-        if joint_name in joint_map:
-            joint_id = [joint_map[joint_name]]
-        else:
-            return
-        
-        # Retrieve the joint states
-        states = self.engine.getJointStates(urdf_id, joint_id)
-        states = states[0]
-        pos = states[0]
-        vel = states[1]
-        rxn = states[2]
-        rxn_force = [rxn[0], rxn[1], rxn[2]]
-        rxn_torque = [rxn[3], rxn[4], rxn[5]]
-        applied_torque = states[3]
-        return pos, vel, rxn_force, rxn_torque, applied_torque
-    
-    
-    def get_link_state(self,
-                       urdf_obj,
-                       link_name):
-        """
-        Gets the rigid body position and orientation of a link in world
-        cooridinates.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj that contrains the link whose state is being measured.
-        link_name : string
-            The name of the link to measure.
-
-        Returns
-        -------
-        pos_in_world : array-like, shape (3,)
-            Cartesian position of center of mass.
-        ori_in_world : array-like, shape(4,)
-            Cartesian orientation of center of mass, in quaternion [x,y,z,w]
-
-        """
-        # Get object id and link map
-        urdf_id = urdf_obj.urdf_id
-        link_map = urdf_obj.link_map
-        
-        # Get the link id
-        if link_name in link_map:
-            link_id = [link_map[link_name]]
-        else:
-            return
-        
-        # Retrieve the link states
-        link_states = self.engine.getLinkStates(urdf_id, link_id)
-        link_states = link_states[0]
-        pos_in_world = link_states[0]
-        ori_in_world = link_states[1]
-        return pos_in_world, ori_in_world
-    
-    
-    def add_urdf_to_visualizer(self,
-                               urdf_obj,
-                               tex_path='./cmg_vis/check.png'):
-        """
-        Adds urdfs to the Visualizer. URDFs describe systems assembles from
-        .stl and .obj links.
-
-        Parameters
-        ----------
-        vis : Visualizer
-            The Visualizer to which the urdf is added.
-        urdf_obj : URDF_Obj
-            A URDF_Obj that will be added to the Visualizer.
-        tex_path : string, optional
-            The path pointing towards a texture file. This texture is applied
-            to all .obj links in the urdf.
-
-        Returns
-        -------
-        None.
-
-        """
-        # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
-            return
-        
-        # Extract the visual data from the urdf object in the simulator
-        paths,names,scales,colors,poss,oris = self._get_urdf_vis_dat(urdf_obj)
-        
-        # Make the URDF name and format the texture path
-        urdf_name = str(urdf_obj.urdf_id)
-        tex_path = format_path(tex_path)
-        
-        # Loop through all the links
-        for i in range(len(paths)):
-            
-            # If the current link is defined by an .obj file
-            if paths[i][-4:] == ".obj":
-                self.vis.add_obj(urdf_name=urdf_name,
-                                 link_name=names[i],
-                                 obj_path=paths[i],
-                                 tex_path=tex_path,
-                                 scale=scales[i],
-                                 translate=poss[i],
-                                 wxyz_quaternion=oris[i])
-                
-            # If the current link is defined by an .stl file
-            elif paths[i][-4:] == ".stl":
-                link_name = names[i]
-                rgb = format_RGB(colors[i][0:3],
-                                  range_to_255=True)
-                opacity = colors[i][3]
-                transparent = opacity != 1.0
-                self.vis.add_stl(urdf_name=urdf_name,
-                                 link_name=link_name,
-                                 stl_path=paths[i],
-                                 color=rgb,
-                                 transparent=transparent,
-                                 opacity=opacity,
-                                 scale=scales[i],
-                                 translate=poss[i],
-                                 wxyz_quaternion=oris[i])
-
-    
-    def _update_urdf_visual(self,
-                            urdf_obj):
-        """
-        Updates the positions of dynamic links in the Visualizer.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj, optional
-            A URDF_Obj whose links are being updated.
-
-        Returns
-        -------
-        None.
-
-        """
-        # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
-            return
-        
-        # Collect the visual data and urdf name
-        paths,names,scales,colors,poss,oris = self._get_urdf_vis_dat(urdf_obj)
-        urdf_name = str(urdf_obj.urdf_id)
-        
-        # Go through all links in urdf object and update their position
-        for i in range(len(paths)):
-            link_name = names[i]
-            self.vis.apply_transform(urdf_name=urdf_name,
-                                     link_name=link_name,
-                                     scale=scales[i],
-                                     translate=poss[i],
-                                     wxyz_quaternion=oris[i])
-    
-    
-    def _get_urdf_vis_dat(self,
-                          urdf_obj):
-        """
-        Extracts all relevant visual data from a urdf loaded into the
-        simulator.
-
-        Parameters
-        ----------
-        urdf_obj : URDF_Obj
-            A URDF_Obj whose visual data is being extracted.
-
-        Returns
-        -------
-        paths : list of strings
-            A list containing the paths to the files containing urdf or link
-            geometries.
-        link_names : list of strings
-            A list containing the name of all links in the urdf.
-        scales : list of lists (3,)
-            A list containing the scale data for the urdf or all links
-            in the urdf .
-        colors : list of lists (4,)
-            A list containing the RGBA data for the urdf or all links
-            in the urdf.
-        positions : list of lists (3,)
-            A list containing the position data for the urdf of all
-            links in the urdf.
-        orientations : list of lists (4,)
-            A list containing the wxyz quaternion(s) for the urdf or all
-            links in the urdf.
-
-        """
-        # Create placeholders for all visual data collected
-        paths = []
-        link_names = []
-        scales = []
-        colors = []
-        positions = []
-        orientations = []
-    
-        # Determine the urdf id of the object
-        urdf_id = urdf_obj.urdf_id
-        
-        # Get the visual data of the urdf object
-        vis_data = self.engine.getVisualShapeData(urdf_id)
-        for vis_datum in vis_data:
-            path = vis_datum[4].decode('UTF-8')
-            path = format_path(path)
-            paths.append(path)
-            scale = list(vis_datum[3])
-            scales.append(scale)
-            color = list(vis_datum[7])
-            colors.append(color)
-            
-            # Extract link id
-            link_id = vis_datum[1]
-            
-            # Link id of -1 implies that the current link is the base
-            # of a robot
-            if link_id == -1:
-                base_link_name = self.engine.getBodyInfo(urdf_id)[0]
-                base_link_name = base_link_name.decode('UTF-8')
-                link_names.append(base_link_name)
-                pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
-                position = list(pos_ori[0])
-                positions.append(position)
-                orientation = list(xyzw_to_wxyz(pos_ori[1]))
-                orientations.append(orientation)
-                
-            # If the link id is not -1, then the current link is not the base.
-            # Therefore, position and orientation data is extracted from the
-            # joint state and link state
-            else:
-                # Collect link name
-                joint_data = self.engine.getJointInfo(urdf_id, link_id)
-                link_name = joint_data[12].decode('UTF-8')
-                link_names.append(link_name)
-                
-                # Extract link positions and orientations
-                link_state = self.engine.getLinkState(urdf_id, link_id)
-                position = list(link_state[4])
-                positions.append(position)
-                orientation = list(xyzw_to_wxyz(link_state[5]))
-                orientations.append(orientation)
-                
-        return paths, link_names, scales, colors, positions, orientations
-    
-    
+    ###########################################################################
+    #VISUALIZATION SCENE MANIPULATION
+    ###########################################################################
     def transform_camera(self,
                          scale = [1., 1., 1.],
                          translate = [0., 0., 0.],
@@ -2011,8 +1991,8 @@ class Simulator:
                                       roll=roll,
                                       pitch=pitch,
                                       yaw=yaw)
-        
-        
+            
+            
     def set_background(self,
                        top_color = None,
                        bot_color = None):
@@ -2202,8 +2182,11 @@ class Simulator:
         else:
             self.vis.set_fill_light(on = on,
                                        intensity = intensity)
-            
-            
+        
+        
+    ###########################################################################
+    #ANIMATOR MANIPULATION
+    ###########################################################################
     def add_plot_to_animator(self,
                              title=None,
                              x_label=None,
@@ -2322,6 +2305,9 @@ class Simulator:
             self.ani.create_figure()
         
         
+    ###########################################################################
+    #SIMULATION EXECUTION
+    ###########################################################################  
     def await_keypress(self,
                        key="enter"):
         """
@@ -2400,4 +2386,4 @@ class Simulator:
         # Update the animator if it exists
         if update_ani and isinstance(self.ani, Animator):
             self.ani.step()
-        
+            
