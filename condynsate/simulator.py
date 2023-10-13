@@ -1345,6 +1345,103 @@ class Simulator:
                                        flags=self.engine.WORLD_FRAME)
         
         
+    def apply_external_torque(self,
+                              urdf_obj,
+                              torque,
+                              show_arrow=False,
+                              arrow_scale=0.1):
+        """
+        Applies an external torque to the center of mass of the body.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj to which the torque is applied.
+        torque : array-like, shape(3,)
+            The torque vector in world coordinates to apply to the body.
+        show_arrow : bool, optional
+            A boolean flag that indicates whether an arrow will be rendered
+            on the com to visualize the applied torque. The default is False.
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.1.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Get the highest link in the body tree
+        highest_link_id = min(link_map.values())
+        
+        # Get the center of mass of the body in world cooridnates
+        com = self.get_center_of_mass(urdf_obj)
+        
+        # If the arrow isn't meant to be visualized, hide it
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = 'COM' in self.ccw_arr_map
+        if (not show_arrow) and vis_exists and arr_exists:
+            arrow_name = str(self.lin_arr_map['COM'])
+            self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                    link_name = arrow_name,
+                                    stl_path="../shapes/arrow_ccw.stl", 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    opacity = 0.0)
+        
+        # Handle force arrow visualization
+        if show_arrow and isinstance(self.vis, Visualizer):
+            # Get the orientation of the force arrow
+            xyzw_ori = get_rot_from_2_vecs([0,0,1], torque)
+            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+            
+            # Get the scale of the arrow based on the magnitude of the force
+            scale = arrow_scale*np.linalg.norm(torque)*np.array([1., 1., 1.])
+            scale=scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if 'COM' in self.ccw_arr_map:
+                arrow_name = str(self.ccw_arr_map['COM'])
+                self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                        link_name = arrow_name,
+                                        stl_path="../shapes/arrow_ccw.stl", 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                self.vis.apply_transform(urdf_name="Torque Arrows",
+                                         link_name=arrow_name,
+                                         scale=scale,
+                                         translate=com,
+                                         wxyz_quaternion=wxyz_ori)
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.ccw_arr_map['COM'] = len(self.ccw_arr_map)
+                arrow_name = str(self.ccw_arr_map['COM'])
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Torque Arrows",
+                                 link_name=arrow_name,
+                                 stl_path="../shapes/arrow_ccw.stl",
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=com,
+                                 wxyz_quaternion=wxyz_ori)
+        
+        # Apply a force to the highest link at the center of mass of the body
+        self.engine.applyExternalTorque(urdf_id,
+                                        highest_link_id,
+                                        torque,
+                                        flags=self.engine.WORLD_FRAME)
+        
+        
     def _apply_force_arrow(self,
                            urdf_obj,
                            link_name,

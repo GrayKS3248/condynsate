@@ -73,7 +73,7 @@ if __name__ == "__main__":
             torque_3 = -max_torque
         if keyboard.is_pressed("f"):
             torque_4 = max_torque
-
+            
         # Set torques
         sim.set_joint_torque(urdf_obj=quad_obj,
                             joint_name='spar1_to_rotor1',
