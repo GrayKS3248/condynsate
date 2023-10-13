@@ -320,9 +320,12 @@ class Simulator:
 
         # Check if the urdf object has a base link
         data = self.engine.getVisualShapeData(urdf_id)
-        if data[0][1] == -1:        
+        if data[0][1] == -1:
             joint_map['base'] = -1
-            link_map['base'] = -1
+            
+            base_link_name = self.engine.getBodyInfo(urdf_id)[0]
+            base_link_name = base_link_name.decode('UTF-8')
+            link_map[base_link_name] = -1
         
         # Go through all joints in the urdf object
         num_joints = self.engine.getNumJoints(urdf_id)
@@ -922,6 +925,55 @@ class Simulator:
                                                   forces=torque)
             
             
+    def get_center_of_mass(self,
+                           urdf_obj):
+        """
+        Get the center of mass of a body .
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose center of mass is calculated.
+
+        Returns
+        -------
+        com : array-like, shape(3,)
+            The cartesian coordinates of the center of mass of the body in
+            world coordinates.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Go through each link and update body com
+        weighted_pos = np.array([0., 0., 0.])
+        total_mass = 0.
+        for link_name in link_map:
+            link_id = link_map[link_name]
+            
+            # Get the mass of each link
+            mass = self.engine.getDynamicsInfo(urdf_id,link_id)[0]
+            
+            # Get the center of mass of each link
+            if link_id==-1:
+                pos = self.engine.getBasePositionAndOrientation(urdf_id)[0]
+            else:
+                pos = self.engine.getLinkState(urdf_id, link_id)[0]
+            pos = np.array(pos)
+            
+            # Update the center of mass parametersd
+            weighted_pos = weighted_pos + mass*pos
+            total_mass = total_mass + mass
+            
+        # Calculate the com
+        if total_mass > 0.:
+            com = weighted_pos / total_mass
+        else:
+            com = np.array([0., 0., 0.])
+        return com
+            
+            
     def get_link_mass(self,
                       urdf_obj,
                       link_name):
@@ -934,8 +986,7 @@ class Simulator:
             A URDF_Obj that contains that link whose mass is measured.
         link_name : string
             The name of the link whose mass is measured. The link name is
-            specified in the .urdf file unless the link is the base link of the
-            urdf, then its name is always 'base'.
+            specified in the .urdf file.
 
         Returns
         -------
@@ -974,8 +1025,7 @@ class Simulator:
             A URDF_Obj that contains that link whose mass is being set.
         link_name : string
             The name of the link whose mass is set. The link name is
-            specified in the .urdf file unless the link is the base link of the
-            urdf, then its name is always 'base'.
+            specified in the .urdf file.
         mass : float, optional
             The mass to set in kg. The default is 0..
         color : bool, optional
@@ -1029,8 +1079,7 @@ class Simulator:
             A URDF_Obj that contains that link whose color is being updated.
         link_name : string
             The name of the link whose color is being updated. The link name is
-            specified in the .urdf file unless the link is the base link of the
-            urdf, then its name is always 'base'.
+            specified in the .urdf file.
         color : array-like, size (3,), optional
             The 0-255 RGB color of the link.
             The default is [91, 155, 213].
@@ -1317,34 +1366,29 @@ class Simulator:
         self.set_link_color(urdf_obj=urdf_obj,
                             link_name=link_name,
                             color=col)
-            
         
-    def apply_force_to_link(self,
-                            urdf_obj,
-                            link_name,
-                            force,
-                            show_arrow=True,
-                            arrow_scale=0.4):
+        
+    def apply_force_to_com(self,
+                           urdf_obj,
+                           force,
+                           show_arrow=False,
+                           arrow_scale=0.4):
         """
-        Applies an external force the to center of a specified link of a urdf.
+        Applies an external force to the center of mass of the body.
 
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj that contains that link to which the force is applied.
-        link_name : string
-            The name of the link to which the force is applied.
-            The link name is specified in the .urdf file unless the link is
-            the base link of the urdf, then its name is always 'base'.
+            A URDF_Obj to which the force is applied.
         force : array-like, shape (3,)
-            The force vector in body coordinates to apply to the link.
+            The force vector in world coordinates to apply to the body.
         show_arrow : bool, optional
             A boolean flag that indicates whether an arrow will be rendered
-            on the link to visualize the applied force.
+            on the com to visualize the applied force. The default is False.
         arrow_scale : float, optional
             The scaling factor that determines the size of the arrow. The
             default is 0.4.
-            
+
         Returns
         -------
         None.
@@ -1354,12 +1398,103 @@ class Simulator:
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
         
-        # Get the joint_id that defines the link
-        if link_name in link_map:
-            joint_id = link_map[link_name]
-        else:
-            return
+        # Get the highest link in the body tree
+        highest_link_id = min(link_map.values())
         
+        # Get the center of mass of the body in world cooridnates
+        com = self.get_center_of_mass(urdf_obj)
+        
+        # If the arrow isn't meant to be visualized, hide it
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = 'COM' in self.lin_arr_map
+        if (not show_arrow) and vis_exists and arr_exists:
+            arrow_name = str(self.lin_arr_map['COM'])
+            self.vis.set_link_color(urdf_name = "Force Arrows",
+                                    link_name = arrow_name,
+                                    stl_path="../shapes/arrow_lin.stl", 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    opacity = 0.0)
+        
+        # Handle force arrow visualization
+        if show_arrow and isinstance(self.vis, Visualizer):
+            # Get the orientation of the force arrow
+            xyzw_ori = self._get_rot_from_2_vecs([0,0,1], force)
+            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+            
+            # Get the scale of the arrow based on the magnitude of the force
+            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
+            scale=scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if 'COM' in self.lin_arr_map:
+                arrow_name = str(self.lin_arr_map['COM'])
+                self.vis.set_link_color(urdf_name = "Force Arrows",
+                                        link_name = arrow_name,
+                                        stl_path="../shapes/arrow_lin.stl", 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                self.vis.apply_transform(urdf_name="Force Arrows",
+                                         link_name=arrow_name,
+                                         scale=scale,
+                                         translate=com,
+                                         wxyz_quaternion=wxyz_ori)
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.lin_arr_map['COM'] = len(self.lin_arr_map)
+                arrow_name = str(self.lin_arr_map['COM'])
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Force Arrows",
+                                 link_name=arrow_name,
+                                 stl_path="../shapes/arrow_lin.stl",
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=com,
+                                 wxyz_quaternion=wxyz_ori)
+        
+        # Apply a force to the highest link at the center of mass of the body
+        self.engine.applyExternalForce(urdf_id,
+                                       highest_link_id,
+                                       force,
+                                       com,
+                                       flags=self.engine.WORLD_FRAME)
+        
+        
+    def _apply_force_arrow(self,
+                           urdf_obj,
+                           link_name,
+                           force,
+                           show_arrow,
+                           arrow_scale):
+        """
+        Draws a body coordinate force arrow based on force applied to a link.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link to which the force is applied.
+        link_name : string
+            The name of the link to which the force is applied.
+            The link name is specified in the .urdf file.
+        force : array-like, shape (3,)
+            The force vector in body coordinates to apply to the link.
+        show_arrow : bool
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied force
+        arrow_scale : float
+            The scaling factor that determines the size of the arrow.
+
+        Returns
+        -------
+        None.
+
+        """
         # If the arrow isn't meant to be visualized, hide it
         vis_exists = isinstance(self.vis, Visualizer)
         arr_exists = link_name in self.lin_arr_map
@@ -1424,12 +1559,60 @@ class Simulator:
                                  translate=pos,
                                  wxyz_quaternion=wxyz_ori)
         
+        
+    def apply_force_to_link(self,
+                            urdf_obj,
+                            link_name,
+                            force,
+                            show_arrow=False,
+                            arrow_scale=0.4):
+        """
+        Applies an external force the to center of a specified link of a urdf.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link to which the force is applied.
+        link_name : string
+            The name of the link to which the force is applied.
+            The link name is specified in the .urdf file.
+        force : array-like, shape (3,)
+            The force vector in body coordinates to apply to the link.
+        show_arrow : bool, optional
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied force. The default is False.
+        arrow_scale : float, optional
+            The scaling factor that determines the size of the arrow. The
+            default is 0.4.
+            
+        Returns
+        -------
+        None.
+
+        """
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        link_map = urdf_obj.link_map
+        
+        # Get the joint_id that defines the link
+        if link_name in link_map:
+            joint_id = link_map[link_name]
+        else:
+            return
+        
+        # Draw the force arrow
+        self._apply_force_arrow(urdf_obj=urdf_obj,
+                                link_name=link_name,
+                                force=force,
+                                show_arrow=show_arrow,
+                                arrow_scale=arrow_scale)
+        
         # Apply the external force
         self.engine.applyExternalForce(urdf_id,
                                        joint_id,
                                        force,
                                        [0., 0., 0.],
-                                       self.engine.LINK_FRAME)
+                                       flags=self.engine.LINK_FRAME)
            
         
     def get_base_state(self,
@@ -1748,7 +1931,9 @@ class Simulator:
             # Link id of -1 implies that the current link is the base
             # of a robot
             if link_id == -1:
-                link_names.append('base')
+                base_link_name = self.engine.getBodyInfo(urdf_id)[0]
+                base_link_name = base_link_name.decode('UTF-8')
+                link_names.append(base_link_name)
                 pos_ori = self.engine.getBasePositionAndOrientation(urdf_id)
                 position = list(pos_ori[0])
                 positions.append(position)
