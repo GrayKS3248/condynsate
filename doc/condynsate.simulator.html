@@ -129,7 +129,45 @@ Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-apply_force_to_link"><strong>apply_force_to_link</strong></a>(self, urdf_obj, link_name, force=[0.0, 0.0, 0.0])</dt><dd><tt>Applies&nbsp;an&nbsp;external&nbsp;force&nbsp;the&nbsp;to&nbsp;center&nbsp;of&nbsp;a&nbsp;specified&nbsp;link&nbsp;of&nbsp;a&nbsp;urdf.<br>
+<dl><dt><a name="Simulator-apply_external_torque"><strong>apply_external_torque</strong></a>(self, urdf_obj, torque, show_arrow=False, arrow_scale=0.1)</dt><dd><tt>Applies&nbsp;an&nbsp;external&nbsp;torque&nbsp;to&nbsp;the&nbsp;center&nbsp;of&nbsp;mass&nbsp;of&nbsp;the&nbsp;body.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;to&nbsp;which&nbsp;the&nbsp;torque&nbsp;is&nbsp;applied.<br>
+torque&nbsp;:&nbsp;array-like,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;torque&nbsp;vector&nbsp;in&nbsp;world&nbsp;coordinates&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;body.<br>
+show_arrow&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;an&nbsp;arrow&nbsp;will&nbsp;be&nbsp;rendered<br>
+&nbsp;&nbsp;&nbsp;&nbsp;on&nbsp;the&nbsp;com&nbsp;to&nbsp;visualize&nbsp;the&nbsp;applied&nbsp;torque.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+arrow_scale&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;scaling&nbsp;factor&nbsp;that&nbsp;determines&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;arrow.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;is&nbsp;0.1.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-apply_force_to_com"><strong>apply_force_to_com</strong></a>(self, urdf_obj, force, show_arrow=False, arrow_scale=0.4)</dt><dd><tt>Applies&nbsp;an&nbsp;external&nbsp;force&nbsp;to&nbsp;the&nbsp;center&nbsp;of&nbsp;mass&nbsp;of&nbsp;the&nbsp;body.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;to&nbsp;which&nbsp;the&nbsp;force&nbsp;is&nbsp;applied.<br>
+force&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;force&nbsp;vector&nbsp;in&nbsp;world&nbsp;coordinates&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;body.<br>
+show_arrow&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;an&nbsp;arrow&nbsp;will&nbsp;be&nbsp;rendered<br>
+&nbsp;&nbsp;&nbsp;&nbsp;on&nbsp;the&nbsp;com&nbsp;to&nbsp;visualize&nbsp;the&nbsp;applied&nbsp;force.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+arrow_scale&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;scaling&nbsp;factor&nbsp;that&nbsp;determines&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;arrow.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;is&nbsp;0.4.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-apply_force_to_link"><strong>apply_force_to_link</strong></a>(self, urdf_obj, link_name, force, show_arrow=False, arrow_scale=0.4)</dt><dd><tt>Applies&nbsp;an&nbsp;external&nbsp;force&nbsp;the&nbsp;to&nbsp;center&nbsp;of&nbsp;a&nbsp;specified&nbsp;link&nbsp;of&nbsp;a&nbsp;urdf.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -137,12 +175,16 @@ urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;link&nbsp;to&nbsp;which&nbsp;the&nbsp;force&nbsp;is&nbsp;applied.<br>
 link_name&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link&nbsp;to&nbsp;which&nbsp;the&nbsp;force&nbsp;is&nbsp;applied.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;link&nbsp;name&nbsp;is&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file&nbsp;unless&nbsp;the&nbsp;link&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;base&nbsp;link&nbsp;of&nbsp;the&nbsp;urdf,&nbsp;then&nbsp;its&nbsp;name&nbsp;is&nbsp;always&nbsp;'base'.<br>
-force&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,),&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;link&nbsp;name&nbsp;is&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
+force&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;force&nbsp;vector&nbsp;in&nbsp;body&nbsp;coordinates&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;link.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
-&nbsp;<br>
+show_arrow&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;an&nbsp;arrow&nbsp;will&nbsp;be&nbsp;rendered<br>
+&nbsp;&nbsp;&nbsp;&nbsp;on&nbsp;the&nbsp;link&nbsp;to&nbsp;visualize&nbsp;the&nbsp;applied&nbsp;force.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+arrow_scale&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;scaling&nbsp;factor&nbsp;that&nbsp;determines&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;arrow.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;is&nbsp;0.4.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
 Returns<br>
 -------<br>
 None.</tt></dd></dl>
@@ -187,6 +229,33 @@ ang_vel&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;angular&nbsp;velocity&nbsp;of&nbsp;the&nbsp;base&nbsp;of&nbsp;the&nbsp;urdf&nbsp;in&nbsp;either&nbsp;world&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;coords&nbsp;or&nbsp;body&nbsp;coords.</tt></dd></dl>
 
+<dl><dt><a name="Simulator-get_center_of_mass"><strong>get_center_of_mass</strong></a>(self, urdf_obj)</dt><dd><tt>Get&nbsp;the&nbsp;center&nbsp;of&nbsp;mass&nbsp;of&nbsp;a&nbsp;body&nbsp;.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;whose&nbsp;center&nbsp;of&nbsp;mass&nbsp;is&nbsp;calculated.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+com&nbsp;:&nbsp;array-like,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;cartesian&nbsp;coordinates&nbsp;of&nbsp;the&nbsp;center&nbsp;of&nbsp;mass&nbsp;of&nbsp;the&nbsp;body&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;world&nbsp;coordinates.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-get_joint_axis"><strong>get_joint_axis</strong></a>(self, urdf_obj, joint_name)</dt><dd><tt>Get&nbsp;the&nbsp;joint&nbsp;axis&nbsp;in&nbsp;local&nbsp;frame.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;joint&nbsp;whose&nbsp;axis&nbsp;is&nbsp;found.<br>
+joint_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;joint&nbsp;axis&nbsp;is&nbsp;returned.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+axis&nbsp;:&nbsp;array-like,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;joint&nbsp;axis&nbsp;in&nbsp;local&nbsp;frame.</tt></dd></dl>
+
 <dl><dt><a name="Simulator-get_joint_state"><strong>get_joint_state</strong></a>(self, urdf_obj, joint_name)</dt><dd><tt>Gets&nbsp;the&nbsp;state&nbsp;of&nbsp;a&nbsp;joint&nbsp;(angle&nbsp;and&nbsp;velocity&nbsp;for&nbsp;continuous&nbsp;joints).<br>
 &nbsp;<br>
 Parameters<br>
@@ -199,10 +268,56 @@ joint_name&nbsp;:&nbsp;string<br>
 &nbsp;<br>
 Returns<br>
 -------<br>
-ang&nbsp;:&nbsp;float<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;angle,&nbsp;in&nbsp;rads,&nbsp;of&nbsp;the&nbsp;joint.<br>
+pos&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;position&nbsp;value&nbsp;of&nbsp;this&nbsp;joint.<br>
 vel&nbsp;:&nbsp;float<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;angular&nbsp;velocity,&nbsp;in&nbsp;rads/s,&nbsp;of&nbsp;the&nbsp;joint.</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;velocity&nbsp;value&nbsp;of&nbsp;this&nbsp;joint.<br>
+rxn_force&nbsp;:&nbsp;array-like,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;These&nbsp;are&nbsp;the&nbsp;joint&nbsp;reaction&nbsp;forces.&nbsp;If&nbsp;a&nbsp;torque&nbsp;sensor&nbsp;is&nbsp;enabled<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;this&nbsp;joint&nbsp;it&nbsp;is&nbsp;[Fx,&nbsp;Fy,&nbsp;Fz].&nbsp;Without&nbsp;torque&nbsp;sensor,&nbsp;it&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
+rxn_torque&nbsp;:&nbsp;array-like,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;These&nbsp;are&nbsp;the&nbsp;joint&nbsp;reaction&nbsp;torques.&nbsp;If&nbsp;a&nbsp;torque&nbsp;sensor&nbsp;is&nbsp;enabled<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;this&nbsp;joint&nbsp;it&nbsp;is&nbsp;[Mx,&nbsp;My,&nbsp;Mz].&nbsp;Without&nbsp;torque&nbsp;sensor,&nbsp;it&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
+applied_torque&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;motor&nbsp;torque&nbsp;applied&nbsp;during&nbsp;the&nbsp;last&nbsp;stepSimulation.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Note&nbsp;that&nbsp;this&nbsp;only&nbsp;applies&nbsp;in&nbsp;VELOCITY_CONTROL&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;POSITION_CONTROL.&nbsp;If&nbsp;you&nbsp;use&nbsp;TORQUE_CONTROL&nbsp;then&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;applied&nbsp;joint&nbsp;motor&nbsp;torque&nbsp;is&nbsp;exactly&nbsp;what&nbsp;you&nbsp;provide,&nbsp;so&nbsp;there&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;no&nbsp;need&nbsp;to&nbsp;report&nbsp;it&nbsp;separately.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-get_link_mass"><strong>get_link_mass</strong></a>(self, urdf_obj, link_name)</dt><dd><tt>Gets&nbsp;the&nbsp;current&nbsp;mass&nbsp;of&nbsp;a&nbsp;link.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;link&nbsp;whose&nbsp;mass&nbsp;is&nbsp;measured.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link&nbsp;whose&nbsp;mass&nbsp;is&nbsp;measured.&nbsp;The&nbsp;link&nbsp;name&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+mass&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;mass&nbsp;of&nbsp;the&nbsp;link&nbsp;in&nbsp;Kg.&nbsp;If&nbsp;link&nbsp;is&nbsp;not&nbsp;found,&nbsp;returns&nbsp;none.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-get_link_state"><strong>get_link_state</strong></a>(self, urdf_obj, link_name)</dt><dd><tt>Gets&nbsp;the&nbsp;rigid&nbsp;body&nbsp;position&nbsp;and&nbsp;orientation&nbsp;of&nbsp;a&nbsp;link&nbsp;in&nbsp;world<br>
+cooridinates.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contrains&nbsp;the&nbsp;link&nbsp;whose&nbsp;state&nbsp;is&nbsp;being&nbsp;measured.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link&nbsp;to&nbsp;measure.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+pos_in_world&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Cartesian&nbsp;position&nbsp;of&nbsp;center&nbsp;of&nbsp;mass.<br>
+ori_in_world&nbsp;:&nbsp;array-like,&nbsp;shape(4,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Cartesian&nbsp;orientation&nbsp;of&nbsp;center&nbsp;of&nbsp;mass,&nbsp;in&nbsp;quaternion&nbsp;[x,y,z,w]</tt></dd></dl>
 
 <dl><dt><a name="Simulator-load_urdf"><strong>load_urdf</strong></a>(self, urdf_path, tex_path='./examples/cmg_vis/check.png', position=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0], roll=None, pitch=None, yaw=None, fixed=False, update_vis=True)</dt><dd><tt>Loads&nbsp;a&nbsp;URDF&nbsp;to&nbsp;the&nbsp;simulation&nbsp;engine.&nbsp;All&nbsp;joint's<br>
 velocity&nbsp;control&nbsp;is&nbsp;disabled&nbsp;(this&nbsp;allows&nbsp;the&nbsp;joint&nbsp;to&nbsp;move&nbsp;freely),<br>
@@ -252,24 +367,6 @@ Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-reset_joint"><strong>reset_joint</strong></a>(self, urdf_obj, joint_name, position=0.0, velocity=0.0)</dt><dd><tt>Resets&nbsp;a&nbsp;joint&nbsp;to&nbsp;a&nbsp;desired&nbsp;position&nbsp;and&nbsp;velocity.<br>
-&nbsp;<br>
-Parameters<br>
-----------<br>
-urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;joint&nbsp;whose&nbsp;torque&nbsp;is&nbsp;being&nbsp;set.<br>
-joint_name&nbsp;:&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;joint&nbsp;whose&nbsp;torque&nbsp;is&nbsp;set.&nbsp;The&nbsp;joint&nbsp;name&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
-position&nbsp;:&nbsp;float,&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;position&nbsp;to&nbsp;which&nbsp;the&nbsp;joint&nbsp;is&nbsp;reset.&nbsp;The&nbsp;default&nbsp;is&nbsp;0..<br>
-velocity&nbsp;:&nbsp;float,&nbsp;optional<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;velocity&nbsp;to&nbsp;which&nbsp;the&nbsp;joint&nbsp;is&nbsp;reset.&nbsp;The&nbsp;default&nbsp;is&nbsp;0..<br>
-&nbsp;<br>
-Returns<br>
--------<br>
-None.</tt></dd></dl>
-
 <dl><dt><a name="Simulator-set_ambient_light"><strong>set_ambient_light</strong></a>(self, on=False, intensity=1.0)</dt><dd><tt>Sets&nbsp;the&nbsp;properties&nbsp;of&nbsp;the&nbsp;ambient&nbsp;light&nbsp;of&nbsp;the&nbsp;Visualizer.<br>
 &nbsp;<br>
 Parameters<br>
@@ -296,6 +393,90 @@ bot_color&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,),&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;color&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;bottom&nbsp;of&nbsp;the&nbsp;background.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;None.&nbsp;If&nbsp;bot_color&nbsp;is&nbsp;set&nbsp;to&nbsp;None,&nbsp;bot_color<br>
 &nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;not&nbsp;altered.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-set_color_from_mass"><strong>set_color_from_mass</strong></a>(self, urdf_obj, link_name, min_mass, max_mass)</dt><dd><tt>Sets&nbsp;the&nbsp;color&nbsp;of&nbsp;a&nbsp;link&nbsp;based&nbsp;on&nbsp;its&nbsp;mass.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;joint&nbsp;whose&nbsp;torque&nbsp;is&nbsp;measured.<br>
+link_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link&nbsp;whose&nbsp;mass&nbsp;is&nbsp;used&nbsp;to&nbsp;set&nbsp;the&nbsp;link&nbsp;color.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;link&nbsp;name&nbsp;is&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
+min_mass&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;possible&nbsp;mass&nbsp;of&nbsp;the&nbsp;link.<br>
+max_mass&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;possible&nbsp;mass&nbsp;of&nbsp;the&nbsp;link.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-set_color_from_pos"><strong>set_color_from_pos</strong></a>(self, urdf_obj, joint_name, min_pos, max_pos)</dt><dd><tt>Sets&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;child&nbsp;link&nbsp;of&nbsp;a&nbsp;specified&nbsp;joint&nbsp;based&nbsp;on&nbsp;the&nbsp;<br>
+position&nbsp;of&nbsp;the&nbsp;joint.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;joint&nbsp;whose&nbsp;position&nbsp;is&nbsp;measured.<br>
+joint_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;joint&nbsp;whose&nbsp;position&nbsp;is&nbsp;used&nbsp;to&nbsp;set&nbsp;the&nbsp;link&nbsp;color.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;joint&nbsp;name&nbsp;is&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
+min_pos&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;possible&nbsp;position&nbsp;of&nbsp;the&nbsp;given&nbsp;joint.<br>
+max_pos&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;possible&nbsp;position&nbsp;of&nbsp;the&nbsp;given&nbsp;joint.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-set_color_from_torque"><strong>set_color_from_torque</strong></a>(self, urdf_obj, joint_name, torque, min_torque=-1.0, max_torque=1.0)</dt><dd><tt>Sets&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;child&nbsp;link&nbsp;of&nbsp;a&nbsp;specified&nbsp;joint&nbsp;based&nbsp;on&nbsp;the&nbsp;<br>
+torque&nbsp;applied&nbsp;to&nbsp;the&nbsp;joint.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;joint&nbsp;whose&nbsp;torque&nbsp;is&nbsp;measured.<br>
+joint_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;joint&nbsp;whose&nbsp;torque&nbsp;is&nbsp;used&nbsp;to&nbsp;set&nbsp;the&nbsp;link&nbsp;color.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;joint&nbsp;name&nbsp;is&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
+torque&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;torque&nbsp;applied&nbsp;to&nbsp;the&nbsp;joint.<br>
+min_torque&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;possible&nbsp;torque&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;joint.&nbsp;The&nbsp;default&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-1..<br>
+max_torque&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;possible&nbsp;torque&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;joint.&nbsp;The&nbsp;default&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1..<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
+<dl><dt><a name="Simulator-set_color_from_vel"><strong>set_color_from_vel</strong></a>(self, urdf_obj, joint_name, min_vel=-100.0, max_vel=100.0)</dt><dd><tt>Sets&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;child&nbsp;link&nbsp;of&nbsp;a&nbsp;specified&nbsp;joint&nbsp;based&nbsp;on&nbsp;the&nbsp;<br>
+velocity&nbsp;of&nbsp;the&nbsp;joint.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;joint&nbsp;whose&nbsp;velocity&nbsp;is&nbsp;measured.<br>
+joint_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;joint&nbsp;whose&nbsp;velocity&nbsp;is&nbsp;used&nbsp;to&nbsp;set&nbsp;the&nbsp;link&nbsp;color.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;joint&nbsp;name&nbsp;is&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
+min_vel&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;possible&nbsp;velocity&nbsp;of&nbsp;the&nbsp;given&nbsp;joint.&nbsp;The&nbsp;default&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-100..&nbsp;Unless&nbsp;otherwise&nbsp;set,&nbsp;PyBullet&nbsp;does&nbsp;not&nbsp;allow&nbsp;joint<br>
+&nbsp;&nbsp;&nbsp;&nbsp;velocities&nbsp;to&nbsp;exceed&nbsp;a&nbsp;magnitude&nbsp;of&nbsp;100.<br>
+max_vel&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;possible&nbsp;velocity&nbsp;of&nbsp;the&nbsp;given&nbsp;joint.&nbsp;The&nbsp;default&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;100..&nbsp;Unless&nbsp;otherwise&nbsp;set,&nbsp;PyBullet&nbsp;does&nbsp;not&nbsp;allow&nbsp;joint<br>
+&nbsp;&nbsp;&nbsp;&nbsp;velocities&nbsp;to&nbsp;exceed&nbsp;a&nbsp;magnitude&nbsp;of&nbsp;100.<br>
 &nbsp;<br>
 Returns<br>
 -------<br>
@@ -367,6 +548,23 @@ Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
+<dl><dt><a name="Simulator-set_joint_force_sensor"><strong>set_joint_force_sensor</strong></a>(self, urdf_obj, joint_name, enable_sensor)</dt><dd><tt>Enables&nbsp;reaction&nbsp;force,&nbsp;moment,&nbsp;and&nbsp;applied&nbsp;torque&nbsp;to&nbsp;be&nbsp;calculated<br>
+for&nbsp;a&nbsp;joint.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;joint&nbsp;for&nbsp;which&nbsp;the&nbsp;sensor&nbsp;is&nbsp;set.<br>
+joint_name&nbsp;:&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;joint&nbsp;whose&nbsp;sensor&nbsp;is&nbsp;set.<br>
+enable_sensor&nbsp;:&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;to&nbsp;enable&nbsp;or&nbsp;disable&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;force&nbsp;sensor.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+None.</tt></dd></dl>
+
 <dl><dt><a name="Simulator-set_joint_friction_params"><strong>set_joint_friction_params</strong></a>(self, urdf_obj, joint_name, lateral_friction=0.0, spinning_friction=0.0, rolling_friction=0.0)</dt><dd><tt>Sets&nbsp;a&nbsp;joint's&nbsp;friction&nbsp;parameters.&nbsp;These&nbsp;parameters&nbsp;determine&nbsp;the<br>
 friction&nbsp;characteristics&nbsp;between&nbsp;2&nbsp;joints.<br>
 &nbsp;<br>
@@ -409,7 +607,7 @@ Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-set_joint_position"><strong>set_joint_position</strong></a>(self, urdf_obj, joint_name, position=0.0)</dt><dd><tt>Sets&nbsp;the&nbsp;position&nbsp;of&nbsp;a&nbsp;joint&nbsp;of&nbsp;a&nbsp;urdf&nbsp;.<br>
+<dl><dt><a name="Simulator-set_joint_position"><strong>set_joint_position</strong></a>(self, urdf_obj, joint_name, position=0.0, color=False, min_pos=None, max_pos=None)</dt><dd><tt>Sets&nbsp;the&nbsp;position&nbsp;of&nbsp;a&nbsp;joint&nbsp;of&nbsp;a&nbsp;urdf&nbsp;.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -421,12 +619,23 @@ joint_name&nbsp;:&nbsp;string<br>
 position&nbsp;:&nbsp;float,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;position&nbsp;in&nbsp;rad&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;the&nbsp;joint.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;0..<br>
+color&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;to&nbsp;color&nbsp;the&nbsp;joint&nbsp;based&nbsp;on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;position.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+min_pos&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;possible&nbsp;position.&nbsp;Used&nbsp;only&nbsp;for&nbsp;coloring.&nbsp;Value&nbsp;is&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ignored&nbsp;if&nbsp;color&nbsp;is&nbsp;False.&nbsp;The&nbsp;default&nbsp;is&nbsp;None.&nbsp;Must&nbsp;be&nbsp;set&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;float&nbsp;value&nbsp;for&nbsp;coloring&nbsp;to&nbsp;be&nbsp;applied.<br>
+max_pos&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;possible&nbsp;position.&nbsp;Used&nbsp;only&nbsp;for&nbsp;coloring.&nbsp;Value&nbsp;is&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ignored&nbsp;if&nbsp;color&nbsp;is&nbsp;False.&nbsp;The&nbsp;default&nbsp;is&nbsp;None.&nbsp;Must&nbsp;be&nbsp;set&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;float&nbsp;value&nbsp;for&nbsp;coloring&nbsp;to&nbsp;be&nbsp;applied.<br>
 &nbsp;<br>
 Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-set_joint_torque"><strong>set_joint_torque</strong></a>(self, urdf_obj, joint_name, torque=0.0)</dt><dd><tt>Sets&nbsp;the&nbsp;torque&nbsp;of&nbsp;a&nbsp;joint&nbsp;of&nbsp;a&nbsp;urdf.<br>
+<dl><dt><a name="Simulator-set_joint_torque"><strong>set_joint_torque</strong></a>(self, urdf_obj, joint_name, torque=0.0, show_arrow=False, arrow_scale=0.1, color=False, min_torque=-1.0, max_torque=1.0)</dt><dd><tt>Sets&nbsp;the&nbsp;torque&nbsp;of&nbsp;a&nbsp;joint&nbsp;of&nbsp;a&nbsp;urdf.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -437,12 +646,27 @@ joint_name&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file<br>
 torque&nbsp;:&nbsp;float,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;torque&nbsp;in&nbsp;NM&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;the&nbsp;joint.&nbsp;The&nbsp;default&nbsp;is&nbsp;0..<br>
-&nbsp;<br>
+show_arrow&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;an&nbsp;arrow&nbsp;will&nbsp;be&nbsp;rendered<br>
+&nbsp;&nbsp;&nbsp;&nbsp;on&nbsp;the&nbsp;link&nbsp;to&nbsp;visualize&nbsp;the&nbsp;applied&nbsp;torque.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+arrow_scale&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;scaling&nbsp;factor&nbsp;that&nbsp;determines&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;arrow.&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;is&nbsp;0.1.<br>
+color&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;child&nbsp;link&nbsp;will&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;colored&nbsp;based&nbsp;on&nbsp;the&nbsp;applied&nbsp;torque.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+min_torque&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;value&nbsp;of&nbsp;torque&nbsp;that&nbsp;can&nbsp;be&nbsp;applied.&nbsp;Used&nbsp;for&nbsp;link<br>
+&nbsp;&nbsp;&nbsp;&nbsp;coloring.&nbsp;Does&nbsp;nothing&nbsp;if&nbsp;color&nbsp;is&nbsp;not&nbsp;enabled.&nbsp;The&nbsp;default&nbsp;is&nbsp;-1..<br>
+max_torque&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;value&nbsp;of&nbsp;torque&nbsp;that&nbsp;can&nbsp;be&nbsp;applied.&nbsp;Used&nbsp;for&nbsp;link<br>
+&nbsp;&nbsp;&nbsp;&nbsp;coloring.&nbsp;Does&nbsp;nothing&nbsp;if&nbsp;color&nbsp;is&nbsp;not&nbsp;enabled.&nbsp;The&nbsp;default&nbsp;is&nbsp;1..<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
 Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-set_joint_velocity"><strong>set_joint_velocity</strong></a>(self, urdf_obj, joint_name, velocity=0.0)</dt><dd><tt>Sets&nbsp;the&nbsp;velocity&nbsp;of&nbsp;a&nbsp;joint&nbsp;of&nbsp;a&nbsp;urdf.<br>
+<dl><dt><a name="Simulator-set_joint_velocity"><strong>set_joint_velocity</strong></a>(self, urdf_obj, joint_name, velocity=0.0, color=False, min_vel=-100.0, max_vel=100.0)</dt><dd><tt>Sets&nbsp;the&nbsp;velocity&nbsp;of&nbsp;a&nbsp;joint&nbsp;of&nbsp;a&nbsp;urdf.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -454,7 +678,16 @@ joint_name&nbsp;:&nbsp;string<br>
 velocity&nbsp;:&nbsp;float,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;velocity&nbsp;in&nbsp;rad/s&nbsp;to&nbsp;be&nbsp;applied&nbsp;to&nbsp;the&nbsp;joint.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;0..<br>
-&nbsp;<br>
+color&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;to&nbsp;color&nbsp;the&nbsp;joint&nbsp;based&nbsp;on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;velocity.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+min_vel&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;possible&nbsp;velocity.&nbsp;Used&nbsp;only&nbsp;for&nbsp;coloring.&nbsp;Value&nbsp;is&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ignored&nbsp;if&nbsp;color&nbsp;is&nbsp;False.&nbsp;The&nbsp;default&nbsp;is&nbsp;-100..<br>
+max_vel&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;possible&nbsp;velocity.&nbsp;Used&nbsp;only&nbsp;for&nbsp;coloring.&nbsp;Value&nbsp;is&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ignored&nbsp;if&nbsp;color&nbsp;is&nbsp;False.&nbsp;The&nbsp;default&nbsp;is&nbsp;100..<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
 Returns<br>
 -------<br>
 None.</tt></dd></dl>
@@ -469,8 +702,7 @@ urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;link&nbsp;whose&nbsp;color&nbsp;is&nbsp;being&nbsp;updated.<br>
 link_name&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link&nbsp;whose&nbsp;color&nbsp;is&nbsp;being&nbsp;updated.&nbsp;The&nbsp;link&nbsp;name&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file&nbsp;unless&nbsp;the&nbsp;link&nbsp;is&nbsp;the&nbsp;base&nbsp;link&nbsp;of&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;urdf,&nbsp;then&nbsp;its&nbsp;name&nbsp;is&nbsp;always&nbsp;'base'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
 color&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;RGB&nbsp;color&nbsp;of&nbsp;the&nbsp;link.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;[91,&nbsp;155,&nbsp;213].<br>
@@ -485,7 +717,7 @@ Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-set_link_mass"><strong>set_link_mass</strong></a>(self, urdf_obj, link_name, mass=0.0)</dt><dd><tt>Sets&nbsp;the&nbsp;mass&nbsp;of&nbsp;a&nbsp;link&nbsp;in&nbsp;a&nbsp;urdf.<br>
+<dl><dt><a name="Simulator-set_link_mass"><strong>set_link_mass</strong></a>(self, urdf_obj, link_name, mass=0.0, color=False, min_mass=None, max_mass=None)</dt><dd><tt>Sets&nbsp;the&nbsp;mass&nbsp;of&nbsp;a&nbsp;link&nbsp;in&nbsp;a&nbsp;urdf.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -493,11 +725,21 @@ urdf_obj&nbsp;:&nbsp;<a href="#URDF_Obj">URDF_Obj</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;<a href="#URDF_Obj">URDF_Obj</a>&nbsp;that&nbsp;contains&nbsp;that&nbsp;link&nbsp;whose&nbsp;mass&nbsp;is&nbsp;being&nbsp;set.<br>
 link_name&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link&nbsp;whose&nbsp;mass&nbsp;is&nbsp;set.&nbsp;The&nbsp;link&nbsp;name&nbsp;is<br>
-&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file&nbsp;unless&nbsp;the&nbsp;link&nbsp;is&nbsp;the&nbsp;base&nbsp;link&nbsp;of&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;urdf,&nbsp;then&nbsp;its&nbsp;name&nbsp;is&nbsp;always&nbsp;'base'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;specified&nbsp;in&nbsp;the&nbsp;.urdf&nbsp;file.<br>
 mass&nbsp;:&nbsp;float,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;mass&nbsp;to&nbsp;set&nbsp;in&nbsp;kg.&nbsp;The&nbsp;default&nbsp;is&nbsp;0..<br>
-&nbsp;<br>
+color&nbsp;:&nbsp;bool,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;to&nbsp;color&nbsp;the&nbsp;joint&nbsp;based&nbsp;on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;velocity.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
+min_mass&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;minimum&nbsp;possible&nbsp;mass.&nbsp;Used&nbsp;only&nbsp;for&nbsp;coloring.&nbsp;Value&nbsp;is&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ignored&nbsp;if&nbsp;color&nbsp;is&nbsp;False.&nbsp;The&nbsp;default&nbsp;is&nbsp;None.&nbsp;Must&nbsp;be&nbsp;set&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;float&nbsp;value&nbsp;for&nbsp;coloring&nbsp;to&nbsp;be&nbsp;applied.<br>
+max_mass&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;maximum&nbsp;possible&nbsp;mass.&nbsp;Used&nbsp;only&nbsp;for&nbsp;coloring.&nbsp;Value&nbsp;is&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ignored&nbsp;if&nbsp;color&nbsp;is&nbsp;False.&nbsp;The&nbsp;default&nbsp;is&nbsp;None.&nbsp;Must&nbsp;be&nbsp;set&nbsp;to&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;float&nbsp;value&nbsp;for&nbsp;coloring&nbsp;to&nbsp;be&nbsp;applied.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
 Returns<br>
 -------<br>
 None.</tt></dd></dl>
@@ -670,5 +912,12 @@ Data descriptors defined here:<br>
 <dl><dt><strong>__weakref__</strong></dt>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
-</td></tr></table></td></tr></table>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>cmaps</strong> = &lt;matplotlib.cm.ColormapRegistry object&gt;</td></tr></table>
 </body></html>
