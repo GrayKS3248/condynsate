@@ -14,6 +14,56 @@ from pathlib import Path
 ###############################################################################
 #PUBLIC FUNCTIONS
 ###############################################################################
+def get_rot_from_2_vecs(vec1,
+                        vec2):
+    """
+    Calculates a quaternion representing the transformation of the
+    the vec1 vector to the vec2 vector.
+
+    Parameters
+    ----------
+    vec1 : array-like, shape(3,)
+        The initial vector.
+    vec2 : array-like, shape(3,)
+        The vector to which the transformation is calculated.
+        
+    Returns
+    -------
+    xyzw_rot : array-like, shape(4,)
+        The JPL quaternion (xyzw) the takes the vec1 vector to the
+        vec2 vector (without scaling). vec2 = xyzw_rot*vec1
+
+    """
+    # Convert to numpy array
+    arr1 = np.array(vec1)
+    arr2 = np.array(vec2)
+    
+    # Calculate the norm of vec
+    mag1 = np.linalg.norm(arr1)
+    mag2 = np.linalg.norm(arr2)
+    
+    # If either magnitude is 0, no rotation can be found.
+    if mag1==0. or mag2==0.:
+        xyzw_rot = [0., 0., 0., 1.]
+        return xyzw_rot
+    
+    # If the magnitude is not zero, get the direction of vec
+    dirn1 = arr1/mag1
+    dirn2 = arr2/mag2
+    
+    # If the vec is exactly 180 degrees away, set the 180 deg quaternion
+    if (dirn2==-1*dirn1).all():
+        xyzw_rot = [0.5*np.sqrt(2), -0.5*np.sqrt(2), 0., 0.]
+        return xyzw_rot
+    
+    # If the vec is some other relative orientation, calculate it
+    q_xyz = np.cross(dirn1, dirn2)
+    q_w = 1.0 + np.dot(dirn1, dirn2)
+    xyzw_rot = np.append(q_xyz, q_w).tolist()
+    xyzw_rot = xyzw_rot/np.linalg.norm(xyzw_rot)
+    return xyzw_rot
+
+
 def xyzw_to_wxyz(xyzw_quaternion):
     """
     Converts a JPL quaternion (xyzw) to a Hamilton quaternion (wxyz)

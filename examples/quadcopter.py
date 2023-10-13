@@ -74,86 +74,81 @@ if __name__ == "__main__":
         if keyboard.is_pressed("f"):
             torque_4 = max_torque
 
-        sim.apply_force_to_com(urdf_obj=quad_obj,
-                                force=[1., 1., 9.81*0.5],
+        # Set torques
+        sim.set_joint_torque(urdf_obj=quad_obj,
+                            joint_name='spar1_to_rotor1',
+                            torque=torque_1,
+                            show_arrow=True,
+                            arrow_scale=0.1,
+                            color=False)
+        sim.set_joint_torque(urdf_obj=quad_obj,
+                            joint_name='spar2_to_rotor2',
+                            torque=torque_2,
+                            show_arrow=True,
+                            arrow_scale=0.1,
+                            color=False)
+        sim.set_joint_torque(urdf_obj=quad_obj,
+                            joint_name='spar3_to_rotor3',
+                            torque=torque_3,
+                            show_arrow=True,
+                            arrow_scale=0.1,
+                            color=False)
+        sim.set_joint_torque(urdf_obj=quad_obj,
+                            joint_name='spar4_to_rotor4',
+                            torque=torque_4,
+                            show_arrow=True,
+                            arrow_scale=0.1,
+                            color=False)
+        
+        # Color based on velocity
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                                joint_name='spar1_to_rotor1',
+                                min_vel=-100.,
+                                max_vel=100.)
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                                joint_name='spar2_to_rotor2',
+                                min_vel=-100.,
+                                max_vel=100.)
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                                joint_name='spar3_to_rotor3',
+                                min_vel=-100.,
+                                max_vel=100.)
+        sim.set_color_from_vel(urdf_obj=quad_obj,
+                                joint_name='spar4_to_rotor4',
+                                min_vel=-100.,
+                                max_vel=100.)
+        
+        # Retrieve the joint states for force calculation
+        _,vel_1,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar1_to_rotor1")
+        _,vel_2,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar2_to_rotor2")
+        _,vel_3,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar3_to_rotor3")
+        _,vel_4,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
+                                            joint_name="spar4_to_rotor4")
+        
+        # Set force based on velocity
+        sim.apply_force_to_link(urdf_obj=quad_obj,
+                                link_name='rotor1',
+                                force=[0., 0.001*vel_1, -0.05*vel_1],
                                 show_arrow=True,
-                                arrow_scale=0.2)
-
-        # # Set torques
-        # sim.set_joint_torque(urdf_obj=quad_obj,
-        #                     joint_name='spar1_to_rotor1',
-        #                     torque=torque_1,
-        #                     show_arrow=True,
-        #                     arrow_scale=0.1,
-        #                     color=False)
-        # sim.set_joint_torque(urdf_obj=quad_obj,
-        #                     joint_name='spar2_to_rotor2',
-        #                     torque=torque_2,
-        #                     show_arrow=True,
-        #                     arrow_scale=0.1,
-        #                     color=False)
-        # sim.set_joint_torque(urdf_obj=quad_obj,
-        #                     joint_name='spar3_to_rotor3',
-        #                     torque=torque_3,
-        #                     show_arrow=True,
-        #                     arrow_scale=0.1,
-        #                     color=False)
-        # sim.set_joint_torque(urdf_obj=quad_obj,
-        #                     joint_name='spar4_to_rotor4',
-        #                     torque=torque_4,
-        #                     show_arrow=True,
-        #                     arrow_scale=0.1,
-        #                     color=False)
-        
-        # # Color based on velocity
-        # sim.set_color_from_vel(urdf_obj=quad_obj,
-        #                        joint_name='spar1_to_rotor1',
-        #                        min_vel=-100.,
-        #                        max_vel=100.)
-        # sim.set_color_from_vel(urdf_obj=quad_obj,
-        #                        joint_name='spar2_to_rotor2',
-        #                        min_vel=-100.,
-        #                        max_vel=100.)
-        # sim.set_color_from_vel(urdf_obj=quad_obj,
-        #                        joint_name='spar3_to_rotor3',
-        #                        min_vel=-100.,
-        #                        max_vel=100.)
-        # sim.set_color_from_vel(urdf_obj=quad_obj,
-        #                        joint_name='spar4_to_rotor4',
-        #                        min_vel=-100.,
-        #                        max_vel=100.)
-        
-        # # Retrieve the joint states for force calculation
-        # _,vel_1,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-        #                                     joint_name="spar1_to_rotor1")
-        # _,vel_2,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-        #                                     joint_name="spar2_to_rotor2")
-        # _,vel_3,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-        #                                     joint_name="spar3_to_rotor3")
-        # _,vel_4,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-        #                                     joint_name="spar4_to_rotor4")
-        
-        # # Set force based on velocity
-        # sim.apply_force_to_link(urdf_obj=quad_obj,
-        #                         link_name='rotor1',
-        #                         force=[0., 0.001*vel_1, -0.05*vel_1],
-        #                         show_arrow=True,
-        #                         arrow_scale=0.40)
-        # sim.apply_force_to_link(urdf_obj=quad_obj,
-        #                         link_name='rotor2',
-        #                         force=[0., 0.001*vel_2, 0.05*vel_2],
-        #                         show_arrow=True,
-        #                         arrow_scale=0.40)
-        # sim.apply_force_to_link(urdf_obj=quad_obj,
-        #                         link_name='rotor3',
-        #                         force=[0., 0.001*vel_3, -0.05*vel_3],
-        #                         show_arrow=True,
-        #                         arrow_scale=0.40)
-        # sim.apply_force_to_link(urdf_obj=quad_obj,
-        #                         link_name='rotor4',
-        #                         force=[0., 0.001*vel_4, 0.05*vel_4],
-        #                         show_arrow=True,
-        #                         arrow_scale=0.40)
+                                arrow_scale=0.40)
+        sim.apply_force_to_link(urdf_obj=quad_obj,
+                                link_name='rotor2',
+                                force=[0., 0.001*vel_2, 0.05*vel_2],
+                                show_arrow=True,
+                                arrow_scale=0.40)
+        sim.apply_force_to_link(urdf_obj=quad_obj,
+                                link_name='rotor3',
+                                force=[0., 0.001*vel_3, -0.05*vel_3],
+                                show_arrow=True,
+                                arrow_scale=0.40)
+        sim.apply_force_to_link(urdf_obj=quad_obj,
+                                link_name='rotor4',
+                                force=[0., 0.001*vel_4, 0.05*vel_4],
+                                show_arrow=True,
+                                arrow_scale=0.40)
         
         # Set the plot data
         pos,_,vel,_ = sim.get_base_state(quad_obj,
