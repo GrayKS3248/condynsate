@@ -12,7 +12,7 @@ if __name__ == "__main__":
     # Create an instance of the simulator with visualization
     sim = condynsate.Simulator(visualization=True,
                                animation=True,
-                               animation_fr=3.)
+                               animation_fr=15.)
     
     # Load all objects
     ground_obj = sim.load_urdf(urdf_path='./quadcopter_vis/plane.urdf',
@@ -51,7 +51,7 @@ if __name__ == "__main__":
                                       x_label="Kinetic Energy [J]",
                                       y_label="Potention Energy [J]",
                                       color="r",
-                                      tail=50)
+                                      tail=500)
     sim.open_animator_gui()
     
     # Wait for user input

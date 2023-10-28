@@ -62,7 +62,7 @@ if __name__ == "__main__":
                                     x_label="θ [Rad]",
                                     y_label="L $[Kg•m^{2}•s^{-1}]$",
                                     color="r",
-                                    tail=600,
+                                    tail=800,
                                     line_width=2.5)
     sim.open_animator_gui()
     
