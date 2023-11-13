@@ -9,11 +9,9 @@
 From source:
 
 ```
-git clone https://github.com/GrayKS3248/condynsate
-cd condynsate
-python setup.py install
+python -m pip install condynsate
 ```
 
 ## Usage
 
-For examples of usage, see [examples](/examples).
+For examples of usage, see [examples](https://github.com/GrayKS3248/condynsate/tree/main/examples).
