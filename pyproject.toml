@@ -36,7 +36,7 @@ dependencies = [
     "keyboard >= 0.13.5",
     "matplotlib >= 3.7.1",
     "pybullet >= 3.2.5",
-    "meshcat >= 0.3.2"
+    "meshcat >= 0.3.2",
 ]
 requires-python = ">=3.9"
 
