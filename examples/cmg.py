@@ -2,7 +2,6 @@
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
-import keyboard
 import condynsate
 
 
@@ -74,33 +73,33 @@ if __name__ == "__main__":
     while(not done):    
         
         # Collect keyboard IO data for torque
-        if keyboard.is_pressed("shift+d"):
+        if sim.is_pressed("shift+d"):
             torque = max_torque
-        elif keyboard.is_pressed("d"):
+        elif sim.is_pressed("d"):
             torque = max_torque / 4.0
-        elif keyboard.is_pressed("shift+a"):
+        elif sim.is_pressed("shift+a"):
             torque = min_torque
-        elif keyboard.is_pressed("a"):
+        elif sim.is_pressed("a"):
             torque = min_torque / 4.0
         else:
             torque = 0.0
     
         # Collect keyboard IO data for mass
-        if keyboard.is_pressed('e'):
+        if sim.is_pressed('e'):
             mass = mass + 0.005*(max_mass - min_mass)
             if mass > max_mass:
                 mass = max_mass
-        elif keyboard.is_pressed('q'):
+        elif sim.is_pressed('q'):
             mass = mass - 0.005*(max_mass - min_mass)
             if mass < min_mass:
                 mass = min_mass
     
         # Collect keyboard IO data for wheel vel
-        if keyboard.is_pressed('w'):
+        if sim.is_pressed('w'):
             vel = vel + 0.005*(max_vel - min_vel)
             if vel > max_vel:
                 vel = max_vel
-        elif keyboard.is_pressed('s'):
+        elif sim.is_pressed('s'):
             vel = vel - 0.005*(max_vel - min_vel)
             if vel < min_vel:
                 vel = min_vel
@@ -147,6 +146,6 @@ if __name__ == "__main__":
                  update_ani=True)
         
         # Collect keyboard IO for termination
-        if keyboard.is_pressed("esc"):
+        if sim.is_pressed("esc"):
             done = True
             

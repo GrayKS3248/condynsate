@@ -15,7 +15,7 @@ from .visualizer import Visualizer
 from .animator import Animator
 from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
 from .utils import xyzw_quat_mult, get_rot_from_2_vecs
-import keyboard
+from .keyboard import Keys
 from matplotlib import colormaps as cmaps
 
 
@@ -129,6 +129,9 @@ class Simulator:
             self.ani = Animator(fr=animation_fr)
         else:
             self.ani=None
+            
+        # Start the keyboard listener
+        self.keys = Keys()
         
     
     ###########################################################################
@@ -2404,7 +2407,32 @@ class Simulator:
         
     ###########################################################################
     #SIMULATION EXECUTION
-    ###########################################################################  
+    ###########################################################################
+    def is_pressed(self,
+                   key):
+        """
+        Wrapper for the keyboard.Keys.is_pressed() function.
+        Returns a boolean flag to indicate whether a desired key is pressed.
+        The key may be alpha numeric or some special keys.
+
+        Parameters
+        ----------
+        key : string
+            The key to be detected. May be alpha numeric ("a", "A", "1", "!",
+            "`", etc.) or some special keys. The special keys are as follows:
+            "space", "enter", "backspace", "tab", "shift", "alt", "tab",
+            "ctrl", and "esc". If "esc" is pressed, the keyboard listener will
+            automatically stop and cannot be restarted.
+
+        Returns
+        -------
+        bool
+            A boolean flag to indicate whether the desired key is pressed.
+
+        """
+        return self.keys.is_pressed(key)
+        
+        
     def await_keypress(self,
                        key="enter"):
         """
@@ -2424,7 +2452,7 @@ class Simulator:
 
         """
         print("PRESS "+key.upper()+" TO CONTINUE")
-        while not keyboard.is_pressed("enter"):
+        while not self.is_pressed("enter"):
             # Ensure so the GUI remains interactive if simulation is suspended
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()

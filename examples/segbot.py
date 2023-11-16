@@ -2,7 +2,6 @@
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
-import keyboard
 import condynsate
 
 
@@ -72,32 +71,32 @@ if __name__ == "__main__":
     while(not done):
         
         # Collect keyboard IO data for torque
-        if keyboard.is_pressed("shift+w"):
+        if sim.is_pressed("shift+w"):
             r_torque = 0.75 * max_torque
             l_torque = 0.75 * max_torque
-        elif keyboard.is_pressed("w"):
+        elif sim.is_pressed("w"):
             r_torque = 0.33 * max_torque
             l_torque = 0.33 * max_torque
-        elif keyboard.is_pressed("shift+s"):
+        elif sim.is_pressed("shift+s"):
             r_torque = 0.75 * min_torque
             l_torque = 0.75 * min_torque
-        elif keyboard.is_pressed("s"):
+        elif sim.is_pressed("s"):
             r_torque = 0.33 * min_torque
             l_torque = 0.33 * min_torque
         else:
             r_torque = 0.0
             l_torque = 0.0
-        if keyboard.is_pressed("d"):
+        if sim.is_pressed("d"):
             l_torque = l_torque + 0.25*max_torque
-        if keyboard.is_pressed("a"):
+        if sim.is_pressed("a"):
             r_torque = r_torque + 0.25*max_torque
         
         # Collect keyboard IO data for station vel
-        if keyboard.is_pressed("e"):
+        if sim.is_pressed("e"):
             stat_vel = stat_vel + 0.005*(max_stat_vel - min_stat_vel)
             if stat_vel > max_stat_vel:
                 stat_vel = max_stat_vel
-        elif keyboard.is_pressed("q"):
+        elif sim.is_pressed("q"):
             stat_vel = stat_vel - 0.005*(max_stat_vel - min_stat_vel)
             if stat_vel < min_stat_vel:
                 stat_vel = min_stat_vel
@@ -153,6 +152,6 @@ if __name__ == "__main__":
                  update_ani=True)
         
         # Collect keyboard IO for termination
-        if keyboard.is_pressed("esc"):
+        if sim.is_pressed("esc"):
             done = True
             

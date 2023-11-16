@@ -2,7 +2,6 @@
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
-import keyboard
 import condynsate
 
 
@@ -111,27 +110,27 @@ if __name__ == "__main__":
     done = False
     while(not done):      
         # Collect keyboard IO data for torques
-        if keyboard.is_pressed("a"):
+        if sim.is_pressed("a"):
             torque_1 = min_torque
-        elif keyboard.is_pressed("q"):
+        elif sim.is_pressed("q"):
             torque_1 = max_torque
         else:
             torque_1 = 0.0
-        if keyboard.is_pressed("s"):
+        if sim.is_pressed("s"):
             torque_2 = min_torque
-        elif keyboard.is_pressed("w"):
+        elif sim.is_pressed("w"):
             torque_2 = max_torque
         else:
             torque_2 = 0.0
-        if keyboard.is_pressed("d"):
+        if sim.is_pressed("d"):
             torque_3 = min_torque
-        elif keyboard.is_pressed("e"):
+        elif sim.is_pressed("e"):
             torque_3 = max_torque
         else:
             torque_3 = 0.0
-        if keyboard.is_pressed("f"):
+        if sim.is_pressed("f"):
             torque_4 = min_torque
-        elif keyboard.is_pressed("r"):
+        elif sim.is_pressed("r"):
             torque_4 = max_torque
         else:
             torque_4 = 0.0
@@ -187,6 +186,6 @@ if __name__ == "__main__":
                  update_ani=True)
         
         # Collect keyboard IO for termination
-        if keyboard.is_pressed("esc"):
+        if sim.is_pressed("esc"):
             done = True
             
