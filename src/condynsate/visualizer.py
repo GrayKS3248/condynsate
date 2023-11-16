@@ -10,7 +10,7 @@ import numpy as np
 import meshcat
 import meshcat.geometry as geo
 import meshcat.transformations as tf
-from .utils import format_path, wxyz_from_euler
+from condynsate.utils import format_path, wxyz_from_euler
 
 
 ###############################################################################

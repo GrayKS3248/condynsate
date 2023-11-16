@@ -11,11 +11,11 @@ import numpy as np
 import time
 import pybullet
 from pybullet_utils import bullet_client as bc
-from .visualizer import Visualizer
-from .animator import Animator
-from .utils import format_path, format_RGB, wxyz_to_xyzw, xyzw_to_wxyz
-from .utils import xyzw_quat_mult, get_rot_from_2_vecs
-from .keyboard import Keys
+from condynsate.visualizer import Visualizer
+from condynsate.animator import Animator
+from condynsate.utils import format_path,format_RGB,wxyz_to_xyzw,xyzw_to_wxyz
+from condynsate.utils import xyzw_quat_mult, get_rot_from_2_vecs
+from condynsate.keyboard import Keys
 from matplotlib import colormaps as cmaps
 
 
