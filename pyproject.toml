@@ -37,8 +37,7 @@ dependencies = [
     "matplotlib >= 3.7.1",
     "pybullet >= 3.2.5",
     "meshcat >= 0.3.2",
-    "PyQt5 >= 5.15.10",
-    "PyQt6 >= 6.6.0",
+    "PyQt5 >= 5.15.10"
 ]
 requires-python = ">=3.10"
 
