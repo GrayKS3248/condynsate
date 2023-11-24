@@ -40,7 +40,7 @@ dependencies = [
     "PyQt5 >= 5.15.10",
     "PyQt6 >= 6.6.0",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
 dev = []
