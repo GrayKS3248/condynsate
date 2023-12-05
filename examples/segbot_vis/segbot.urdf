@@ -81,7 +81,6 @@
 		<child link = "left_wheel" />
 		<origin rpy="1.57 0 0" xyz = "0 0.35 -0.3" />
 		<axis xyz = "0 0 -1" />
-		<limit effort="1000" velocity="1000"/>
 	</joint>
 
   <joint name="chassis_to_right_wheel" type="continuous">
@@ -89,7 +88,6 @@
 		<child link = "right_wheel" />
 		<origin rpy="1.57 0 0" xyz="0 -0.35 -0.3" />
 		<axis xyz="0 0 -1" />
-		<limit effort="1000" velocity="1000"/>
 	</joint>
 
 </robot>

@@ -125,7 +125,6 @@
 		<child link = "outer" />
 		<origin xyz = "0 0 0" />
 		<axis xyz = "0 1 0" />
-		<limit effort="1000" velocity="1000"/>
 	</joint>
 
   <joint name="outer_to_inner" type="continuous">
@@ -133,7 +132,6 @@
 		<child link = "inner" />
 		<origin xyz = "0 0 0" />
 		<axis xyz = "1 0 0" />
-		<limit effort="1000" velocity="1000"/>
 	</joint>
 
   <joint name="inner_to_wheel" type="continuous">
@@ -141,7 +139,6 @@
 		<child link = "wheel" />
 		<origin xyz = "0 0 0" />
 		<axis xyz = "0 0 1" />
-		<limit effort="1000" velocity="1000"/>
 	</joint>
 
   <joint name="outer_to_spar" type="fixed">

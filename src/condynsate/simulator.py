@@ -30,7 +30,8 @@ class URDF_Obj:
                  urdf_id,
                  joint_map,
                  link_map,
-                 update_vis):
+                 update_vis,
+                 initial_conds=0):
         """
         Initialize an instance of the URDF_Obj class. This class is used to
         store information relating to a urdf described by a .urdf file.
@@ -48,6 +49,7 @@ class URDF_Obj:
         update_vis : bool
             A boolean flag that indicates whether this urdf will be updated
             by the visualizer each time step.
+        initial_conds : TODO
             
         Returns
         -------
@@ -58,6 +60,7 @@ class URDF_Obj:
         self.joint_map = joint_map
         self.link_map = link_map     
         self.update_vis = update_vis
+        self.initial_conds = initial_conds
 
 
 ###############################################################################
@@ -2451,13 +2454,19 @@ class Simulator:
         None.
 
         """
-        print("PRESS "+key.upper()+" TO CONTINUE")
+        print("PRESS "+key.upper()+" TO CONTINUE."+
+              "\nPRESS ESC TO QUIT."+
+              "\nPRESS CTRL+R TO RESET SIMULATION.")
         while not self.is_pressed("enter"):
             # Ensure so the GUI remains interactive if simulation is suspended
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()
         print("CONTINUING...")
-       
+      
+        
+    def reset(self):
+        pass
+    
         
     def step(self,
              real_time=True,
