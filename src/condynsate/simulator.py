@@ -31,7 +31,7 @@ class URDF_Obj:
                  joint_map,
                  link_map,
                  update_vis,
-                 initial_conds=0):
+                 initial_conds):
         """
         Initialize an instance of the URDF_Obj class. This class is used to
         store information relating to a urdf described by a .urdf file.
@@ -135,6 +135,12 @@ class Simulator:
             
         # Start the keyboard listener
         self.keys = Keys()
+        
+        # Keep track if the simulation has been run or not
+        self.is_started = False
+        
+        # Keep track if the simulation is done or not
+        self.is_done = False
         
     
     ###########################################################################
@@ -255,8 +261,17 @@ class Simulator:
         # Get the joint and link maps for the urdf object
         joint_map, link_map = self._make_joint_and_link_maps(urdf_id)
         
+        # Record the initial conditions of the URDF
+        initial_conds = {'position' : position,
+                         'orientation' : orientation,
+                         'fixed' : fixed}
+        
         # Create urdf_obj and adjust the default state of its joints
-        urdf_obj = URDF_Obj(urdf_id, joint_map, link_map, update_vis)
+        urdf_obj = URDF_Obj(urdf_id,
+                            joint_map,
+                            link_map,
+                            update_vis,
+                            initial_conds)
         for joint_name in joint_map:
             
             # Set the joint's friction parameters to model metal to metal
@@ -2424,8 +2439,11 @@ class Simulator:
             The key to be detected. May be alpha numeric ("a", "A", "1", "!",
             "`", etc.) or some special keys. The special keys are as follows:
             "space", "enter", "backspace", "tab", "shift", "alt", "tab",
-            "ctrl", and "esc". If "esc" is pressed, the keyboard listener will
-            automatically stop and cannot be restarted.
+            "ctrl", and "esc". The following modifiers can also be used:
+            "shift+", "alt+", and "ctrl+". Modifiers are added with the
+            following format: "shift+a", "ctrl+a", "alt+a", "shift+ctrl+alt+a",
+            etc. If "esc" is pressed, the keyboard listener will automatically
+            stop and cannot be restarted.
 
         Returns
         -------
@@ -2456,17 +2474,58 @@ class Simulator:
         """
         print("PRESS "+key.upper()+" TO CONTINUE."+
               "\nPRESS ESC TO QUIT."+
-              "\nPRESS CTRL+R TO RESET SIMULATION.")
+              "\nPRESS TAB TO RESET SIMULATION.")
         while not self.is_pressed("enter"):
             # Ensure so the GUI remains interactive if simulation is suspended
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()
+        
+        # Note that the simulation is started
         print("CONTINUING...")
+        self.is_started = True
       
         
-    def reset(self):
-        pass
+    def reset(self,
+              update_vis,
+              update_ani):
+        # Note that the simulation is resetting to the user
+        print("RESETTING...")
+        
+        # Note the simulation is no longer running and reset the time
+        self.is_started = False
+        self.is_done = False
+        self.time = 0.
+        self.last_step_time = time.time()
+        
+        # Reset the base position and orientation of all urdfs
+        for urdf_obj in self.urdf_objs:
+            i = urdf_obj.urdf_id
+            p = urdf_obj.initial_conds['position']
+            o = urdf_obj.initial_conds['orientation']
+            self.engine.resetBasePositionAndOrientation(bodyUniqueId=i,
+                                                        posObj=p,
+                                                        ornObj=o)
+        
+        #TOTO Reset the joint and link states for all urdfs
+        
+        #TODO Reset all joint torques and forces to 0 for all urdfs
+        
+        #TODO Reset all external forces and torques to 0 for all urdfs
+        
+        #TODO Reset the plots
+        
+        # Update the visualizer if it exists
+        if update_vis and isinstance(self.vis, Visualizer):
+            for urdf_obj in self.urdf_objs:
+                if urdf_obj.update_vis:
+                    self._update_urdf_visual(urdf_obj)
+        
+        # Update the animator if it exists
+        if update_ani and isinstance(self.ani, Animator):
+            self.ani.step()
     
+        # Wait one half second to prevent multiple resets
+        time.sleep(0.5)
         
     def step(self,
              real_time=True,
@@ -2497,6 +2556,9 @@ class Simulator:
         None.
 
         """
+        # Note that the simulation is started
+        self.is_started = True
+        
         # Calculate suspend time if running in real time
         if real_time:
             time_since_last_step = time.time() - self.last_step_time
@@ -2520,4 +2582,13 @@ class Simulator:
         # Update the animator if it exists
         if update_ani and isinstance(self.ani, Animator):
             self.ani.step()
+        
+        # Collect keyboard IO for simulation reset
+        if self.is_pressed("tab"):
+            self.reset(update_vis = update_vis,
+                       update_ani = update_ani)
+        
+        # Collect keyboard IO for termination
+        if self.is_pressed("esc"):
+            self.is_done = True
             
