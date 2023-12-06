@@ -14,13 +14,8 @@ sim = condynsate.Simulator(visualization=True,
                            animation_fr=15.)
 
 # Load urdf objects
-ground_obj = sim.load_urdf(urdf_path='./wheel_vis/plane.urdf',
-                           tex_path='./wheel_vis/check.png',
-                           position=[0., 0., 0.],
-                           fixed=True,
-                           update_vis=False)
 wheel_obj = sim.load_urdf(urdf_path='./wheel_vis/wheel.urdf',
-                          position=[0., 0., 0.1665],
+                          position=[0., 0., 0.],
                           fixed=True,
                           update_vis=True)
 target_obj = sim.load_urdf(urdf_path='./wheel_vis/target_arrow.urdf',
@@ -52,7 +47,7 @@ while(not sim.is_done):
     # Use a sensor to collect the absolute angle of the wheel and calculate
     # the error from target angle.
     angle,angle_vel,_,_,_ = sim.get_joint_state(urdf_obj=wheel_obj,
-                                                joint_name="world_to_axle")
+                                                joint_name="ground_to_axle")
     ###########################################################################
     # CONTROLLER
     # This is the section where you make a controller.
@@ -61,12 +56,12 @@ while(not sim.is_done):
     # some target angle. 
     angle_error = angle - angle_tag
     angle_vel_error = angle_vel - 0.0
-    torque = -15.0 * angle_error - 9.5*angle_vel_error
+    torque = -3.0 * angle_error - 2.0*angle_vel_error
     ###########################################################################
     # ACTUATOR
     # Apply the controller calculated torque to the wheel using an actuator.
     sim.set_joint_torque(urdf_obj=wheel_obj,
-                          joint_name="world_to_axle",
+                          joint_name="ground_to_axle",
                           torque=torque)
     ###########################################################################
     

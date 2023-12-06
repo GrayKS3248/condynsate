@@ -169,7 +169,7 @@ class Simulator:
     ###########################################################################
     def load_urdf(self,
                   urdf_path,
-                  tex_path='./examples/cmg_vis/check.png',
+                  tex_path='../shapes/check.png',
                   position = [0., 0., 0.],
                   wxyz_quaternion = [1., 0., 0., 0.],
                   roll=None,

@@ -13,7 +13,20 @@
     <color rgba = "0.96078431 0.50980392 0.11764706 1" />
   </material>
   
-  <link name="world"/>
+  <link name="ground">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="plane_big.obj" scale="1.0 1.0 1.0"/>
+      </geometry>
+      <material name = "steel"/>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
 
   <link name="axle">
     <visual>
@@ -25,8 +38,8 @@
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="00001"/>
-      <inertia ixx="00001" ixy="0" ixz="0" iyy="00001" iyz="0" izz="00001"/>
+      <mass value="0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
   </link>
 
@@ -55,15 +68,15 @@
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.0001"/>
-      <inertia ixx="00001" ixy="0" ixz="0" iyy="00001" iyz="0" izz="00001"/>
+      <mass value="0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
   </link>
 
-  <joint name="world_to_axle" type="continuous">
-		<parent link = "world" />
+  <joint name="ground_to_axle" type="continuous">
+		<parent link = "ground" />
 		<child link = "axle" />
-		<origin xyz = "0 0 0" />
+		<origin xyz = "0 0 0.1665" />
 		<axis xyz = "0 0 1" />
   </joint>
 
