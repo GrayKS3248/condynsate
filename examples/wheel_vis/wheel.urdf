@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<robot name="wheel">
+
+  <material name="industrial-blue">
+    <color rgba="0.1137254901960784 0.3450980392156862 0.654901960784313 1" />
+  </material>
+
+  <material name="arches-blue">
+    <color rgba="0.0 0.6235294117647059 0.8313725490196079 1" />
+  </material>
+
+  <material name = "heritage-orange">
+    <color rgba = "0.96078431 0.50980392 0.11764706 1" />
+  </material>
+  
+  <link name="world"/>
+
+  <link name="axle">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<mesh filename="cylinder.stl" scale="0.5 0.5 0.333"/>
+      </geometry>
+      <material name = "arches-blue"/>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="00001"/>
+      <inertia ixx="00001" ixy="0" ixz="0" iyy="00001" iyz="0" izz="00001"/>
+    </inertial>
+  </link>
+
+  <link name="wheel">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<mesh filename="cylinder.stl" scale="2.0 2.0 0.333"/>
+      </geometry>
+      <material name = "industrial-blue"/>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.25924" ixy="0" ixz="0" iyy="0.25924" iyz="0" izz="0.5"/>
+    </inertial>
+  </link>
+
+  <link name="arrow">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+  			<mesh filename="arrow_lin.stl" scale="1.25 0.1 0.75"/>
+      </geometry>
+      <material name = "heritage-orange"/>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.0001"/>
+      <inertia ixx="00001" ixy="0" ixz="0" iyy="00001" iyz="0" izz="00001"/>
+    </inertial>
+  </link>
+
+  <joint name="world_to_axle" type="continuous">
+		<parent link = "world" />
+		<child link = "axle" />
+		<origin xyz = "0 0 0" />
+		<axis xyz = "0 0 1" />
+  </joint>
+
+  <joint name="axle_to_wheel" type="fixed">
+		<parent link = "axle" />
+		<child link = "wheel" />
+		<origin xyz = "0 0 0.333" />
+  </joint>
+
+  <joint name="wheel_to_arrow" type="fixed">
+		<parent link = "wheel" />
+		<child link = "arrow" />
+		<origin xyz="0 -0.1 0.17" rpy="1.5707963267948966 0 0"/>
+  </joint>
+
+
+</robot>

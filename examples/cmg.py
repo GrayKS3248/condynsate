@@ -126,7 +126,7 @@ while(not sim.is_done):
                            min_vel=min_vel,
                            max_vel=max_vel)
 
-    # Set the plot data
+    # Add the current datapoint to the plot
     ang, ang_vel,_,_,_ = sim.get_joint_state(urdf_obj=cmg_obj,
                                              joint_name="world_to_outer")
     ang_momentum = mass*ang_vel

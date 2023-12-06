@@ -609,11 +609,12 @@ class Simulator:
                            urdf_obj,
                            joint_name,
                            position=0.,
+                           physics=False,
                            color=False,
                            min_pos=None,
                            max_pos=None):
         """
-        Sets the position of a joint of a urdf .
+        Sets the position of a joint of a urdf.
 
         Parameters
         ----------
@@ -625,6 +626,11 @@ class Simulator:
         position : float, optional
             The position in rad to be applied to the joint.
             The default is 0..
+        physics : bool, optional
+            A boolean flag that indicates whether physics based poisiton
+            controller will be used to change joint position or whether
+            the joint position will be reset immediately to the target
+            position with zero end velocity. The default is False. 
         color : bool, optional
             A boolean flag that indicates whether to color the joint based on
             its position. The default is False.
@@ -655,13 +661,20 @@ class Simulator:
                 return
             
             # Set the position
-            mode = self.engine.POSITION_CONTROL
-            position = [position]
-            self.engine.setJointMotorControlArray(urdf_id,
-                                                  joint_id,
-                                                  mode,
-                                                  forces=[1000.],
-                                                  targetPositions=position)
+            if physics:
+                mode = self.engine.POSITION_CONTROL
+                position = [position]
+                self.engine.setJointMotorControlArray(urdf_id,
+                                                      joint_id,
+                                                      mode,
+                                                      forces=[100.],
+                                                      targetPositions=position)
+            # Reset joint position
+            else:
+                self.engine.resetJointState(bodyUniqueId=urdf_id,
+                                            jointIndex=joint_id[0],
+                                            targetValue=position,
+                                            targetVelocity=0.0)
            
             # Color the link based on the position
             if color and min_pos!=None and max_pos!=None:
