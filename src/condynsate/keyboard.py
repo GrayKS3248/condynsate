@@ -12,6 +12,9 @@ import signal
 import sys
 
 
+###############################################################################
+#KEYS CLASS
+###############################################################################
 class Keys:
     """
     Keys detected keyboard events and stores key information. Used for 

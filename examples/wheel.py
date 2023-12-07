@@ -1,7 +1,6 @@
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-import numpy as np
 import condynsate
 
 
@@ -19,7 +18,7 @@ wheel_obj = sim.load_urdf(urdf_path='./wheel_vis/wheel.urdf',
                           fixed=True,
                           update_vis=True)
 target_obj = sim.load_urdf(urdf_path='./wheel_vis/target_arrow.urdf',
-                           position=[0., 0., 0.],
+                           position=[0., 0., 0.6655],
                            fixed=True,
                            update_vis=True)
 
@@ -42,7 +41,7 @@ plot2, lines2 = sim.add_subplot_to_animator(n_lines=1,
 sim.open_animator_gui()
 
 # Set the target angle for the wheel
-angle_tag = np.pi/2.
+angle_tag = 0.0
 
 # Wait for user input
 sim.await_keypress(key="enter")
@@ -91,13 +90,13 @@ while(not sim.is_done):
     
     # Collect keyboard IO data for changing the target angle
     if sim.is_pressed('a'):
-        angle_tag = angle_tag + 0.005*2*np.pi
-        if angle_tag > np.pi:
-            angle_tag = np.pi
+        angle_tag = angle_tag + 0.005*6.2831854
+        if angle_tag > 3.1415927:
+            angle_tag = 3.1415927
     elif sim.is_pressed('d'):
-        angle_tag = angle_tag - 0.005*2*np.pi
-        if angle_tag < -np.pi:
-            angle_tag = -np.pi
+        angle_tag = angle_tag - 0.005*6.2831854
+        if angle_tag < -3.1415927:
+            angle_tag = -3.1415927
 
     # Adjust the target arrow so that it is always 
     # pointing in the target angle direction

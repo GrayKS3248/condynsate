@@ -12,6 +12,9 @@ import numpy as np
 import time
 
 
+###############################################################################
+#ANIMATOR CLASS
+###############################################################################
 class Animator():
     """
     Animator manages the real time plotting of states.
@@ -759,3 +762,4 @@ class Animator():
         plt.ion()
         self.fig.canvas.flush_events() 
         plt.ioff()
+        
