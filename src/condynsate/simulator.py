@@ -2389,21 +2389,22 @@ class Simulator:
         return plot_index
         
         
-    def set_plot_data(self,
-                      plot_index,
-                      x,
-                      y):
+    def add_plot_point(self,
+                       plot_index,
+                       x,
+                       y):
         """
-        Sets the data to be plotted for an individual plot. 
+        Adds a single data point to the plot. Data point is appended to the end
+        of all previously plotted data points.
 
         Parameters
         ----------
         plot_index : int
-            The plot's unique identifier. Provided by add_plot_to_animator().
-        x : array-like, shape(n,)
-            An array of the x data.
-        y : array-like, shape(n,)
-            An array of the y data.
+            The plot's unique identifier.
+        x : float
+            The x value of the data point added to the plot.
+        y : float
+            The y value of the data point added to the plot.
 
         Returns
         -------
@@ -2415,20 +2416,25 @@ class Simulator:
             return
         
         # Update the plot
-        self.ani.set_plot_data(plot_index=plot_index,
-                               x=x,
-                               y=y)
+        self.ani.add_plot_point(plot_index=plot_index,
+                                x=x,
+                                y=y)
         
         
-    def erase_all_plot_data(self):
+    def reset_plots(self):
+        """
+        Removes all previously plotted data from all plots.
+
+        Returns
+        -------
+        None.
+
+        """
         # If there is no animator, do not attempt to update it
         if not isinstance(self.ani, Animator):
             return
         
-        for plot_index in range(self.ani.n_plots):
-            self.ani.set_plot_data(plot_index=plot_index,
-                                   x=[],
-                                   y=[])
+        self.ani.reset_plots()
         
         
     def open_animator_gui(self):
@@ -2509,9 +2515,17 @@ class Simulator:
         self.is_started = True
       
         
-    def reset(self,
-              update_vis,
-              update_ani):
+    def reset(self):
+        """
+        Reset the physics state to the initial conditions.
+        Reset the visualizer to the initial conditions.
+        Reset the animator to the initial conditions
+
+        Returns
+        -------
+        None.
+
+        """
         # Note that the simulation is resetting to the user
         print("RESETTING...")
         
@@ -2551,18 +2565,17 @@ class Simulator:
                                           show_arrow=False,
                                           color=False,)
         
-        #TODO Reset the plots
-        self.erase_all_plot_data()
-        
+        # Reset the plots
+        self.reset_plots()
         
         # Update the visualizer if it exists
-        if update_vis and isinstance(self.vis, Visualizer):
+        if isinstance(self.vis, Visualizer):
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
         
         # Update the animator if it exists
-        if update_ani and isinstance(self.ani, Animator):
+        if isinstance(self.ani, Animator):
             self.ani.step()
     
         # Wait one half second to prevent multiple resets
@@ -2627,8 +2640,7 @@ class Simulator:
         
         # Collect keyboard IO for simulation reset
         if self.is_pressed("tab"):
-            self.reset(update_vis = update_vis,
-                       update_ani = update_ani)
+            self.reset()
         
         # Collect keyboard IO for termination
         if self.is_pressed("esc"):

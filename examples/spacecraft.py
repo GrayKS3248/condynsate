@@ -78,10 +78,6 @@ max_torque = 1.
 min_torque = -1.
 
 # Create desired plots then open the animator
-times=[]
-rolls=[]
-pitches=[]
-yaws=[]
 plot_1 = sim.add_plot_to_animator(title="Roll vs Time",
                                   x_label="Time [s]",
                                   y_label="Roll [Rad]",
@@ -169,15 +165,11 @@ while(not sim.is_done):
                         max_torque=max_torque)
     
     # Set the plot data
-    times.append(sim.time)
     _,rpy,_,_ = sim.get_base_state(urdf_obj=craft_obj,
                                    body_coords=True)
-    rolls.append(rpy[0])
-    pitches.append(rpy[1])
-    yaws.append(rpy[2])
-    sim.set_plot_data(plot_1, times, rolls)
-    sim.set_plot_data(plot_2, times, pitches)
-    sim.set_plot_data(plot_3, times, yaws)
+    sim.add_plot_point(plot_1, sim.time, rpy[0])
+    sim.add_plot_point(plot_2, sim.time, rpy[1])
+    sim.add_plot_point(plot_3, sim.time, rpy[2])
     
     # Step the sim
     sim.step(real_time=True,

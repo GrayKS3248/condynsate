@@ -43,8 +43,6 @@ min_torque = 0.1
 max_torque = 5.
 
 # Create desired plots then open the animator
-pot_engs=[]
-kin_engs=[]
 plot_1 = sim.add_plot_to_animator(title="Potention Energy vs Kinetic",
                                   x_label="Kinetic Energy [J]",
                                   y_label="Potention Energy [J]",
@@ -153,9 +151,7 @@ while(not sim.is_done):
                                      body_coords=False)
     pot_eng = 0.1*9.81*(pos[2]+3.)
     kin_eng = 0.5*0.1*(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2])
-    pot_engs.append(pot_eng)
-    kin_engs.append(kin_eng)
-    sim.set_plot_data(plot_1, kin_engs, pot_engs)
+    sim.add_plot_point(plot_1, kin_eng, pot_eng)
     
     # Step the sim
     sim.step(real_time=True,

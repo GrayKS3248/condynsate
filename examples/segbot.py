@@ -46,15 +46,11 @@ min_stat_vel = 0.
 stat_vel = 0.5 * (min_stat_vel + max_stat_vel)
 
 # Create desired plots then open the animator
-times=[]
-torques=[]
 plot_1 = sim.add_plot_to_animator(title="Torque vs Time",
                                   x_label="Time [s]",
                                   y_label="Torque [Nm]",
                                   color="r",
                                   tail=500)
-pitches = []
-pitch_vels = []
 plot_2 = sim.add_plot_to_animator(title="Pitch Speed Vs Time",
                                   x_label="Time [s]",
                                   y_label="Pitch Velocity [Rad/s]",
@@ -138,11 +134,8 @@ while(not sim.is_done):
     sim.set_gravity(gravity=gravity)
     
     # Set the plot data
-    times.append(sim.time)
-    torques.append(0.5*(r_torque + l_torque))
-    pitch_vels.append(seg_ang_vel[1])
-    sim.set_plot_data(plot_1, times, torques)
-    sim.set_plot_data(plot_2, times, pitch_vels)
+    sim.add_plot_point(plot_1, sim.time, 0.5*(r_torque + l_torque))
+    sim.add_plot_point(plot_2, sim.time, seg_ang_vel[1])
     
     # Step the sim
     sim.step(real_time=True,

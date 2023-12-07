@@ -54,8 +54,6 @@ min_vel = 0.0
 vel = 0.5 * (max_vel + min_vel)
 
 # Create desired plots then open the animator
-ang_momentums = []
-angles = []
 plot = sim.add_plot_to_animator(title="Phase Space",
                                 x_label="θ [Rad]",
                                 y_label="L $[Kg•m^{2}•s^{-1}]$",
@@ -132,11 +130,9 @@ while(not sim.is_done):
     ang, ang_vel,_,_,_ = sim.get_joint_state(urdf_obj=cmg_obj,
                                              joint_name="world_to_outer")
     ang_momentum = mass*ang_vel
-    ang_momentums.append(ang_momentum)
-    angles.append(ang)
-    sim.set_plot_data(plot_index=plot,
-                      x=angles,
-                      y=ang_momentums)
+    sim.add_plot_point(plot_index=plot,
+                       x=ang,
+                       y=ang_momentum)
 
     # Step the sim
     sim.step(real_time=True,

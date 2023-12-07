@@ -34,6 +34,8 @@ class Animator():
         # Plot data
         self.xs = []
         self.ys = []
+        self.all_xs = []
+        self.all_ys = []
         self.tails = []
         self.lines = []
         
@@ -119,6 +121,8 @@ class Animator():
         # Store the plot data
         self.xs.append([])
         self.ys.append([])
+        self.all_xs.append([])
+        self.all_ys.append([])
         self.tails.append(tail)
         self.lines.append(None)
         
@@ -146,13 +150,26 @@ class Animator():
 
     
     def reset_plots(self):
-        for i in range(self.n_plots):
-            # Update the plot data
-            self.xs[i] = []
-            self.ys[i] = []
-        
+        """
+        Removes all previously plotted data from all plots.
 
+        Returns
+        -------
+        None.
+
+        """
+        # Reset plot data
+        for plot_index in range(len(self.xs)):
+            self.xs[plot_index] = []
+            self.ys[plot_index] = []
+            self.x_data_ranges[plot_index] = [np.inf, -np.inf]
+            self.y_data_ranges[plot_index] = [np.inf, -np.inf]
+            self.x_plot_lims[plot_index] = [None, None]
+            self.y_plot_lims[plot_index] = [None, None]
+            
+        
     def _trim_data(self,
+                   plot_index,
                    x,
                    y,
                    tail):
@@ -161,6 +178,8 @@ class Animator():
 
         Parameters
         ----------
+        plot_index : int
+            The plot's unique identifier.
         x : array-like, shape(n,)
             An array of the x data.
         y : array-like, shape(n,)
@@ -177,7 +196,7 @@ class Animator():
         y : array-like, shape(tail,)
             An array of the trimmed y data.
 
-        """
+        """       
         # Trim data to desired length
         if tail != None and len(x) > tail:
             x = x[-tail:]
@@ -240,34 +259,40 @@ class Animator():
         return new_data_range, plot_limits
 
 
-    def set_plot_data(self,
-                      plot_index,
-                      x,
-                      y):
+    def add_plot_point(self,
+                       plot_index,
+                       x,
+                       y):
         """
-        Sets the data to be plotted for an individual plot. 
+        Adds a single data point to the plot. Data point is appended to the end
+        of all previously plotted data points.
 
         Parameters
         ----------
         plot_index : int
             The plot's unique identifier.
-        x : array-like, shape(n,)
-            An array of the x data.
-        y : array-like, shape(n,)
-            An array of the y data.
+        x : float
+            The x value of the data point added to the plot.
+        y : float
+            The y value of the data point added to the plot.
 
         Returns
         -------
         None.
 
         """
+        # Collect the data point
+        self.xs[plot_index].append(x)
+        self.ys[plot_index].append(y)
+        
         # Trim data to desired length
         tail = self.tails[plot_index]
-        x, y = self._trim_data(x = x,
-                               y = y,
+        x, y = self._trim_data(plot_index = plot_index,
+                               x = self.xs[plot_index],
+                               y = self.ys[plot_index],
                                tail = tail)
             
-        # Update the plot data
+        # Update the plot data with the trimmed values
         self.xs[plot_index] = x
         self.ys[plot_index] = y
         
