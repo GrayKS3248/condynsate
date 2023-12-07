@@ -15,7 +15,7 @@ sim = condynsate.Simulator(visualization=True,
 
 # Load all urdf objects
 station_obj = sim.load_urdf(urdf_path='./segbot_vis/station.urdf',
-                            position=[0., 0., 19.355],
+                            position=[0., 0., 19.362],
                             roll=np.pi/2.0,
                             fixed=True,
                             update_vis=True)

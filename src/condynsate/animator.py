@@ -60,7 +60,7 @@ class Animator():
         
         # Frame rate data
         self.fr = fr
-        self.last_step_time = time.time()
+        self.last_step_time = 0.0
         self.n_plots = 0
     
     
@@ -144,6 +144,13 @@ class Animator():
         plot_index = len(self.xs)-1
         return plot_index
 
+    
+    def reset_plots(self):
+        for i in range(self.n_plots):
+            # Update the plot data
+            self.xs[i] = []
+            self.ys[i] = []
+        
 
     def _trim_data(self,
                    x,
@@ -202,6 +209,10 @@ class Animator():
             The newly calculated limits to be applied to the plot axis.
 
         """
+        # Handle the empty case
+        if len(data) == 0:
+            return [-np.inf, np.inf], [None, None]
+        
         # Variables to hold the calulcated plot limits
         plot_limits = [0., 0.]
         plot_limits[0] = fixed_plot_lims[0]
@@ -453,7 +464,6 @@ class Animator():
         
         # Calculate the subplot shape and create the figure
         (n_rows, n_cols) = self._get_subplot_shape(self.n_plots)
-        #self.fig = plt.Figure()
         self.fig, self.axes = plt.subplots(n_rows, n_cols)
         if self.n_plots > 1:
             self.axes = self.axes.flatten()
@@ -609,9 +619,9 @@ class Animator():
             color = self.colors[i]
             line_width = self.line_widths[i]
             line_style = self.line_styles[i]
-            
+                
             # Update the plotted data
-            if len(x)>1 and len(y)>1:
+            if len(x)==len(y):
                 new_line = self._step_subplot(x=x,
                                               y=y,
                                               line=line,

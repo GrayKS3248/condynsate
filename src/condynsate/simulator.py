@@ -136,9 +136,6 @@ class Simulator:
         # Start the keyboard listener
         self.keys = Keys()
         
-        # Keep track if the simulation has been run or not
-        self.is_started = False
-        
         # Keep track if the simulation is done or not
         self.is_done = False
         
@@ -652,6 +649,12 @@ class Simulator:
         # Set the joint velocity
         if joint_name in joint_map:
             joint_id = [joint_map[joint_name]]
+            
+            # Ensure that we don't try to change a base joint
+            if joint_id[0] < 0:
+                return
+            
+            # Set the position
             mode = self.engine.POSITION_CONTROL
             position = [position]
             self.engine.setJointMotorControlArray(urdf_id,
@@ -710,6 +713,12 @@ class Simulator:
         # Set the joint velocity
         if joint_name in joint_map:
             joint_id = [joint_map[joint_name]]
+            
+            # Ensure that we don't try to change a base joint
+            if joint_id[0] < 0:
+                return
+            
+            # Set the velocity
             mode = self.engine.VELOCITY_CONTROL
             velocity = [velocity]
             self.engine.setJointMotorControlArray(urdf_id,
@@ -776,6 +785,10 @@ class Simulator:
         if joint_name in joint_map:
             joint_id = joint_map[joint_name]
         else:
+            return
+        
+        # Ensure that we don't try to change a base joint
+        if joint_id < 0:
             return
         
         # If the arrow isn't meant to be visualized, hide it
@@ -2407,6 +2420,17 @@ class Simulator:
                                y=y)
         
         
+    def erase_all_plot_data(self):
+        # If there is no animator, do not attempt to update it
+        if not isinstance(self.ani, Animator):
+            return
+        
+        for plot_index in range(self.ani.n_plots):
+            self.ani.set_plot_data(plot_index=plot_index,
+                                   x=[],
+                                   y=[])
+        
+        
     def open_animator_gui(self):
         """
         Opens the Animator GUI with the specified plots. After the Animator
@@ -2491,28 +2515,45 @@ class Simulator:
         # Note that the simulation is resetting to the user
         print("RESETTING...")
         
-        # Note the simulation is no longer running and reset the time
-        self.is_started = False
+        # Note the simulation is no longer done and reset the time
         self.is_done = False
         self.time = 0.
         self.last_step_time = time.time()
         
-        # Reset the base position and orientation of all urdfs
+        # Reset each urdf
         for urdf_obj in self.urdf_objs:
+            
+            # Reset the base position and orientation of all urdfs
             i = urdf_obj.urdf_id
             p = urdf_obj.initial_conds['position']
             o = urdf_obj.initial_conds['orientation']
             self.engine.resetBasePositionAndOrientation(bodyUniqueId=i,
                                                         posObj=p,
                                                         ornObj=o)
-        
-        #TOTO Reset the joint and link states for all urdfs
-        
-        #TODO Reset all joint torques and forces to 0 for all urdfs
-        
-        #TODO Reset all external forces and torques to 0 for all urdfs
+            
+            # Reset each joint
+            for joint_name in urdf_obj.joint_map.keys():
+                
+                # Ensure we aren't setting a base joint
+                joint_id = urdf_obj.joint_map[joint_name]
+                if joint_id!=-1:
+                    
+                    # Reset joint state to 0
+                    self.engine.resetJointState(bodyUniqueId=urdf_obj.urdf_id,
+                                                jointIndex=joint_id,
+                                                targetValue=0.0,
+                                                targetVelocity=0.0)
+                    
+                    # Set the joint torque to 0
+                    self.set_joint_torque(urdf_obj,
+                                          joint_name,
+                                          torque=0.,
+                                          show_arrow=False,
+                                          color=False,)
         
         #TODO Reset the plots
+        self.erase_all_plot_data()
+        
         
         # Update the visualizer if it exists
         if update_vis and isinstance(self.vis, Visualizer):
@@ -2526,6 +2567,7 @@ class Simulator:
     
         # Wait one half second to prevent multiple resets
         time.sleep(0.5)
+        
         
     def step(self,
              real_time=True,

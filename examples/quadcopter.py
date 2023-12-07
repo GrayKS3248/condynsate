@@ -57,7 +57,7 @@ sim.await_keypress(key="enter")
 
 # Run the simulation
 done = False
-while(not done):
+while(not sim.is_done):
     # Collect keyboard IO data for torques
     torque_1 = -min_torque
     torque_2 = min_torque
@@ -161,8 +161,4 @@ while(not done):
     sim.step(real_time=True,
              update_vis=True,
              update_ani=True)
-    
-    # Collect keyboard IO for termination
-    if sim.is_pressed("esc"):
-        done = True
             
