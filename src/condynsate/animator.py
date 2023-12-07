@@ -564,7 +564,8 @@ class Animator():
                       line_width,
                       line_style,
                       x_plot_lim,
-                      y_plot_lim):
+                      y_plot_lim,
+                      head_marker):
         """
         Rerenders a single subplot. Does not update GUI.
 
@@ -580,20 +581,19 @@ class Animator():
             The axis artist that defines the subplot being updated.
         color : matplotlib color string, optional
             The color of the plot lines. The default is None.
-        line_width : float, optional
-            The weight of the line that is plotted. The default is None.
-            When set to None, defaults to 1.0.
-        line_style : matplotlib line style string, optional
-            The style of the line that is plotted. The default is None. When 
-            set the None, defaults to solid.
-        x_plot_lim : [float, float], optional
+        line_width : float
+            The weight of the line that is plotted.
+        line_style : matplotlib line style string,
+            The style of the line that is plotted.
+        x_plot_lim : [float, float]
             The limits to apply to the x axis of the plots. A value of None
             will apply automatically updating limits to that bound of the axis.
-            The default is [None, None].
-        y_plot_lim : [float, float], optional
+        y_plot_lim : [float, float]
             The limits to apply to the y axis of the plots. A value of None
             will apply automatically updating limits to that bound of the axis.
-            The default is [None, None].
+        head_marker : boolean
+            A boolean flag that indicates whether a marker will be drawn at 
+            the head of the line.
 
         Returns
         -------
@@ -603,8 +603,23 @@ class Animator():
         """
         # Redraw the line data
         if line==None:
-            line, = axis.plot(x, y, c=color, lw=line_width, ls=line_style)
+            if head_marker:
+                line, = axis.plot(x,
+                                  y,
+                                  c=color,
+                                  lw=line_width,
+                                  ls=line_style,
+                                  ms=2.5*line_width,
+                                  marker='o')
+            else:
+                line, = axis.plot(x,
+                                  y,
+                                  c=color,
+                                  lw=line_width,
+                                  ls=line_style)
         else:
+            if head_marker:
+                line.set_markevery((len(x)-1, 1))
             line.set_data(x, y)
             
         # Reset the axis limits
@@ -665,7 +680,10 @@ class Animator():
             subplot_colors = self.colors[subplot]
             subplot_line_widths = self.line_widths[subplot]
             subplot_line_styles = self.line_styles[subplot]
-                
+            
+            # Determine if a head marker will be drawn
+            head_marker = self.tails[subplot] != None
+            
             # Update the plotted data
             for line in range(len(subplot_xs)):
                 # Get the x and y data of the line in the subplot
@@ -702,7 +720,8 @@ class Animator():
                                               line_width=line_line_width,
                                               line_style=line_line_style,
                                               x_plot_lim=subplot_x_lim,
-                                              y_plot_lim=subplot_y_lim)
+                                              y_plot_lim=subplot_y_lim,
+                                              head_marker=head_marker)
                 
                 # Store the line that was drawn if it is new
                 if line_line==None:

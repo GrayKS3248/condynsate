@@ -2362,13 +2362,15 @@ class Simulator:
             plot when rendered. The default is None.
         colors : list of matplotlib color string, optional
             The colors of each subplot line. The default is None. When left 
-            as default, all lines are plotted black. 
+            as default, all lines are plotted black. Must be length n_lines.
         line_widths : list of float, optional
             The weight of each line in a subplot. The default is None.
             When set to None, defaults to 1.0 for all lines.
+            Must be length n_lines.
         line_styles : list of matplotlib line style string, optional
             The style of each line in the subplot. The default is None. When 
             set the None, defaults to solid for all lines.
+            Must be length n_lines.
         tail : int, optional
             The number of points that are used to draw the line. Only the most 
             recent data points are kept. A value of None will plot all points
