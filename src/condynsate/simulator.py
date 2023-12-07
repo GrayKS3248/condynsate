@@ -2331,22 +2331,26 @@ class Simulator:
     ###########################################################################
     #ANIMATOR MANIPULATION
     ###########################################################################
-    def add_plot_to_animator(self,
-                             title=None,
-                             x_label=None,
-                             y_label=None,
-                             color=None,
-                             line_width=None,
-                             line_style=None,
-                             tail=None,
-                             x_lim=[None, None],
-                             y_lim=[None, None]):
+    def add_subplot_to_animator(self,
+                                n_lines=1,
+                                title=None,
+                                x_label=None,
+                                y_label=None,
+                                colors=None,
+                                line_widths=None,
+                                line_styles=None,
+                                tail=None,
+                                x_lim=[None, None],
+                                y_lim=[None, None]):
         """
-        Adds a plot to the Animator. This function needs to be called to 
-        define a plot before that plot's data can be set or updated
+        Adds a subplot to the Animator. This function needs to be called to 
+        define a subplot before data can be written to it.
 
         Parameters
         ----------
+        n_lines : int, optional
+            The number of lines to which data can be drawn on the subplot.
+            The default is 1.
         title : string, optional
             The title of the plot. Will be written above the plot when
             rendered. The default is None.
@@ -2356,14 +2360,15 @@ class Simulator:
         y_label : string, optional
             The label to apply to the y axis. We be written to the left of the
             plot when rendered. The default is None.
-        color : matplotlib color string, optional
-            The color of the plot lines. The default is None.
-        line_width : float, optional
-            The weight of the line that is plotted. The default is None.
-            When set to None, defaults to 1.0.
-        line_style : matplotlib line style string, optional
-            The style of the line that is plotted. The default is None. When 
-            set the None, defaults to solid.
+        colors : list of matplotlib color string, optional
+            The colors of each subplot line. The default is None. When left 
+            as default, all lines are plotted black. 
+        line_widths : list of float, optional
+            The weight of each line in a subplot. The default is None.
+            When set to None, defaults to 1.0 for all lines.
+        line_styles : list of matplotlib line style string, optional
+            The style of each line in the subplot. The default is None. When 
+            set the None, defaults to solid for all lines.
         tail : int, optional
             The number of points that are used to draw the line. Only the most 
             recent data points are kept. A value of None will plot all points
@@ -2379,8 +2384,10 @@ class Simulator:
 
         Returns
         -------
-        plot_index : int
-            A unique integer identifier that allows future plot interation.
+        subplot_index : int
+            A unique integer identifier that allows future subplot interation.
+        line_indices : tuple of ints
+            The unique integer identifiers of each line on the subplot.
 
         """
         # If there is no animator, do not attempt to add a plot to it
@@ -2388,24 +2395,28 @@ class Simulator:
             return
         
         # Add the plot data to the plot
-        plot_index = self.ani.add_plot(title=title,
-                                       x_label=x_label,
-                                       y_label=y_label,
-                                       color=color,
-                                       line_width=line_width,
-                                       line_style=line_style,
-                                       tail=tail,
-                                       x_lim=x_lim,
-                                       y_lim=y_lim)
+        v1, v2 = self.ani.add_subplot(n_lines=n_lines,
+                                      title=title,
+                                      x_label=x_label,
+                                      y_label=y_label,
+                                      colors=colors,
+                                      line_widths=line_widths,
+                                      line_styles=line_styles,
+                                      tail=tail,
+                                      x_lim=x_lim,
+                                      y_lim=y_lim)
+        subplot_index = v1
+        line_indices = v2
         
         # Return the plot index
-        return plot_index
+        return subplot_index, line_indices
         
         
-    def add_plot_point(self,
-                       plot_index,
-                       x,
-                       y):
+    def add_subplot_point(self,
+                          subplot_index,
+                          line_index,
+                          x,
+                          y):
         """
         Adds a single data point to the plot. Data point is appended to the end
         of all previously plotted data points.
@@ -2413,7 +2424,9 @@ class Simulator:
         Parameters
         ----------
         plot_index : int
-            The plot's unique identifier.
+            The subplot's unique identifier.
+        line_index : int
+            The subplot's line index to which the data is added.
         x : float
             The x value of the data point added to the plot.
         y : float
@@ -2429,9 +2442,10 @@ class Simulator:
             return
         
         # Update the plot
-        self.ani.add_plot_point(plot_index=plot_index,
-                                x=x,
-                                y=y)
+        self.ani.add_subplot_point(subplot_index=subplot_index,
+                                   line_index=line_index,
+                                   x=x,
+                                   y=y)
         
         
     def reset_plots(self):

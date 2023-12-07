@@ -25,11 +25,19 @@ target_obj = sim.load_urdf(urdf_path='./wheel_vis/target_arrow.urdf',
 
 
 # Create desired plots then open the animator
-plot = sim.add_plot_to_animator(title="Angle Error vs Time",
-                                x_label="Time [Seconds]",
-                                y_label="θ-θ0 [Rad]$",
-                                color="r",
-                                line_width=2.5)
+plot1, lines1 = sim.add_subplot_to_animator(n_lines=2,
+                                            title="Angle vs Time",
+                                            x_label="Time [Seconds]",
+                                            y_label="$θ-θ_{0}$ [Rad]",
+                                            colors=["r", "b"],
+                                            line_widths=[2.5, 2.5],
+                                            line_styles=["-", ":"])
+plot2, lines2 = sim.add_subplot_to_animator(n_lines=1,
+                                            title="Torque vs Time",
+                                            x_label="Time [Seconds]",
+                                            y_label="Torque [Nm]",
+                                            colors=["k"],
+                                            line_widths=[2.5])
 sim.open_animator_gui()
 
 # Set the target angle for the wheel
@@ -66,11 +74,20 @@ while(not sim.is_done):
     ###########################################################################
     
     
-    # Plot the angle error to see how good we are doing
-    sim.add_plot_point(plot_index=plot,
-                        x=sim.time,
-                        y=angle_error)
-
+    # Plot angle, target angle, and torque
+    sim.add_subplot_point(subplot_index=plot1,
+                          line_index=lines1[0],
+                          x=sim.time,
+                          y=angle)
+    sim.add_subplot_point(subplot_index=plot1,
+                          line_index=lines1[1],
+                          x=sim.time,
+                          y=angle_tag)
+    sim.add_subplot_point(subplot_index=plot2,
+                          line_index=lines2[0],
+                          x=sim.time,
+                          y=torque)
+    
     # Collect keyboard IO data for changing the target angle
     if sim.is_pressed('a'):
         angle_tag = angle_tag + 0.005*2*np.pi

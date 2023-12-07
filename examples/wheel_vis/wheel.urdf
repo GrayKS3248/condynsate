@@ -89,7 +89,7 @@
   <joint name="wheel_to_arrow" type="fixed">
 		<parent link = "wheel" />
 		<child link = "arrow" />
-		<origin xyz="0 -0.1 0.17" rpy="1.5707963267948966 0 0"/>
+		<origin xyz="0 0 0.17" rpy="1.5707963267948966 0 0"/>
   </joint>
 
 

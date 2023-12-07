@@ -34,8 +34,6 @@ class Animator():
         # Plot data
         self.xs = []
         self.ys = []
-        self.all_xs = []
-        self.all_ys = []
         self.tails = []
         self.lines = []
         
@@ -66,22 +64,26 @@ class Animator():
         self.n_plots = 0
     
     
-    def add_plot(self,
-                 title=None,
-                 x_label=None,
-                 y_label=None,
-                 color=None,
-                 line_width=None,
-                 line_style=None,
-                 tail=None,
-                 x_lim=[None, None],
-                 y_lim=[None, None]):
+    def add_subplot(self,
+                    n_lines=1,
+                    title=None,
+                    x_label=None,
+                    y_label=None,
+                    colors=None,
+                    line_widths=None,
+                    line_styles=None,
+                    tail=None,
+                    x_lim=[None, None],
+                    y_lim=[None, None]):
         """
-        Adds a plot to the animator. This function needs to be called to 
-        define a plot before that plot's data can be set or updated
+        Adds a subplot to the animator. This function needs to be called to 
+        define a subplot before data can be added to that plot.
 
         Parameters
         ----------
+        n_lines : int, optional
+            The number of lines to which data can be drawn on the subplot.
+            The default is 1.
         title : string, optional
             The title of the plot. Will be written above the plot when
             rendered. The default is None.
@@ -91,14 +93,15 @@ class Animator():
         y_label : string, optional
             The label to apply to the y axis. We be written to the left of the
             plot when rendered. The default is None.
-        color : matplotlib color string, optional
-            The color of the plot lines. The default is None.
-        line_width : float, optional
-            The weight of the line that is plotted. The default is None.
-            When set to None, defaults to 1.0.
-        line_style : matplotlib line style string, optional
-            The style of the line that is plotted. The default is None. When 
-            set the None, defaults to solid.
+        colors : list of matplotlib color string, optional
+            The colors of each subplot line. The default is None. When left 
+            as default, all lines are plotted black. 
+        line_widths : list of float, optional
+            The weight of each line in a subplot. The default is None.
+            When set to None, defaults to 1.0 for all lines.
+        line_styles : list of matplotlib line style string, optional
+            The style of each line in the subplot. The default is None. When 
+            set the None, defaults to solid for all lines.
         tail : int, optional
             The number of points that are used to draw the line. Only the most 
             recent data points are kept. A value of None will plot all points
@@ -114,17 +117,22 @@ class Animator():
 
         Returns
         -------
-        plot_index : int
-            A unique integer identifier that allows future plot interation.
+        subplot_index : int
+            A unique integer identifier that allows future subplot interation.
+        line_indices : tuple of ints
+            The unique integer identifiers of each line on the subplot.
 
         """
         # Store the plot data
         self.xs.append([])
         self.ys.append([])
-        self.all_xs.append([])
-        self.all_ys.append([])
+        self.lines.append([])
+        line_indices = tuple(np.arange(n_lines).tolist())
+        for i in range(n_lines):
+            self.xs[-1].append([])
+            self.ys[-1].append([])
+            self.lines[-1].append(None)
         self.tails.append(tail)
-        self.lines.append(None)
         
         # Store the plot labels
         self.titles.append(title)
@@ -132,9 +140,9 @@ class Animator():
         self.y_labels.append(y_label)
         
         # Store line drawing parameters
-        self.colors.append(color)
-        self.line_widths.append(line_width)
-        self.line_styles.append(line_style)
+        self.colors.append(colors)
+        self.line_widths.append(line_widths)
+        self.line_styles.append(line_styles)
         
         # Store the limit options
         self.x_data_ranges.append([np.inf, -np.inf])
@@ -145,8 +153,8 @@ class Animator():
         self.y_plot_lims.append([None, None])
         
         # Return the index of the added plot
-        plot_index = len(self.xs)-1
-        return plot_index
+        subplot_index = len(self.xs)-1
+        return subplot_index, line_indices
 
     
     def reset_plots(self):
@@ -160,8 +168,12 @@ class Animator():
         """
         # Reset plot data
         for plot_index in range(len(self.xs)):
+            n_lines = len(self.xs[plot_index])
             self.xs[plot_index] = []
             self.ys[plot_index] = []
+            for i in range(n_lines):
+                self.xs[plot_index].append([])
+                self.ys[plot_index].append([])
             self.x_data_ranges[plot_index] = [np.inf, -np.inf]
             self.y_data_ranges[plot_index] = [np.inf, -np.inf]
             self.x_plot_lims[plot_index] = [None, None]
@@ -169,17 +181,14 @@ class Animator():
             
         
     def _trim_data(self,
-                   plot_index,
                    x,
                    y,
                    tail):
         """
-        Trims a plot dataset (x,y) to have length tail.
+        Trims a line of a subplot to have length tail.
 
         Parameters
         ----------
-        plot_index : int
-            The plot's unique identifier.
         x : array-like, shape(n,)
             An array of the x data.
         y : array-like, shape(n,)
@@ -213,7 +222,7 @@ class Animator():
 
         Parameters
         ----------
-        data : array-like
+        data : array of arrays
             The array of data over which the range is calculated.
         data_range : array-like, shape(2,)
             The previously calculated range of data.
@@ -229,15 +238,25 @@ class Animator():
 
         """
         # Handle the empty case
-        if len(data) == 0:
+        if all([len(datum)==0 for datum in data]):
             return [-np.inf, np.inf], [None, None]
         
         # Variables to hold the calulcated plot limits
         plot_limits = [0., 0.]
         plot_limits[0] = fixed_plot_lims[0]
         plot_limits[1] = fixed_plot_lims[1]
-        data_min = np.min(data)#min(np.min(data), data_range[0])
-        data_max = np.max(data)#max(np.max(data), data_range[1])
+        
+        # Data range
+        data_min = np.inf
+        data_max = -np.inf
+        for datum in data:
+            if len(datum) > 0:
+                curr_min = np.min(datum)
+                curr_max = np.max(datum)
+                if curr_min < data_min:
+                    data_min = curr_min
+                if curr_max > data_max:
+                        data_max = curr_max
         data_min = 1.1*data_min - 0.1*data_max
         data_max = 1.1*data_max - 0.1*data_min
         new_data_range = [data_min, data_max]
@@ -259,18 +278,21 @@ class Animator():
         return new_data_range, plot_limits
 
 
-    def add_plot_point(self,
-                       plot_index,
-                       x,
-                       y):
+    def add_subplot_point(self,
+                          subplot_index,
+                          line_index,
+                          x,
+                          y):
         """
-        Adds a single data point to the plot. Data point is appended to the end
-        of all previously plotted data points.
+        Adds a single data point to the subplot. Data point is appended to the
+        end of all previously plotted data points on the specified line.
 
         Parameters
         ----------
-        plot_index : int
-            The plot's unique identifier.
+        subplot_index : int
+            The subplot's unique identifier.
+        line_index : int
+            The subplot's line index to which the data is added.
         x : float
             The x value of the data point added to the plot.
         y : float
@@ -282,37 +304,36 @@ class Animator():
 
         """
         # Collect the data point
-        self.xs[plot_index].append(x)
-        self.ys[plot_index].append(y)
+        self.xs[subplot_index][line_index].append(x)
+        self.ys[subplot_index][line_index].append(y)
         
         # Trim data to desired length
-        tail = self.tails[plot_index]
-        x, y = self._trim_data(plot_index = plot_index,
-                               x = self.xs[plot_index],
-                               y = self.ys[plot_index],
+        tail = self.tails[subplot_index]
+        x, y = self._trim_data(x = self.xs[subplot_index][line_index],
+                               y = self.ys[subplot_index][line_index],
                                tail = tail)
             
         # Update the plot data with the trimmed values
-        self.xs[plot_index] = x
-        self.ys[plot_index] = y
+        self.xs[subplot_index][line_index] = x
+        self.ys[subplot_index][line_index] = y
         
         # Update the x data ranges and associated plot limits
-        cur_x_range = self.x_data_ranges[plot_index]
-        fix_x_lims = self.fixed_x_plot_lims[plot_index]
-        new_x_range, x_lims = self._get_ran_lims(data = x,
+        cur_x_range = self.x_data_ranges[subplot_index]
+        fix_x_lims = self.fixed_x_plot_lims[subplot_index]
+        new_x_range, x_lims = self._get_ran_lims(data = self.xs[subplot_index],
                                                  data_range = cur_x_range,
                                                  fixed_plot_lims = fix_x_lims)
-        self.x_data_ranges[plot_index] = new_x_range
-        self.x_plot_lims[plot_index] = x_lims
+        self.x_data_ranges[subplot_index] = new_x_range
+        self.x_plot_lims[subplot_index] = x_lims
         
         # Update the y data ranges and associated plot limits
-        cur_y_range = self.y_data_ranges[plot_index]
-        fix_y_lims = self.fixed_y_plot_lims[plot_index]
-        new_y_range, y_lims = self._get_ran_lims(data = y,
+        cur_y_range = self.y_data_ranges[subplot_index]
+        fix_y_lims = self.fixed_y_plot_lims[subplot_index]
+        new_y_range, y_lims = self._get_ran_lims(data = self.ys[subplot_index],
                                                  data_range = cur_y_range,
                                                  fixed_plot_lims = fix_y_lims)
-        self.y_data_ranges[plot_index] = new_y_range
-        self.y_plot_lims[plot_index] = y_lims
+        self.y_data_ranges[subplot_index] = new_y_range
+        self.y_plot_lims[subplot_index] = y_lims
 
 
     def _get_n_plots(self):
@@ -624,40 +645,68 @@ class Animator():
             self.create_figure()
         
         # Update each plot
-        for i in range(self.n_plots):
+        for subplot in range(self.n_plots):
             # Get the axis on which the subplot is drawn
             if self.n_plots > 1:
-                axis = self.axes[i]
+                subplot_axis = self.axes[subplot]
             else:
-                axis = self.axes    
+                subplot_axis = self.axes    
     
             # Retrieve the plot data
-            x = self.xs[i]
-            y = self.ys[i]
+            subplot_xs = self.xs[subplot]
+            subplot_ys = self.ys[subplot]
             
             # Retrieve the limit data
-            x_plot_lim = self.x_plot_lims[i]
-            y_plot_lim = self.y_plot_lims[i]
+            subplot_x_lim = self.x_plot_lims[subplot]
+            subplot_y_lim = self.y_plot_lims[subplot]
             
             # Retrieve the line artist for each axis
-            line = self.lines[i]
-            color = self.colors[i]
-            line_width = self.line_widths[i]
-            line_style = self.line_styles[i]
+            subplot_lines = self.lines[subplot]
+            subplot_colors = self.colors[subplot]
+            subplot_line_widths = self.line_widths[subplot]
+            subplot_line_styles = self.line_styles[subplot]
                 
             # Update the plotted data
-            if len(x)==len(y):
-                new_line = self._step_subplot(x=x,
-                                              y=y,
-                                              line=line,
-                                              axis=axis,
-                                              color=color,
-                                              line_width=line_width,
-                                              line_style=line_style,
-                                              x_plot_lim=x_plot_lim,
-                                              y_plot_lim=y_plot_lim)
-                if line==None:
-                    self.lines[i] = new_line
+            for line in range(len(subplot_xs)):
+                # Get the x and y data of the line in the subplot
+                line_x = subplot_xs[line]
+                line_y = subplot_ys[line]
+                
+                # Get the line object being drawn to
+                line_line = subplot_lines[line]
+                
+                # Get the line's color
+                if subplot_colors == None:
+                    line_color = "k"
+                else:
+                    line_color = subplot_colors[line]
+                
+                 # Get the line's line width
+                if subplot_line_widths == None:
+                    line_line_width = 1.0
+                else:
+                    line_line_width = subplot_line_widths[line]
+                
+                # Get the line's line style
+                if subplot_line_styles == None:
+                    line_line_style = "-"
+                else:
+                    line_line_style = subplot_line_styles[line]
+                
+                # Update the line
+                new_line = self._step_subplot(x=line_x,
+                                              y=line_y,
+                                              line=line_line,
+                                              axis=subplot_axis,
+                                              color=line_color,
+                                              line_width=line_line_width,
+                                              line_style=line_line_style,
+                                              x_plot_lim=subplot_x_lim,
+                                              y_plot_lim=subplot_y_lim)
+                
+                # Store the line that was drawn if it is new
+                if line_line==None:
+                    self.lines[subplot][line] = new_line
         
         # Manually cycle the GUI loop
         self.fig.canvas.draw_idle()
