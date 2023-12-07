@@ -41,6 +41,7 @@ class Animator():
         self.titles = []
         self.x_labels = []
         self.y_labels = []
+        self.labels = []
         
         # Line drawing parameters
         self.colors = []
@@ -72,6 +73,7 @@ class Animator():
                     colors=None,
                     line_widths=None,
                     line_styles=None,
+                    labels=None,
                     tail=None,
                     x_lim=[None, None],
                     y_lim=[None, None]):
@@ -102,6 +104,10 @@ class Animator():
         line_styles : list of matplotlib line style string, optional
             The style of each line in the subplot. The default is None. When 
             set the None, defaults to solid for all lines.
+        labels : list of strings, optional
+            The labels to apply to each line in the subplot. The default is 
+            None. When left as none, no labels or legend will appear in the 
+            subplot. Must be length n_lines if not None.
         tail : int, optional
             The number of points that are used to draw the line. Only the most 
             recent data points are kept. A value of None will plot all points
@@ -138,6 +144,7 @@ class Animator():
         self.titles.append(title)
         self.x_labels.append(x_label)
         self.y_labels.append(y_label)
+        self.labels.append(labels)
         
         # Store line drawing parameters
         self.colors.append(colors)
@@ -423,23 +430,21 @@ class Animator():
         ----------
         axis : matplotlib.axes
             A member of the matplotlib axis class.
-        title : string, optional
+        title : string
             The title of the plot. Will be written above the plot when
-            rendered. The default is None.
-        x_label : string, optional
+            rendered.
+        x_label : string
             The label to apply to the x axis. We be written under the plot when
-            rendered. The default is None.
-        y_label : string, optional
+            rendered.
+        y_label : string
             The label to apply to the y axis. We be written to the left of the
-            plot when rendered. The default is None.
-        x_plot_lim : [float, float], optional
+            plot when rendered.
+        x_plot_lim : [float, float]
             The limits to apply to the x axis of the plots. A value of None
             will apply automatically updating limits to that bound of the axis.
-            The default is [None, None].
-        y_plot_lim : [float, float], optional
+        y_plot_lim : [float, float]
             The limits to apply to the y axis of the plots. A value of None
             will apply automatically updating limits to that bound of the axis.
-            The default is [None, None].
 
         Returns
         -------
@@ -726,6 +731,9 @@ class Animator():
                 # Store the line that was drawn if it is new
                 if line_line==None:
                     self.lines[subplot][line] = new_line
+                    if self.labels[subplot] != None:
+                        subplot_axis.legend(self.labels[subplot],
+                                            loc="upper right")
         
         # Manually cycle the GUI loop
         self.fig.canvas.draw_idle()

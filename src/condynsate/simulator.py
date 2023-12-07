@@ -2339,6 +2339,7 @@ class Simulator:
                                 colors=None,
                                 line_widths=None,
                                 line_styles=None,
+                                labels=None,
                                 tail=None,
                                 x_lim=[None, None],
                                 y_lim=[None, None]):
@@ -2371,6 +2372,10 @@ class Simulator:
             The style of each line in the subplot. The default is None. When 
             set the None, defaults to solid for all lines.
             Must be length n_lines.
+        labels : list of strings, optional
+            The labels to apply to each line in the subplot. The default is 
+            None. When left as none, no labels or legend will appear in the 
+            subplot. Must be length n_lines if not None.
         tail : int, optional
             The number of points that are used to draw the line. Only the most 
             recent data points are kept. A value of None will plot all points
@@ -2404,6 +2409,7 @@ class Simulator:
                                       colors=colors,
                                       line_widths=line_widths,
                                       line_styles=line_styles,
+                                      labels=labels,
                                       tail=tail,
                                       x_lim=x_lim,
                                       y_lim=y_lim)

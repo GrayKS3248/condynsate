@@ -26,12 +26,13 @@ target_obj = sim.load_urdf(urdf_path='./wheel_vis/target_arrow.urdf',
 
 # Create desired plots then open the animator
 plot1, lines1 = sim.add_subplot_to_animator(n_lines=2,
-                                            title="Angle vs Time",
+                                            title="Angles vs Time",
                                             x_label="Time [Seconds]",
-                                            y_label="$θ-θ_{0}$ [Rad]",
+                                            y_label="Angles [Rad]",
                                             colors=["r", "b"],
                                             line_widths=[2.5, 2.5],
-                                            line_styles=["-", ":"])
+                                            line_styles=["-", ":"],
+                                            labels=["Angle", "Target"])
 plot2, lines2 = sim.add_subplot_to_animator(n_lines=1,
                                             title="Torque vs Time",
                                             x_label="Time [Seconds]",
