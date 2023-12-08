@@ -2536,68 +2536,81 @@ class Simulator:
     #ANIMATOR MANIPULATION
     ###########################################################################
     def add_subplot(self,
-                    n_lines=1,
+                    n_artists=1,
+                    subplot_type='line',
                     title=None,
                     x_label=None,
                     y_label=None,
                     colors=None,
+                    labels=None,
+                    x_lim=[None, None],
+                    y_lim=[None, None],
                     line_widths=None,
                     line_styles=None,
-                    labels=None,
-                    tail=None,
-                    x_lim=[None, None],
-                    y_lim=[None, None]):
+                    tail=None):
         """
-        Adds a subplot to the Animator. This function needs to be called to 
-        define a subplot before data can be written to it.
+        Adds a subplot to the animator. This function needs to be called to 
+        define a subplot before data can be added to that plot.
 
         Parameters
         ----------
-        n_lines : int, optional
-            The number of lines to which data can be drawn on the subplot.
+        n_artists : int, optional
+            The number of artists that can draw on the subplot.
             The default is 1.
+        subplot_type: either 'line' or 'bar', optional
+            The type of plot. May either be 'line' or 'bar'. The default
+            is 'line'.
         title : string, optional
             The title of the plot. Will be written above the plot when
             rendered. The default is None.
         x_label : string, optional
-            The label to apply to the x axis. We be written under the plot when
-            rendered. The default is None.
+            The label to apply to the x axis. Will be written under the subplot
+            when rendered. The default is None.
         y_label : string, optional
-            The label to apply to the y axis. We be written to the left of the
-            plot when rendered. The default is None.
+            The label to apply to the y axis. Will be written to the left of
+            the subplot when rendered. The default is None.
         colors : list of matplotlib color string, optional
-            The colors of each subplot line. The default is None. When left 
-            as default, all lines are plotted black. Must be length n_lines.
-        line_widths : list of float, optional
-            The weight of each line in a subplot. The default is None.
-            When set to None, defaults to 1.0 for all lines.
-            Must be length n_lines.
-        line_styles : list of matplotlib line style string, optional
-            The style of each line in the subplot. The default is None. When 
-            set the None, defaults to solid for all lines.
-            Must be length n_lines.
+            The colors of each subplot artist. The default is None. When left 
+            as default, all artists plot in black. Must be length n_artists
+            if not None.
         labels : list of strings, optional
-            The labels to apply to each line in the subplot. The default is 
+            The labels to apply to each artist in the subplot. The default is 
             None. When left as none, no labels or legend will appear in the 
-            subplot. Must be length n_lines if not None.
-        tail : int, optional
-            The number of points that are used to draw the line. Only the most 
-            recent data points are kept. A value of None will plot all points
-            in the plot data. The default is None.
+            subplot. Must be length n_artists if not None.
         x_lim : [float, float], optional
-            The limits to apply to the x axis of the plots. A value of None
+            The limits to apply to the x axis of the subplot. A value of None
             will apply automatically updating limits to that bound of the axis.
             The default is [None, None].
         y_lim : [float, float], optional
-            The limits to apply to the y axis of the plots. A value of None
+            The limits to apply to the y axis of the subplot. A value of None
             will apply automatically updating limits to that bound of the axis.
             The default is [None, None].
-
+        line_widths : list of float, optional
+            The line weigth each artist uses. The default is None.
+            When set to None, defaults to 1.0 for all lines.
+            Must be length n_artists if not None.
+        line_styles : list of matplotlib line style string, optional
+            The line style each artist uses. The default is None. When 
+            set the None, defaults to solid for all artists. Only used if
+            subplot type is 'line'. Must be length n_artists if not None.
+        tail : int, optional
+            The number of points that are used to draw lines. Only the most 
+            recent data points are kept. A value of None will plot all points
+            in the plot data. The default is None. Only used if
+            subplot type is 'line'.
+            
+        Raises
+        ------
+        Exception
+            An argument is the wrong length.
+        TypeError
+            An argument is the wrong type.
+        
         Returns
         -------
         subplot_index : int
             A unique integer identifier that allows future subplot interation.
-        line_indices : tuple of ints
+        artist_inds : tuple of ints
             The unique integer identifiers of each line on the subplot.
 
         """
@@ -2606,29 +2619,30 @@ class Simulator:
             return
         
         # Add the plot data to the plot
-        v1, v2 = self.ani.add_subplot(n_lines=n_lines,
+        v1, v2 = self.ani.add_subplot(n_artists=n_artists,
+                                      subplot_type=subplot_type,
                                       title=title,
                                       x_label=x_label,
                                       y_label=y_label,
                                       colors=colors,
+                                      labels=labels,
+                                      x_lim=x_lim,
+                                      y_lim=y_lim,
                                       line_widths=line_widths,
                                       line_styles=line_styles,
-                                      labels=labels,
-                                      tail=tail,
-                                      x_lim=x_lim,
-                                      y_lim=y_lim)
+                                      tail=tail)
         subplot_index = v1
-        line_indices = v2
+        artist_inds = v2
         
         # Return the plot index
-        return subplot_index, line_indices
+        return subplot_index, artist_inds
         
         
     def add_subplot_point(self,
                           subplot_index,
-                          line_index,
-                          x,
-                          y):
+                          artist_index,
+                          x=None,
+                          y=None):
         """
         Adds a single data point to the plot. Data point is appended to the end
         of all previously plotted data points.
@@ -2637,12 +2651,14 @@ class Simulator:
         ----------
         plot_index : int
             The subplot's unique identifier.
-        line_index : int
-            The subplot's line index to which the data is added.
-        x : float
-            The x value of the data point added to the plot.
-        y : float
-            The y value of the data point added to the plot.
+        artist_index : int
+            The subplot's artist index to which the data is added.
+        x : float, optional
+            The x value of the data point added to the plot. The default
+            value is None.
+        y : float, optional
+            The y value of the data point added to the plot. The default
+            value is None.
 
         Returns
         -------
@@ -2659,7 +2675,7 @@ class Simulator:
         
         # Update the plot
         self.ani.add_subplot_point(subplot_index=subplot_index,
-                                   line_index=line_index,
+                                   artist_index=artist_index,
                                    x=x,
                                    y=y)
         
