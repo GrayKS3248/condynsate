@@ -2732,9 +2732,9 @@ class Simulator:
         
         
     def await_keypress(self,
-                       key="enter"):
+                       key = "enter"):
         """
-        Suspends the simulation until a specified keystroke is recieved.
+        Waits until a specified keystroke is recieved.
         When an Animator GUI is open, this function must be called to
         keep the GUI responsive. If a GUI is not present, this function is
         optional. 
@@ -2749,10 +2749,10 @@ class Simulator:
         None.
 
         """
-        print("PRESS "+key.upper()+" TO CONTINUE."+
-              "\nPRESS ESC TO QUIT."+
-              "\nPRESS SPACE TO PAUSE/RESUME SIMULATION."+
-              "\nPRESS TAB TO RESET SIMULATION.")
+        print("PRESS "+key.upper()+" TO START SIMULATION.")
+        print("PRESS ESC TO QUIT.")
+        print("PRESS SPACE TO PAUSE/RESUME SIMULATION.")
+        print("PRESS TAB TO RESET SIMULATION.")
         while not self.is_pressed("enter"):
             # Ensure so the GUI remains interactive if simulation is suspended
             if isinstance(self.ani, Animator):

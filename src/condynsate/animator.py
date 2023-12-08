@@ -10,6 +10,7 @@ functions that are used by it.
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import matplotlib as mpl
 
 
 ###############################################################################
@@ -501,7 +502,24 @@ class Animator():
         -------
         None.
 
-        """
+        """       
+        # Setup the rcparams to prevent unwanted keypresses
+        mpl.rcParams["keymap.fullscreen"] = []
+        mpl.rcParams["keymap.home"] = []
+        mpl.rcParams["keymap.back"] = []
+        mpl.rcParams["keymap.forward"] = []
+        mpl.rcParams["keymap.pan"] = []
+        mpl.rcParams["keymap.zoom"] = []
+        mpl.rcParams["keymap.save"] = ['ctrl+s']
+        mpl.rcParams["keymap.help"] = []
+        mpl.rcParams["keymap.quit"] = []
+        mpl.rcParams["keymap.quit_all"] = []
+        mpl.rcParams["keymap.grid"] = []
+        mpl.rcParams["keymap.grid_minor"] = []
+        mpl.rcParams["keymap.yscale"] = []
+        mpl.rcParams["keymap.xscale"] = []
+        mpl.rcParams["keymap.copy"] = []
+        
         # Set the desired backend and matplotlib parameters for interactive
         # plotting
         plt.switch_backend("QtAgg")
@@ -550,6 +568,7 @@ class Animator():
         # Set the layout
         self.fig.tight_layout()
         
+        # Tell what to do during resize
         self.fig.canvas.mpl_connect('resize_event', self._on_resize)
         
         # Manually cycle the GUI loop

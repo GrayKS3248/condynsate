@@ -38,24 +38,24 @@ plot2, lines2 = sim.add_subplot(n_lines=1,
                                 y_label="Torque [Nm]",
                                 colors=["k"],
                                 line_widths=[2.5])
-# plot3, lines3 = sim.add_subplot(n_lines=2,
-#                                 title="Gains vs Time",
-#                                 x_label="Time [seconds]",
-#                                 y_label="Gains [-]",
-#                                 colors=["r", "g"],
-#                                 line_widths=[2.5, 2.5],
-#                                 labels=['P', 'D'])
+plot3, lines3 = sim.add_subplot(n_lines=2,
+                                title="Gains vs Time",
+                                x_label="Time [seconds]",
+                                y_label="Gains [-]",
+                                colors=["r", "g"],
+                                line_widths=[2.5, 2.5],
+                                labels=['P', 'D'])
 sim.open_animator_gui()
 
 # Set the target angle for the wheel
-angle_tag = 0.0
-P = 3.0
-D = 2.0
+angle_tag = 3.1415926
+P = 0.0
+D = 0.0
 
 # Wait for user input
 sim.await_keypress(key="enter")
 
-# Run the simulation
+# Run the simulation  
 while(not sim.is_done):
     
     
@@ -76,6 +76,10 @@ while(not sim.is_done):
     angle_error = angle - angle_tag
     angle_vel_error = angle_vel - 0.0
     torque = -P * angle_error - D*angle_vel_error
+    if torque > 5.:
+        torque=5.
+    elif torque < -5.:
+        torque = -5.
     ###########################################################################
     # ACTUATOR
     # Apply the controller calculated torque to the wheel using an actuator.
@@ -100,14 +104,14 @@ while(not sim.is_done):
                           line_index=lines2[0],
                           x=sim.time,
                           y=torque)
-    # sim.add_subplot_point(subplot_index=plot3,
-    #                       line_index=lines3[0],
-    #                       x=sim.time,
-    #                       y=P)
-    # sim.add_subplot_point(subplot_index=plot3,
-    #                       line_index=lines3[1],
-    #                       x=sim.time,
-    #                       y=D)
+    sim.add_subplot_point(subplot_index=plot3,
+                          line_index=lines3[0],
+                          x=sim.time,
+                          y=P)
+    sim.add_subplot_point(subplot_index=plot3,
+                          line_index=lines3[1],
+                          x=sim.time,
+                          y=D)
     
     # Collect keyboard IO data for changing the target angle
     if sim.is_pressed('a') and not sim.paused:
@@ -120,15 +124,19 @@ while(not sim.is_done):
             angle_tag = -3.1415927
 
     # Collect keyboard IO for changing gains
-    # if sim.is_pressed('r'):
-    #     P = P + 0.005*2.0
-    # elif sim.is_pressed('f'):
-    #     P = P - 0.005*2.0
-    # if sim.is_pressed('t'):
-    #     D = D + 0.005*2.0
-    # elif sim.is_pressed('g'):
-    #     D = D - 0.005*2.0
-        
+    if sim.is_pressed('r'):
+        P = P + 0.005*2.0
+    elif sim.is_pressed('f'):
+        P = P - 0.005*2.0
+        if P < 0.:
+            P = 0.
+    if sim.is_pressed('t'):
+        D = D + 0.005*2.0
+    elif sim.is_pressed('g'):
+        D = D - 0.005*2.0
+        if D < 0.:
+            D = 0.
+            
     # Adjust the target arrow so that it is always 
     # pointing in the target angle direction
     sim.set_joint_position(urdf_obj=target_obj,
