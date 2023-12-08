@@ -78,24 +78,14 @@ max_torque = 1.
 min_torque = -1.
 
 # Create desired plots then open the animator
-plot_1 = sim.add_plot_to_animator(title="Roll vs Time",
-                                  x_label="Time [s]",
-                                  y_label="Roll [Rad]",
-                                  color="r",
-                                  tail=500,
-                                  y_lim=[-np.pi,np.pi])
-plot_2 = sim.add_plot_to_animator(title="Pitch Vs Time",
-                                  x_label="Time [s]",
-                                  y_label="Pitch [Rad]",
-                                  color="g",
-                                  tail=500,
-                                  y_lim=[-np.pi,np.pi])
-plot_3 = sim.add_plot_to_animator(title="Yaw Vs Time",
-                                  x_label="Time [s]",
-                                  y_label="Yaw [Rad]",
-                                  color="b",
-                                  tail=500,
-                                  y_lim=[-np.pi,np.pi])
+plot,lines = sim.add_subplot(n_lines=3,
+                             title="Angles vs Time",
+                             x_label="Time [s]",
+                             y_label="Angle [Rad]",
+                             colors=['r', 'g', 'b'],
+                             line_widths=[2.5, 2.5, 2.5],
+                             labels=['Roll','Pitch','Yaw'],
+                             y_lim=[-np.pi,np.pi])
 sim.open_animator_gui()
 
 # Wait for user input
@@ -135,41 +125,41 @@ while(not sim.is_done):
                         joint_name='bus_to_wheel_1',
                         torque=torque_1,
                         show_arrow=True,
-                        arrow_scale=2.,
-                        color=True,
-                        min_torque=min_torque,
-                        max_torque=max_torque)
+                        arrow_scale=2.)
     sim.set_joint_torque(urdf_obj=craft_obj,
                         joint_name='bus_to_wheel_2',
                         torque=torque_2,
                         show_arrow=True,
-                        arrow_scale=2.,
-                        color=True,
-                        min_torque=min_torque,
-                        max_torque=max_torque)
+                        arrow_scale=2.)
     sim.set_joint_torque(urdf_obj=craft_obj,
                         joint_name='bus_to_wheel_3',
                         torque=torque_3,
                         show_arrow=True,
-                        arrow_scale=2.,
-                        color=True,
-                        min_torque=min_torque,
-                        max_torque=max_torque)
+                        arrow_scale=2.)
     sim.set_joint_torque(urdf_obj=craft_obj,
                         joint_name='bus_to_wheel_4',
                         torque=torque_4,
                         show_arrow=True,
-                        arrow_scale=2.,
-                        color=True,
-                        min_torque=min_torque,
-                        max_torque=max_torque)
+                        arrow_scale=2.)
     
     # Set the plot data
-    _,rpy,_,_ = sim.get_base_state(urdf_obj=craft_obj,
+    state = sim.get_base_state(urdf_obj=craft_obj,
                                    body_coords=True)
-    sim.add_plot_point(plot_1, sim.time, rpy[0])
-    sim.add_plot_point(plot_2, sim.time, rpy[1])
-    sim.add_plot_point(plot_3, sim.time, rpy[2])
+    roll = state['roll']
+    pitch = state['pitch']
+    yaw = state['yaw']
+    sim.add_subplot_point(subplot_index=plot,
+                          line_index=lines[0],
+                          x=sim.time,
+                          y=roll)
+    sim.add_subplot_point(subplot_index=plot,
+                          line_index=lines[1],
+                          x=sim.time,
+                          y=pitch)
+    sim.add_subplot_point(subplot_index=plot,
+                          line_index=lines[2],
+                          x=sim.time,
+                          y=yaw)
     
     # Step the sim
     sim.step(real_time=True,

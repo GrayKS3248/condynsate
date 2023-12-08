@@ -46,16 +46,16 @@ min_stat_vel = 0.
 stat_vel = 0.5 * (min_stat_vel + max_stat_vel)
 
 # Create desired plots then open the animator
-plot_1 = sim.add_plot_to_animator(title="Torque vs Time",
+plot_1, lines_1 = sim.add_subplot(n_lines=1,
+                                  title="Torque vs Time",
                                   x_label="Time [s]",
                                   y_label="Torque [Nm]",
-                                  color="r",
-                                  tail=500)
-plot_2 = sim.add_plot_to_animator(title="Pitch Speed Vs Time",
+                                  colors=["r"])
+plot_2, lines_2 = sim.add_subplot(n_lines=1,
+                                  title="Pitch Speed Vs Time",
                                   x_label="Time [s]",
                                   y_label="Pitch Velocity [Rad/s]",
-                                  color="b",
-                                  tail=500)
+                                  colors=["b"])
 sim.open_animator_gui()
 
 # Wait for user input
@@ -100,18 +100,14 @@ while(not sim.is_done):
                          joint_name='chassis_to_right_wheel',
                          torque=r_torque,
                          show_arrow=True,
-                         arrow_scale=0.1,
-                         color=True,
-                         min_torque=min_torque,
-                         max_torque=max_torque)
+                         arrow_scale=0.075,
+                         arrow_offset=-0.05)
     sim.set_joint_torque(urdf_obj=segbot_obj,
                          joint_name='chassis_to_left_wheel',
                          torque=l_torque,
                          show_arrow=True,
-                         arrow_scale=0.1,
-                         color=True,
-                         min_torque=min_torque,
-                         max_torque=max_torque)
+                         arrow_scale=0.075,
+                         arrow_offset=0.05)
     
     # Set station velocity
     sim.set_joint_velocity(urdf_obj=station_obj,
@@ -122,10 +118,13 @@ while(not sim.is_done):
                            max_vel=max_stat_vel)
     
     # Get the rigid body states of the segbot and station
-    seg_pos,_,_,seg_ang_vel = sim.get_base_state(urdf_obj=segbot_obj,
-                                                 body_coords=True)
-    stat_pos,_,_,_ = sim.get_base_state(urdf_obj=station_obj,
-                                        body_coords=False)
+    seg_state = sim.get_base_state(urdf_obj=segbot_obj,
+                                   body_coords=True)
+    stat_state = sim.get_base_state(urdf_obj=station_obj,
+                                    body_coords=False)
+    seg_pos = seg_state['position']
+    seg_ang_vel = seg_state['angular velocity']
+    stat_pos = stat_state['position']
     
     # This simulates centrifugal gravity from the station
     seg_relative_pos = np.array(seg_pos) - np.array(stat_pos)
@@ -134,8 +133,14 @@ while(not sim.is_done):
     sim.set_gravity(gravity=gravity)
     
     # Set the plot data
-    sim.add_plot_point(plot_1, sim.time, 0.5*(r_torque + l_torque))
-    sim.add_plot_point(plot_2, sim.time, seg_ang_vel[1])
+    sim.add_subplot_point(subplot_index=plot_1,
+                          line_index=lines_1[0],
+                          x=sim.time,
+                          y=0.5*(r_torque + l_torque))
+    sim.add_subplot_point(subplot_index=plot_2,
+                          line_index=lines_2[0],
+                          x=sim.time,
+                          y=seg_ang_vel[1])
     
     # Step the sim
     sim.step(real_time=True,

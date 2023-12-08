@@ -54,12 +54,13 @@ min_vel = 0.0
 vel = 0.5 * (max_vel + min_vel)
 
 # Create desired plots then open the animator
-plot = sim.add_plot_to_animator(title="Phase Space",
-                                x_label="θ [Rad]",
-                                y_label="L $[Kg•m^{2}•s^{-1}]$",
-                                color="r",
-                                tail=800,
-                                line_width=2.5)
+plot, lines = sim.add_subplot(n_lines=1,
+                              title="Phase Space",
+                              x_label="θ [Rad]",
+                              y_label="L $[Kg•m^{2}•s^{-1}]$",
+                              colors=["r"],
+                              line_widths=[2.5],
+                              tail=800)
 sim.open_animator_gui()
 
 # Wait for user input
@@ -104,8 +105,6 @@ while(not sim.is_done):
     sim.set_joint_torque(urdf_obj=cmg_obj,
                          joint_name="outer_to_inner",
                          torque=torque,
-                         show_arrow=True,
-                         arrow_scale=2.5,
                          color=True,
                          min_torque=min_torque,
                          max_torque=max_torque)
@@ -127,12 +126,15 @@ while(not sim.is_done):
                            max_vel=max_vel)
 
     # Add the current datapoint to the plot
-    ang, ang_vel,_,_,_ = sim.get_joint_state(urdf_obj=cmg_obj,
-                                             joint_name="world_to_outer")
+    state = sim.get_joint_state(urdf_obj=cmg_obj,
+                                joint_name="world_to_outer")
+    ang = state['position']
+    ang_vel = state['velocity']
     ang_momentum = mass*ang_vel
-    sim.add_plot_point(plot_index=plot,
-                       x=ang,
-                       y=ang_momentum)
+    sim.add_subplot_point(subplot_index=plot,
+                          line_index=lines[0],
+                          x=ang,
+                          y=ang_momentum)
 
     # Step the sim
     sim.step(real_time=True,

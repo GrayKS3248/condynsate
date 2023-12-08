@@ -838,11 +838,24 @@ class Simulator:
             # Get the link state
             state = self.get_link_state(urdf_obj=urdf_obj,
                                         link_name=link_name)
-            pos = state['position']
-            pos = np.array(pos) + arrow_offset*np.array(axis)
-            pos = tuple(pos.tolist())
             body_xyzw_in_world = state['orientation']
             body_xyzw_in_world = np.array(body_xyzw_in_world)
+            
+            # Get the arrow offset
+            body_wxyz_axis = np.insert(np.array(axis), 0, 0.)
+            wxyz_R = xyzw_to_wxyz(body_xyzw_in_world)
+            wxyz_R_prime = np.array([wxyz_R[0],
+                                     -wxyz_R[1],
+                                     -wxyz_R[2],
+                                     -wxyz_R[3]])
+            r1 = xyzw_quat_mult(wxyz_R,body_wxyz_axis)
+            world_wxyz_axis = -xyzw_quat_mult(r1, wxyz_R_prime)
+            world_axis = np.array([world_wxyz_axis[1],
+                                   world_wxyz_axis[2],
+                                   world_wxyz_axis[3]])
+            pos = state['position']
+            pos = np.array(pos) + arrow_offset*np.array(world_axis)
+            pos = tuple(pos.tolist())
             
             # Combine the two rotations
             xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
@@ -1381,7 +1394,10 @@ class Simulator:
         
         # Get the center of mass of the body in world cooridnates
         com = self.get_center_of_mass(urdf_obj)
-        force_dirn = np.array(force) / np.linalg.norm(force)
+        if np.linalg.norm(force) != 0:
+            force_dirn = np.array(force) / np.linalg.norm(force)
+        else:
+            force_dirn = np.array([0., 0., 0.])
         pos = com + arrow_offset*force_dirn
         pos = tuple(pos.tolist())
         
@@ -1608,7 +1624,10 @@ class Simulator:
             state = self.get_link_state(urdf_obj=urdf_obj,
                                         link_name=link_name)
             pos = state['position']
-            force_dirn = np.array(force) / np.linalg.norm(force)
+            if np.linalg.norm(force) != 0:
+                force_dirn = np.array(force) / np.linalg.norm(force)
+            else:
+                force_dirn = np.array([0., 0., 0.])
             pos = np.array(pos) + arrow_offset*force_dirn
             pos = tuple(pos.tolist())
             body_xyzw_in_world = state['orientation']
@@ -2405,18 +2424,18 @@ class Simulator:
     ###########################################################################
     #ANIMATOR MANIPULATION
     ###########################################################################
-    def add_subplot_to_animator(self,
-                                n_lines=1,
-                                title=None,
-                                x_label=None,
-                                y_label=None,
-                                colors=None,
-                                line_widths=None,
-                                line_styles=None,
-                                labels=None,
-                                tail=None,
-                                x_lim=[None, None],
-                                y_lim=[None, None]):
+    def add_subplot(self,
+                    n_lines=1,
+                    title=None,
+                    x_label=None,
+                    y_label=None,
+                    colors=None,
+                    line_widths=None,
+                    line_styles=None,
+                    labels=None,
+                    tail=None,
+                    x_lim=[None, None],
+                    y_lim=[None, None]):
         """
         Adds a subplot to the Animator. This function needs to be called to 
         define a subplot before data can be written to it.
