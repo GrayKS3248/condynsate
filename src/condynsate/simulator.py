@@ -98,6 +98,9 @@ class Simulator:
         None.
 
         """
+        # Note that the simulator is running
+        self.paused = False
+        
         # Connect to pybullet
         self.engine = bc.BulletClient(connection_mode=pybullet.DIRECT)
         
@@ -158,6 +161,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Configure gravity
         self.engine.setGravity(gravity[0],
                                gravity[1],
@@ -219,6 +226,10 @@ class Simulator:
             the simulation.
             
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Get the properly formatted string of the urdf path
         urdf_path = format_path(urdf_path)
         
@@ -430,6 +441,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -470,6 +485,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -507,6 +526,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -546,6 +569,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -591,6 +618,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -648,6 +679,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -719,6 +754,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -794,6 +833,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -1055,6 +1098,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
@@ -1328,6 +1375,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
@@ -1385,6 +1436,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
@@ -1494,6 +1549,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
@@ -1699,6 +1758,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -1898,6 +1961,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return    
@@ -1960,6 +2027,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         joint_map = urdf_obj.joint_map
     
@@ -2024,6 +2095,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         joint_map = urdf_obj.joint_map
     
@@ -2090,6 +2165,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         joint_map = urdf_obj.joint_map
     
@@ -2145,6 +2224,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Gather information from urdf_obj
         link_map = urdf_obj.link_map
     
@@ -2216,6 +2299,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -2252,6 +2339,10 @@ class Simulator:
         None.
     
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -2284,6 +2375,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -2318,6 +2413,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -2352,6 +2451,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -2382,6 +2485,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -2393,8 +2500,8 @@ class Simulator:
             
             
     def set_fill_light(self,
-                          on = False,
-                          intensity = 1.0):
+                       on = False,
+                       intensity = 1.0):
         """
         Sets the properties of the fill light in the Visualizer.
 
@@ -2411,6 +2518,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no visualizer, do not attempt to update it
         if not isinstance(self.vis, Visualizer):
             return
@@ -2538,6 +2649,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no animator, do not attempt to update it
         if not isinstance(self.ani, Animator):
             return
@@ -2558,6 +2673,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # If there is no animator, do not attempt to update it
         if not isinstance(self.ani, Animator):
             return
@@ -2632,6 +2751,7 @@ class Simulator:
         """
         print("PRESS "+key.upper()+" TO CONTINUE."+
               "\nPRESS ESC TO QUIT."+
+              "\nPRESS SPACE TO PAUSE/RESUME SIMULATION."+
               "\nPRESS TAB TO RESET SIMULATION.")
         while not self.is_pressed("enter"):
             # Ensure so the GUI remains interactive if simulation is suspended
@@ -2640,7 +2760,6 @@ class Simulator:
         
         # Note that the simulation is started
         print("CONTINUING...")
-        self.is_started = True
       
         
     def reset(self):
@@ -2654,6 +2773,10 @@ class Simulator:
         None.
 
         """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
         # Note that the simulation is resetting to the user
         print("RESETTING...")
         
@@ -2739,9 +2862,28 @@ class Simulator:
         None.
 
         """
-        # Note that the simulation is started
-        self.is_started = True
+        # Collect keyboard IO for termination
+        if self.is_pressed("esc"):
+            self.is_done = True
+            return 
         
+        # Handle pause condition
+        if self.is_pressed("space"):
+            self.paused = not self.paused
+            if self.paused:
+                print("PAUSING...")
+            else:
+                print("RESUMING...")
+            start_time = time.time()
+            ani_exists = isinstance(self.ani, Animator)
+            while time.time() - start_time < 0.2:
+                    if ani_exists:
+                        self.ani.flush_events()
+                    else:
+                        time.sleep(0.2)
+        if self.paused:
+            return
+            
         # Calculate suspend time if running in real time
         if real_time:
             time_since_last_step = time.time() - self.last_step_time
@@ -2769,8 +2911,4 @@ class Simulator:
         # Collect keyboard IO for simulation reset
         if self.is_pressed("tab"):
             self.reset()
-        
-        # Collect keyboard IO for termination
-        if self.is_pressed("esc"):
-            self.is_done = True
             
