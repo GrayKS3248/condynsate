@@ -54,8 +54,10 @@ while(not sim.is_done):
     # SENSOR
     # Use a sensor to collect the absolute angle of the wheel and calculate
     # the error from target angle.
-    angle,angle_vel,_,_,_ = sim.get_joint_state(urdf_obj=wheel_obj,
-                                                joint_name="ground_to_axle")
+    state = sim.get_joint_state(urdf_obj=wheel_obj,
+                                joint_name="ground_to_axle")
+    angle = state['position']
+    angle_vel = state['velocity']
     ###########################################################################
     # CONTROLLER
     # This is the section where you make a controller.
@@ -70,9 +72,11 @@ while(not sim.is_done):
     # Apply the controller calculated torque to the wheel using an actuator.
     sim.set_joint_torque(urdf_obj=wheel_obj,
                           joint_name="ground_to_axle",
-                          torque=torque)
+                          torque=torque,
+                          show_arrow=True,
+                          arrow_scale=0.3,
+                          arrow_offset=0.52)
     ###########################################################################
-    
     
     # Plot angle, target angle, and torque
     sim.add_subplot_point(subplot_index=plot1,

@@ -754,6 +754,7 @@ class Simulator:
                          torque=0.,
                          show_arrow=False,
                          arrow_scale=0.1,
+                         arrow_offset=0.0,
                          color=False,
                          min_torque=-1.,
                          max_torque=1.):
@@ -775,6 +776,9 @@ class Simulator:
         arrow_scale : float, optional
             The scaling factor that determines the size of the arrow. The
             default is 0.1.
+        arrow_offset : float, optional
+            The amount to offset the drawn arrow along the joint axis.
+            The default is 0.0.
         color : bool, optional
             A boolean flag that indicates whether the child link will be
             colored based on the applied torque. The default is False.
@@ -832,8 +836,12 @@ class Simulator:
             link_name = list(urdf_obj.link_map.keys())[joint_index]
                 
             # Get the link state
-            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
-                                                          link_name=link_name)
+            state = self.get_link_state(urdf_obj=urdf_obj,
+                                        link_name=link_name)
+            pos = state['position']
+            pos = np.array(pos) + arrow_offset*np.array(axis)
+            pos = tuple(pos.tolist())
+            body_xyzw_in_world = state['orientation']
             body_xyzw_in_world = np.array(body_xyzw_in_world)
             
             # Combine the two rotations
@@ -841,7 +849,7 @@ class Simulator:
             wxyz_ori = xyzw_to_wxyz(xyzw_ori)
                 
             # Get the scale of the arrow based on the magnitude of the torque
-            scale = arrow_scale*abs(torque)*np.array([1., 1., 1.])
+            scale = arrow_scale*abs(torque)*np.array([1., 1., 0.1])
             scale = scale.tolist()
             
             # If the arrow already exists, only update its position and ori
@@ -914,24 +922,23 @@ class Simulator:
 
         Returns
         -------
-        pos : float
-            The position value of this joint.
-        vel : float
-            The velocity value of this joint.
-        rxn_force : array-like, shape(3,)
-            These are the joint reaction forces. If a torque sensor is enabled
-            for this joint it is [Fx, Fy, Fz]. Without torque sensor, it is
-            [0., 0., 0.].
-        rxn_torque : array-like, shape(3,)
-            These are the joint reaction torques. If a torque sensor is enabled
-            for this joint it is [Mx, My, Mz]. Without torque sensor, it is
-            [0., 0., 0.].
-        applied_torque : float
-            This is the motor torque applied during the last stepSimulation.
-            Note that this only applies in VELOCITY_CONTROL and
-            POSITION_CONTROL. If you use TORQUE_CONTROL then the
-            applied joint motor torque is exactly what you provide, so there is
-            no need to report it separately.
+        state : dictionary with the following keys
+            'position' : float
+                The position value of this joint.
+            'velocity' : float
+                The velocity value of this joint.
+            'reaction force' : list shape(3,)
+                These are the joint reaction forces. Only read if a torque
+                sensor is enabled for this joint.
+            'reaction torque' : list shape(3,)
+                These are the joint reaction torques. Only read if a torque
+                sensor is enabled for this joint.
+            'applied torque' : float
+                This is the motor torque applied during the last
+                stepSimulation. Note that this only applies in VELOCITY_CONTROL
+                and POSITION_CONTROL. If you use TORQUE_CONTROL then the
+                applied joint motor torque is exactly what you provide, so
+                there is no need to report it separately.
             
         """
         # Get object id and joint id
@@ -953,7 +960,14 @@ class Simulator:
         rxn_force = [rxn[0], rxn[1], rxn[2]]
         rxn_torque = [rxn[3], rxn[4], rxn[5]]
         applied_torque = states[3]
-        return pos, vel, rxn_force, rxn_torque, applied_torque
+        
+        # Make the state dictionary
+        state = {'position' : pos,
+                 'velocity' : vel,
+                 'reaction force' : rxn_force,
+                 'reaction torque' : rxn_torque,
+                 'applied torque' : applied_torque}
+        return state
     
     
     def get_joint_axis(self,
@@ -1064,10 +1078,12 @@ class Simulator:
 
         Returns
         -------
-        pos_in_world : array-like, shape (3,)
-            Cartesian position of center of mass.
-        ori_in_world : array-like, shape(4,)
-            Cartesian orientation of center of mass, in quaternion [x,y,z,w]
+        state : dictionary with the following keys
+            'position' : array-like, shape (3,)
+                Cartesian position of center of mass.
+            'orientation' : array-like, shape(4,)
+                Cartesian orientation of center of mass, in quaternion
+                [x,y,z,w]
 
         """
         # Get object id and link map
@@ -1085,7 +1101,11 @@ class Simulator:
         link_states = link_states[0]
         pos_in_world = link_states[0]
         ori_in_world = link_states[1]
-        return pos_in_world, ori_in_world
+        
+        #  Make the dictionary
+        state = {'position' : pos_in_world,
+                 'orientation' : ori_in_world}
+        return state
     
     
     def get_link_mass(self,
@@ -1131,7 +1151,7 @@ class Simulator:
                        body_coords=False):
         """
         Gets the rigid body states (position, orientation, linear velocity, and
-        angular velocitiy) of the base of a given urdf. 
+        angular velocitiy) of the base link of a given urdf. 
 
         Parameters
         ----------
@@ -1144,17 +1164,24 @@ class Simulator:
 
         Returns
         -------
-        pos : array-like, shape (3,)
-            The (x,y,z) world coordinates of the base of the urdf.
-        rpy : array-like, shape (3,)
-            The Euler angles (roll, pitch, yaw) of the base of the urdf
-            that define the body's orientation in the world.
-        vel : array-like, shape (3,)
-            The linear velocity of the base of the urdf in either world 
-            coords or body coords.
-        ang_vel : array-like, shape (3,)
-            The angular velocity of the base of the urdf in either world 
-            coords or body coords.
+        state : a dictionary with the following keys:
+            'position' : array-like, shape (3,)
+                The (x,y,z) world coordinates of the base of the urdf.
+            'roll' : float
+                The Euler angle roll of the base of the urdf
+                that define the body's orientation in the world.
+            'pitch' : float
+                The Euler angle pitch of the base of the urdf
+                that define the body's orientation in the world.
+            'yaw' : float
+                The Euler angle yaw of the base of the urdf
+                that define the body's orientation in the world.
+            'velocity' : array-like, shape (3,)
+                The linear velocity of the base of the urdf in either world 
+                coords or body coords.
+            'angular velocity' : array-like, shape (3,)
+                The angular velocity of the base of the urdf in either world 
+                coords or body coords.
 
         """
         # Get object id
@@ -1182,9 +1209,23 @@ class Simulator:
             vel_body = R_world_to_body @ vel_world
             ang_vel_body =  R_world_to_body @ ang_vel_world
             
-            return pos, rpy, vel_body, ang_vel_body
+            # Make the dictionary
+            state = {'position' : pos,
+                     'roll' : rpy[0],
+                     'pitch' : rpy[1],
+                     'yaw' : rpy[2],
+                     'velocity' : vel_body,
+                     'angular velocity' : ang_vel_body}
+            return state
         
-        return pos, rpy, vel_world, ang_vel_world
+        # Make the dictionary
+        state = {'position' : pos,
+                 'roll' : rpy[0],
+                 'pitch' : rpy[1],
+                 'yaw' : rpy[2],
+                 'velocity' : vel_world,
+                 'angular velocity' : ang_vel_world}
+        return state
     
     
     def get_center_of_mass(self,
@@ -1244,7 +1285,8 @@ class Simulator:
                             link_name,
                             force,
                             show_arrow=False,
-                            arrow_scale=0.4):
+                            arrow_scale=0.4,
+                            arrow_offset=0.0):
         """
         Applies an external force the to center of a specified link of a urdf.
 
@@ -1263,6 +1305,10 @@ class Simulator:
         arrow_scale : float, optional
             The scaling factor that determines the size of the arrow. The
             default is 0.4.
+        arrow_offset : float, optional
+            The amount by which the drawn force arrow will be offset from the
+            center of mass along the direction of the applied force. The 
+            default is 0.0.
             
         Returns
         -------
@@ -1284,7 +1330,8 @@ class Simulator:
                                 link_name=link_name,
                                 force=force,
                                 show_arrow=show_arrow,
-                                arrow_scale=arrow_scale)
+                                arrow_scale=arrow_scale,
+                                arrow_offset=arrow_offset)
         
         # Apply the external force
         self.engine.applyExternalForce(urdf_id,
@@ -1298,7 +1345,8 @@ class Simulator:
                            urdf_obj,
                            force,
                            show_arrow=False,
-                           arrow_scale=0.4):
+                           arrow_scale=0.4,
+                           arrow_offset=0.0):
         """
         Applies an external force to the center of mass of the body.
 
@@ -1314,6 +1362,10 @@ class Simulator:
         arrow_scale : float, optional
             The scaling factor that determines the size of the arrow. The
             default is 0.4.
+        arrow_offset : float, optional
+            The amount by which the drawn force arrow will be offset from the
+            center of mass along the direction of the applied force. The 
+            default is 0.0.
 
         Returns
         -------
@@ -1329,6 +1381,9 @@ class Simulator:
         
         # Get the center of mass of the body in world cooridnates
         com = self.get_center_of_mass(urdf_obj)
+        force_dirn = np.array(force) / np.linalg.norm(force)
+        pos = com + arrow_offset*force_dirn
+        pos = tuple(pos.tolist())
         
         # If the arrow isn't meant to be visualized, hide it
         vis_exists = isinstance(self.vis, Visualizer)
@@ -1364,7 +1419,7 @@ class Simulator:
                 self.vis.apply_transform(urdf_name="Force Arrows",
                                          link_name=arrow_name,
                                          scale=scale,
-                                         translate=com,
+                                         translate=pos,
                                          wxyz_quaternion=wxyz_ori)
             
             # If the arrow is not already created, add it to the visualizer
@@ -1381,7 +1436,7 @@ class Simulator:
                                  transparent=False,
                                  opacity = 1.0,
                                  scale=scale,
-                                 translate=com,
+                                 translate=pos,
                                  wxyz_quaternion=wxyz_ori)
         
         # Apply a force to the highest link at the center of mass of the body
@@ -1396,7 +1451,8 @@ class Simulator:
                               urdf_obj,
                               torque,
                               show_arrow=False,
-                              arrow_scale=0.1):
+                              arrow_scale=0.1,
+                              arrow_offset=0.0):
         """
         Applies an external torque to the center of mass of the body.
 
@@ -1412,6 +1468,10 @@ class Simulator:
         arrow_scale : float, optional
             The scaling factor that determines the size of the arrow. The
             default is 0.1.
+        arrow_offset : float, optional
+            The amount by which the drawn torque arrow will be offset from the
+            center of mass along the direction of the applied torque. The 
+            default is 0.0.
 
         Returns
         -------
@@ -1427,6 +1487,9 @@ class Simulator:
         
         # Get the center of mass of the body in world cooridnates
         com = self.get_center_of_mass(urdf_obj)
+        torque_dirn = np.array(torque) / np.linalg.norm(torque)
+        pos = com + arrow_offset*torque_dirn
+        pos = tuple(pos.tolist())
         
         # If the arrow isn't meant to be visualized, hide it
         vis_exists = isinstance(self.vis, Visualizer)
@@ -1447,7 +1510,7 @@ class Simulator:
             wxyz_ori = xyzw_to_wxyz(xyzw_ori)
             
             # Get the scale of the arrow based on the magnitude of the force
-            scale = arrow_scale*np.linalg.norm(torque)*np.array([1., 1., 1.])
+            scale = arrow_scale*np.linalg.norm(torque)*np.array([1., 1., 0.1])
             scale=scale.tolist()
             
             # If the arrow already exists, only update its position and ori
@@ -1462,7 +1525,7 @@ class Simulator:
                 self.vis.apply_transform(urdf_name="Torque Arrows",
                                          link_name=arrow_name,
                                          scale=scale,
-                                         translate=com,
+                                         translate=pos,
                                          wxyz_quaternion=wxyz_ori)
             
             # If the arrow is not already created, add it to the visualizer
@@ -1479,7 +1542,7 @@ class Simulator:
                                  transparent=False,
                                  opacity = 1.0,
                                  scale=scale,
-                                 translate=com,
+                                 translate=pos,
                                  wxyz_quaternion=wxyz_ori)
         
         # Apply a force to the highest link at the center of mass of the body
@@ -1494,7 +1557,8 @@ class Simulator:
                            link_name,
                            force,
                            show_arrow,
-                           arrow_scale):
+                           arrow_scale,
+                           arrow_offset):
         """
         Draws a body coordinate force arrow based on force applied to a link.
 
@@ -1512,7 +1576,10 @@ class Simulator:
             on the link to visualize the applied force
         arrow_scale : float
             The scaling factor that determines the size of the arrow.
-
+        arrow_offset : float
+            The amount by which the drawn force arrow will be offset from the
+            center of mass along the direction of the applied force.
+            
         Returns
         -------
         None.
@@ -1538,8 +1605,13 @@ class Simulator:
             arrow_xyzw_in_body = get_rot_from_2_vecs([0,0,1], force)
             
             # Get the link state
-            pos, body_xyzw_in_world = self.get_link_state(urdf_obj=urdf_obj,
-                                                          link_name=link_name)
+            state = self.get_link_state(urdf_obj=urdf_obj,
+                                        link_name=link_name)
+            pos = state['position']
+            force_dirn = np.array(force) / np.linalg.norm(force)
+            pos = np.array(pos) + arrow_offset*force_dirn
+            pos = tuple(pos.tolist())
+            body_xyzw_in_world = state['orientation']
             body_xyzw_in_world = np.array(body_xyzw_in_world)
             
             # Combine the two rotations
@@ -1883,8 +1955,9 @@ class Simulator:
             return    
         
         # Get the joint position
-        pos,_,_,_,_ = self.get_joint_state(urdf_obj=urdf_obj,
-                                           joint_name=joint_name)
+        state = self.get_joint_state(urdf_obj=urdf_obj,
+                                     joint_name=joint_name)
+        pos = state['position']
         
         # Calculate the position saturation and get the associated color
         sat = np.clip((pos - min_pos) / (max_pos - min_pos), 0.0, 1.0)
@@ -1946,8 +2019,9 @@ class Simulator:
             return    
         
         # Get the joint velocity
-        _,vel,_,_,_ = self.get_joint_state(urdf_obj=urdf_obj,
-                                           joint_name=joint_name)
+        state = self.get_joint_state(urdf_obj=urdf_obj,
+                                     joint_name=joint_name)
+        vel = state['velocity']
         
         # Calculate the velocity saturation and get the associated color
         sat = np.clip((vel - min_vel) / (max_vel - min_vel), 0.0, 1.0)

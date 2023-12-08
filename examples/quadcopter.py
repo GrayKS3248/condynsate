@@ -39,7 +39,7 @@ sim.set_joint_damping(urdf_obj=quad_obj,
                       damping=0.1)
 
 # Variables to track torque
-min_torque = 0.1
+min_torque = 0.
 max_torque = 5.
 
 # Create desired plots then open the animator
@@ -115,14 +115,18 @@ while(not sim.is_done):
                             max_vel=100.)
     
     # Retrieve the joint states for force calculation
-    _,vel_1,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                        joint_name="spar1_to_rotor1")
-    _,vel_2,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                        joint_name="spar2_to_rotor2")
-    _,vel_3,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                        joint_name="spar3_to_rotor3")
-    _,vel_4,_,_,_ = sim.get_joint_state(urdf_obj=quad_obj,
-                                        joint_name="spar4_to_rotor4")
+    state1 = sim.get_joint_state(urdf_obj=quad_obj,
+                                 joint_name="spar1_to_rotor1")
+    state2 = sim.get_joint_state(urdf_obj=quad_obj,
+                                 joint_name="spar2_to_rotor2")
+    state3 = sim.get_joint_state(urdf_obj=quad_obj,
+                                 joint_name="spar3_to_rotor3")
+    state4 = sim.get_joint_state(urdf_obj=quad_obj,
+                                 joint_name="spar4_to_rotor4")
+    vel_1 = state1['velocity']
+    vel_2 = state2['velocity']
+    vel_3 = state3['velocity']
+    vel_4 = state4['velocity']
     
     # Set force based on velocity
     sim.apply_force_to_link(urdf_obj=quad_obj,
@@ -134,7 +138,8 @@ while(not sim.is_done):
                             link_name='rotor2',
                             force=[0., 0.001*vel_2, 0.05*vel_2],
                             show_arrow=True,
-                            arrow_scale=0.40)
+                            arrow_scale=0.40,
+                            arrow_offset=1.)
     sim.apply_force_to_link(urdf_obj=quad_obj,
                             link_name='rotor3',
                             force=[0., 0.001*vel_3, -0.05*vel_3],
@@ -148,7 +153,7 @@ while(not sim.is_done):
     
     # Set the plot data
     pos,_,vel,_ = sim.get_base_state(quad_obj,
-                                     body_coords=False)
+                                      body_coords=False)
     pot_eng = 0.1*9.81*(pos[2]+3.)
     kin_eng = 0.5*0.1*(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2])
     sim.add_plot_point(plot_1, kin_eng, pot_eng)
