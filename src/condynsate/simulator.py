@@ -2882,6 +2882,8 @@ class Simulator:
                     else:
                         time.sleep(0.2)
         if self.paused:
+            if isinstance(self.ani, Animator):
+                self.ani.flush_events()
             return
             
         # Calculate suspend time if running in real time
