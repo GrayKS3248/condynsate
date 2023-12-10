@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 import matplotlib as mpl
-import copy
 
 
 ###############################################################################
@@ -71,6 +70,9 @@ class Animator():
         self.n_plots = 0
     
     
+    ###########################################################################
+    #STORE NEW SUBPLOT DATA STYLE INFORMATION
+    ###########################################################################
     def _validate_inputs(self,
                          arg,
                          arg_str,
@@ -224,8 +226,8 @@ class Animator():
         self.line_styles.append(line_styles)
         
         # Store the limit options
-        self.x_data_ranges.append([np.inf, -np.inf])
-        self.y_data_ranges.append([np.inf, -np.inf])
+        self.x_data_ranges.append([-np.inf, np.inf])
+        self.y_data_ranges.append([-np.inf, np.inf])
         self.fixed_x_plot_lims.append(x_lim)
         self.fixed_y_plot_lims.append(y_lim)
         self.x_plot_lims.append([None, None])
@@ -235,7 +237,10 @@ class Animator():
         subplot_index = len(self.xs)-1
         return subplot_index, artist_inds
 
-    
+
+    ###########################################################################
+    #RESET ALL SUBPLOTS
+    ###########################################################################
     def reset_plots(self):
         """
         Removes all previously plotted data from all plots.
@@ -253,193 +258,42 @@ class Animator():
             for i in range(n_artists):
                 self.xs[plot_index].append([])
                 self.ys[plot_index].append([])
-            self.x_data_ranges[plot_index] = [np.inf, -np.inf]
-            self.y_data_ranges[plot_index] = [np.inf, -np.inf]
+            self.x_data_ranges[plot_index] = [-np.inf, np.inf]
+            self.y_data_ranges[plot_index] = [-np.inf, np.inf]
             self.x_plot_lims[plot_index] = [None, None]
             self.y_plot_lims[plot_index] = [None, None]
             
         
-    def _trim_data(self,
-                   x,
-                   y,
-                   tail):
+    ###########################################################################
+    #CREATE FIGURE
+    ###########################################################################    
+    def _disable_keystrokes(self):
         """
-        Trims a line of a subplot to have length tail.
-
-        Parameters
-        ----------
-        x : array-like, shape(n,)
-            An array of the x data.
-        y : array-like, shape(n,)
-            An array of the y data.
-        tail : int
-            The number of points that are used to draw the line. Only the most 
-            recent data points are kept. A value of None will keep all data
-            points.
-
-        Returns
-        -------
-        x : array-like, shape(tail,)
-            An array of the trimmed x data.
-        y : array-like, shape(tail,)
-            An array of the trimmed y data.
-
-        """       
-        # Trim data to desired length
-        if tail != None and len(x) > tail:
-            x = x[-tail:]
-            y = y[-tail:]
-        return x, y
-
-
-    def _get_ran_lims(self,
-                      data,
-                      data_range,
-                      fixed_plot_lims):
-        """
-        Calculates the plot limits and the current range of data.
-
-        Parameters
-        ----------
-        data : array of arrays
-            The array of data over which the range is calculated.
-        data_range : array-like, shape(2,)
-            The previously calculated range of data.
-        fixed_plot_lims : array-like, shape(2,)
-            The fixed limits to be applied to the plot axis (if any).
-
-        Returns
-        -------
-        new_data_range : array-like, shape(2,)
-            The newly calculated range of data.
-        plot_limits : array-like, shape(2,)
-            The newly calculated limits to be applied to the plot axis.
-
-        """
-        # Handle the empty case
-        if all([len(datum)==0 for datum in data]):
-            return [-np.inf, np.inf], [None, None]
-        
-        # Variables to hold the calulcated plot limits
-        plot_limits = [0., 0.]
-        plot_limits[0] = fixed_plot_lims[0]
-        plot_limits[1] = fixed_plot_lims[1]
-        
-        # Data range
-        data_min = np.inf
-        data_max = -np.inf
-        for datum in data:
-            if len(datum) > 0:
-                curr_min = np.min(datum)
-                curr_max = np.max(datum)
-                if curr_min < data_min:
-                    data_min = curr_min
-                if curr_max > data_max:
-                        data_max = curr_max
-        data_min = 1.1*data_min - 0.1*data_max
-        data_max = 1.1*data_max - 0.1*data_min
-        new_data_range = [data_min, data_max]
-        
-        # If there is no lower hard plot limit, set to min of all data seen
-        if plot_limits[0] == None:
-            plot_limits[0] = data_min
-        
-        # If there is no upper hard plot limit, set to max of all data seen
-        if plot_limits[1] == None:
-            plot_limits[1] = data_max
-            
-        # If the calculated plot limits are the same, set the plot limits as
-        # (None, None)
-        if plot_limits[0] == plot_limits[1]:
-            plot_limits = [None, None]
-            
-        # Return the calculated plot limits
-        return new_data_range, plot_limits
-
-
-    def add_subplot_point(self,
-                          subplot_index,
-                          artist_index,
-                          x,
-                          y):
-        """
-        Adds a single data point to the subplot. Data point is appended to the
-        end of all previously plotted data points on the specified line.
-
-        Parameters
-        ----------
-        subplot_index : int
-            The subplot's unique identifier.
-        artist_index : int
-            The subplot's artist index to which the data is added.
-        x : float
-            The x value of the data point added to the plot.
-        y : float
-            The y value of the data point added to the plot.
+        Disables most keystrokes for the matplotlib QT widget to prevent
+        unexpected interactions while simulations are occuring.
 
         Returns
         -------
         None.
 
         """
-        # Collect and trim data to desired length if line plot
-        if self.types[subplot_index] == 'line':
-            # Collect the data
-            self.xs[subplot_index][artist_index].append(x)
-            self.ys[subplot_index][artist_index].append(y)
-            
-            # Trim the data
-            tail = self.tails[subplot_index]
-            x, y = self._trim_data(x = 
-                                   self.xs[subplot_index][artist_index],
-                                   y = self.ys[subplot_index][artist_index],
-                                   tail = tail)
-            
-            # Store the trimmed data
-            self.xs[subplot_index][artist_index] = x
-            self.ys[subplot_index][artist_index] = y
-            
-            # Update the x data ranges and associated plot limits
-            cur_x_ran = self.x_data_ranges[subplot_index]
-            fix_x = self.fixed_x_plot_lims[subplot_index]
-            new_x_ran, x_lims = self._get_ran_lims(data=self.xs[subplot_index],
-                                                   data_range=cur_x_ran,
-                                                   fixed_plot_lims=fix_x)
-            self.x_data_ranges[subplot_index] = new_x_ran
-            self.x_plot_lims[subplot_index] = x_lims
-        
-            # Update the y data ranges and associated plot limits
-            cur_y_ran = self.y_data_ranges[subplot_index]
-            fix_y = self.fixed_y_plot_lims[subplot_index]
-            new_y_ran, y_lims = self._get_ran_lims(data=self.ys[subplot_index],
-                                                   data_range = cur_y_ran,
-                                                   fixed_plot_lims = fix_y)
-            self.y_data_ranges[subplot_index] = new_y_ran
-            self.y_plot_lims[subplot_index] = y_lims
-            
-        # Keep the y value for bar chart
-        elif self.types[subplot_index] == 'bar':
-            self.ys[subplot_index][artist_index] = y
-            
-            # Update the y data ranges and plot limits
-            cur_x_ran = self.x_data_ranges[subplot_index]
-            fix_x = self.fixed_x_plot_lims[subplot_index]
-            xs = [0]
-            for i in range(len(self.xs[subplot_index])):
-                x = self.xs[subplot_index][i]
-                try:
-                    for j in range(len(x)):
-                        xx = x[j]
-                        xs.append(xx)
-                except:
-                    xs.append(x)
-            new_x_ran, x_lims = self._get_ran_lims(data=[xs],
-                                                   data_range = cur_x_ran,
-                                                   fixed_plot_lims = fix_x)
-            self.x_data_ranges[subplot_index] = new_x_ran
-            self.x_plot_lims[subplot_index] = x_lims
-
-
+        mpl.rcParams["keymap.fullscreen"] = []
+        mpl.rcParams["keymap.home"] = []
+        mpl.rcParams["keymap.back"] = []
+        mpl.rcParams["keymap.forward"] = []
+        mpl.rcParams["keymap.pan"] = []
+        mpl.rcParams["keymap.zoom"] = []
+        mpl.rcParams["keymap.save"] = ['ctrl+s']
+        mpl.rcParams["keymap.help"] = []
+        mpl.rcParams["keymap.quit"] = []
+        mpl.rcParams["keymap.quit_all"] = []
+        mpl.rcParams["keymap.grid"] = []
+        mpl.rcParams["keymap.grid_minor"] = []
+        mpl.rcParams["keymap.yscale"] = []
+        mpl.rcParams["keymap.xscale"] = []
+        mpl.rcParams["keymap.copy"] = []
+    
+    
     def _get_n_plots(self):
         """
         Calculates how many plots have been set by the user.
@@ -481,7 +335,7 @@ class Animator():
         # If all plots have full set of parameters, return the number of plots
         n_plots = len(self.xs)
         return n_plots
-            
+    
     
     def _get_subplot_shape(self,
                           n_plots):
@@ -514,6 +368,116 @@ class Animator():
          # Return the calculated dimension
         dim = (n_rows, n_cols)
         return dim
+    
+    
+    def _get_lims(self,
+                  data,
+                  data_range,
+                  fixed_lims):
+        """
+        Calculates the plot limits and the current range of data.
+
+        Parameters
+        ----------
+        data : array of arrays
+            The array of data over which the range is calculated.
+        data_range : array-like, shape(2,)
+            The previously calculated range of data.
+        fixed_lims : array-like, shape(2,)
+            The fixed limits to be applied to the plot axis (if any).
+
+        Returns
+        -------
+        new_data_range : array-like, shape(2,)
+            The newly calculated range of data.
+        plot_limits : array-like, shape(2,)
+            The newly calculated limits to be applied to the plot axis.
+
+        """
+        # Variables to hold the calulcated plot limits
+        plot_limits = [0., 0.]
+        plot_limits[0] = fixed_lims[0]
+        plot_limits[1] = fixed_lims[1]
+        
+        # Handle the empty case
+        if all([len(datum)==0 for datum in data]):
+            return [-np.inf, np.inf], plot_limits
+        
+        # Data range
+        data_min = np.inf
+        data_max = -np.inf
+        for datum in data:
+            if len(datum) > 0:
+                curr_min = np.min(datum)
+                curr_max = np.max(datum)
+                if curr_min < data_min:
+                    data_min = curr_min
+                if curr_max > data_max:
+                        data_max = curr_max
+        data_min = 1.1*data_min - 0.1*data_max
+        data_max = 1.1*data_max - 0.1*data_min
+        new_data_range = [data_min, data_max]
+        
+        # If there is no lower hard plot limit, set to min of all data seen
+        if plot_limits[0] == None:
+            plot_limits[0] = data_min
+        
+        # If there is no upper hard plot limit, set to max of all data seen
+        if plot_limits[1] == None:
+            plot_limits[1] = data_max
+            
+        # If the calculated plot limits are the same, set the plot limits as
+        # (None, None)
+        if plot_limits[0] == plot_limits[1]:
+            plot_limits = [None, None]
+            
+        # Return the calculated plot limits
+        return new_data_range, plot_limits
+
+
+    def _update_limits(self,
+                       subplot_index):
+        """
+        Updates the currently stored data ranges and plot limits for 
+        both x and y axes for the subplot given.
+
+        Parameters
+        ----------
+        subplot_index : int
+            The subplot's unique identifier.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Collect the current relevant information for the x axis
+        data_range = self.x_data_ranges[subplot_index]
+        fixed_lims = self.fixed_x_plot_lims[subplot_index]
+        data = self.xs[subplot_index]
+        
+        # Calcaulate the new data range and the new plot limits for the x axis
+        data_range, plot_lims = self._get_lims(data=data,
+                                               data_range=data_range,
+                                               fixed_lims=fixed_lims)
+        
+        # Apply the new data range and new plot limits for the x axis
+        self.x_data_ranges[subplot_index] = data_range
+        self.x_plot_lims[subplot_index] = plot_lims
+    
+        # Collect the current relevant information for the y axis
+        data_range = self.y_data_ranges[subplot_index]
+        fixed_lims = self.fixed_y_plot_lims[subplot_index]
+        data = self.ys[subplot_index]
+        
+        # Calcaulate the new data range and the new plot limits for the y axis
+        data_range, plot_lims = self._get_lims(data=data,
+                                               data_range=data_range,
+                                               fixed_lims=fixed_lims)
+        
+        # Apply the new data range and new plot limits for the y axis
+        self.y_data_ranges[subplot_index] = data_range
+        self.y_plot_lims[subplot_index] = plot_lims
     
     
     def _create_subplot(self,
@@ -567,7 +531,172 @@ class Animator():
         if y_plot_lim != [None, None]:
             axis.set_ylim(y_plot_lim[0],
                           y_plot_lim[1])
-    
+            
+            
+    def _get_artist_params(self,
+                           subplot_index,
+                           artist_index):
+        """
+        Gets style parameters for a given artist of a given subplot
+
+        Parameters
+        ----------
+        subplot_index : int
+            A subplot's unique identifier.
+        artist_index : int
+            A subplot's artist's unique identifier.
+
+        Returns
+        -------
+        color : matplotlib color string
+            The artist color.
+        line_width : float
+            The artist line width.
+        line_style : matplotlib line style string
+            The artist linestyle.
+        label : string
+            The artist label
+        head_marker : bool
+            A boolean flag that indicates whether the artist will apply a 
+            marker to the end of a line plot. Only applies to line plots
+
+        """
+        # Get the color
+        try:
+            color = self.colors[subplot_index][artist_index]
+        except:
+             color = 'k'  
+             
+        # Get the line width
+        try:
+            line_width = self.line_widths[subplot_index][artist_index]
+        except:
+            line_width = 1.0
+            
+        # Get the line style
+        try:
+            line_style = self.line_styles[subplot_index][artist_index]
+        except:
+            line_style = "-"
+        
+        # Get the label
+        try:
+            label = self.labels[subplot_index][artist_index]
+        except:
+            label = None
+        
+        # Get the head marker boolean
+        if self.types[subplot_index] == 'line':
+            head_marker = (self.tails[subplot_index] != None)
+        else:
+            head_marker = False
+        
+        # Return parameters
+        return color, line_width, line_style, label, head_marker
+            
+            
+    def _make_line_artist(self,
+                          axis,
+                          color,
+                          line_width,
+                          line_style,
+                          label,
+                          head_marker):
+        """
+        Creates a line artist with the specified parameters. Makes a single
+        point at the origin.
+
+        Parameters
+        ----------
+        axis : matplotlib.axes
+            The axis artist that defines the subplot being updated.
+        color : matplotlib color string
+            The color of the plot lines.
+        line_width : float
+            The weight of the line that is plotted. Only if type is line.
+        line_style : matplotlib line style string,
+            The style of the line that is plotted. Only if type is line.
+        label : string
+            The label to apply to the artist.
+        head_marker : boolean
+            A boolean flag that indicates whether a marker will be placed
+            at the head of the dataset.
+
+        Returns
+        -------
+        artist : matplotlib.lines.Line2D
+            The same line artist that belongs to the axis.
+
+        """
+        # Make the artist by plotting a single point at the origin
+        # Because a head marker is wanted, add a marker to this point
+        if head_marker:
+            artist, = axis.plot([0],
+                                [0],
+                                c=color,
+                                lw=line_width,
+                                ls=line_style,
+                                label=label,
+                                ms=2.5*line_width,
+                                marker='o')
+            return artist
+        
+        # If a head marker is not wanted, simply plot on point at 0,0
+        artist, = axis.plot([0],
+                            [0],
+                            c=color,
+                            lw=line_width,
+                            ls=line_style,
+                            label=label)
+        return artist
+        
+        
+    def _make_bar_artist(self,
+                         axis,
+                         colors,
+                         line_widths,
+                         labels):
+        """
+        Creates a bar artist with the specified parameters. Makes bar width 0.
+
+        Parameters
+        ----------
+        axis : matplotlib.axes
+            The axis artist that defines the subplot being updated.
+        colors : list of matplotlib color string
+            The colors of the bars.
+        line_widths : list of float
+            The weight of the lines of the bars.
+        labels : list of string
+            The labels to apply to each bar
+
+        Returns
+        -------
+        artists : list of matplotlib.patches.Rectangle
+            The bar artists that vary bar length.
+
+        """        
+        # Set all data to 0
+        data = [0. for label in labels]
+        
+        # Make sure the labels aren't None
+        if None in labels:
+            for i in range(len(labels)):
+                if labels[i] == None:
+                    labels[i] = "UNAMED_"+str(i+1)
+
+        # Make a bar chart
+        container = axis.barh(labels,
+                              data,
+                              align='center',
+                              color=colors,
+                              edgecolor='k',
+                              linewidth=line_widths)
+        
+        # Extract the rectangle artists from the container
+        artists = [artist for artist in container]
+        return artists
+            
     
     def _on_resize(self, event):
         """
@@ -589,7 +718,7 @@ class Animator():
         self.fig.canvas.flush_events() 
         plt.ioff()
     
-    
+            
     def create_figure(self):
         """
         Creates, renders, and draws on GUI a figure containing all specified
@@ -601,21 +730,7 @@ class Animator():
 
         """       
         # Setup the rcparams to prevent unwanted keypresses
-        mpl.rcParams["keymap.fullscreen"] = []
-        mpl.rcParams["keymap.home"] = []
-        mpl.rcParams["keymap.back"] = []
-        mpl.rcParams["keymap.forward"] = []
-        mpl.rcParams["keymap.pan"] = []
-        mpl.rcParams["keymap.zoom"] = []
-        mpl.rcParams["keymap.save"] = ['ctrl+s']
-        mpl.rcParams["keymap.help"] = []
-        mpl.rcParams["keymap.quit"] = []
-        mpl.rcParams["keymap.quit_all"] = []
-        mpl.rcParams["keymap.grid"] = []
-        mpl.rcParams["keymap.grid_minor"] = []
-        mpl.rcParams["keymap.yscale"] = []
-        mpl.rcParams["keymap.xscale"] = []
-        mpl.rcParams["keymap.copy"] = []
+        self._disable_keystrokes()
         
         # Set the desired backend and matplotlib parameters for interactive
         # plotting
@@ -638,21 +753,23 @@ class Animator():
             self.axes = self.axes.flatten()
 
         # Create each subplot
-        for i in range(self.n_plots):
+        for subplot_index in range(self.n_plots):
             # Get the axis on which the subplot is drawn
             if self.n_plots > 1:
-                axis = self.axes[i]
+                axis = self.axes[subplot_index]
             else:
                 axis = self.axes    
             
             # Retrieve the label data
-            title = self.titles[i]
-            x_label = self.x_labels[i]
-            y_label = self.y_labels[i]
+            title = self.titles[subplot_index]
+            x_label = self.x_labels[subplot_index]
+            y_label = self.y_labels[subplot_index]
+            plt_type = self.types[subplot_index]
             
             # Retrieve the limit data
-            x_plot_lim = self.x_plot_lims[i]
-            y_plot_lim = self.y_plot_lims[i]
+            self._update_limits(subplot_index)
+            x_plot_lim = self.x_plot_lims[subplot_index]
+            y_plot_lim = self.y_plot_lims[subplot_index]
             
             # Create the subplot
             self._create_subplot(axis=axis,
@@ -661,6 +778,53 @@ class Animator():
                                  y_label=y_label,
                                  x_plot_lim=x_plot_lim,
                                  y_plot_lim=y_plot_lim)
+            
+            # Create line artists for subplot
+            if plt_type == 'line':
+                for artist_index in range(len(self.artists[subplot_index])):
+                    # Retrieve the style parameters of the current artist
+                    params = self._get_artist_params(subplot_index,
+                                                     artist_index)
+                                                           
+                    # Make the line artist                                 
+                    artist = self._make_line_artist(axis=axis,
+                                                    color=params[0],
+                                                    line_width=params[1],
+                                                    line_style=params[2],
+                                                    label=params[3],
+                                                    head_marker=params[4])
+                    
+                    # Store the made artist
+                    self.artists[subplot_index][artist_index] = artist
+                    
+                # Check if a legend should be added, and then add it if needed
+                if self.labels[subplot_index] != None:
+                    axis.legend(self.labels[subplot_index],
+                                loc="upper right")
+                    
+            # Make bar artists for subplot
+            elif plt_type == 'bar':
+                # Get the artist params
+                n_bars = len(self.artists[subplot_index])
+                colors = []
+                line_widths = []
+                labels = []
+                for bar in range(n_bars):
+                    # Retrieve the style parameters of the current artist
+                    params = self._get_artist_params(subplot_index, bar)
+                    colors.append(params[0])
+                    line_widths.append(params[1])
+                    labels.append(params[3])
+                
+                # Make each artist
+
+                artists = self._make_bar_artist(axis=axis,
+                                                colors=colors,
+                                                line_widths=line_widths,
+                                                labels=labels)
+                for artist_index in range(len(artists)):
+                    artist = artists[artist_index]
+                    self.artists[subplot_index][artist_index] = artist
             
         # Set the layout
         self.fig.tight_layout()
@@ -679,14 +843,157 @@ class Animator():
         plt.ioff()
        
         
+    ###########################################################################
+    #ADD DATA POINT TO SUBPLOT
+    ###########################################################################
+    def _trim_data(self,
+                   x,
+                   y,
+                   tail):
+        """
+        Trims a line of a subplot to have length tail.
+
+        Parameters
+        ----------
+        x : array-like, shape(n,)
+            An array of the x data.
+        y : array-like, shape(n,)
+            An array of the y data.
+        tail : int
+            The number of points that are used to draw the line. Only the most 
+            recent data points are kept. A value of None will keep all data
+            points.
+
+        Returns
+        -------
+        x : array-like, shape(tail,)
+            An array of the trimmed x data.
+        y : array-like, shape(tail,)
+            An array of the trimmed y data.
+
+        """       
+        # Trim data to desired length
+        if tail != None and len(x) > tail:
+            x = x[-tail:]
+            y = y[-tail:]
+        return x, y
+    
+    
+    def _add_line_point(self,
+                        subplot_index,
+                        artist_index,
+                        x,
+                        y):
+        """
+        Adds a single point to a line type subplot.
+
+        Parameters
+        ----------
+        subplot_index : int
+            The subplot's unique identifier.
+        artist_index : int
+            The subplot's artist index to which the data is added.
+        x : float
+            The x value of the data point added to the plot.
+        y : float
+            The y value of the data point added to the plot.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Add the data point
+        self.xs[subplot_index][artist_index].append(x)
+        self.ys[subplot_index][artist_index].append(y)
+        
+        # Trim the data
+        tail = self.tails[subplot_index]
+        x, y = self._trim_data(x = 
+                               self.xs[subplot_index][artist_index],
+                               y = self.ys[subplot_index][artist_index],
+                               tail = tail)
+        
+        # Update the stored data to the trimmed version
+        self.xs[subplot_index][artist_index] = x
+        self.ys[subplot_index][artist_index] = y
+
+
+    def _add_bar_point(self,
+                       subplot_index,
+                       artist_index,
+                       width):
+        """
+        Adds a single point to a bar type subplot.
+
+        Parameters
+        ----------
+        subplot_index : int
+            The subplot's unique identifier.
+        artist_index : int
+            The subplot's artist index to which the data is added.
+        width : float
+            The updated width of the bar chart artist.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Store the data point
+        self.xs[subplot_index][artist_index] = [0., width]
+        
+        
+    def add_subplot_point(self,
+                          subplot_index,
+                          artist_index,
+                          x,
+                          y):
+        """
+        Adds a single data point to the subplot. Data point is appended to the
+        end of all previously plotted data points on the specified line.
+
+        Parameters
+        ----------
+        subplot_index : int
+            The subplot's unique identifier.
+        artist_index : int
+            The subplot's artist index to which the data is added.
+        x : float
+            The x value of the data point added to the plot.
+        y : float
+            The y value of the data point added to the plot.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Add a data point to a line type subplot
+        if self.types[subplot_index] == 'line':
+            self._add_line_point(subplot_index=subplot_index,
+                                 artist_index=artist_index,
+                                 x=x,
+                                 y=y)
+            
+        # Add a point to a bar type subplot
+        if self.types[subplot_index] == 'bar':
+            self._add_bar_point(subplot_index=subplot_index,
+                                artist_index=artist_index,
+                                width=x)
+            
+        # Update the x and y limits of the plot
+        self._update_limits(subplot_index)
+        
+
+    ###########################################################################
+    #STEP ANIMATOR FORWARD ONE TIME STEP
+    ###########################################################################
     def _step_line(self,
                    x,
                    y,
                    artist,
                    axis,
-                   color,
-                   line_width,
-                   line_style,
                    x_plot_lim,
                    y_plot_lim,
                    head_marker):
@@ -700,15 +1007,9 @@ class Animator():
         y : array-like, shape(n,)
             An array of the new y data.
         artist : matplotlib.lines.Lines2D or None
-            The artist that belongs to the axis. None if it does not exist yet.
+            The artist that belongs to the axis.
         axis : matplotlib.axes
             The axis artist that defines the subplot being updated.
-        color : matplotlib color string
-            The color of the plot lines.
-        line_width : float
-            The weight of the line that is plotted. Only if type is line.
-        line_style : matplotlib line style string,
-            The style of the line that is plotted. Only if type is line.
         x_plot_lim : [float, float]
             The limits to apply to the x axis of the plots. A value of None
             will apply automatically updating limits to that bound of the axis.
@@ -722,110 +1023,60 @@ class Animator():
 
         Returns
         -------
-        artist : matplotlib.lines.Line2D
-            The same line artist that belongs to the axis.
+        None.
 
         """
-        # Create a new artist
-        if artist==None:
-            # Make the line artist add a marker to the head of the line
-            if head_marker:
-                artist, = axis.plot(x,
-                                    y,
-                                    c=color,
-                                    lw=line_width,
-                                    ls=line_style,
-                                    ms=2.5*line_width,
-                                    marker='o')
-                
-            # Do not make the line artist add a marker to the head of
-            # line
-            else:
-                artist, = axis.plot(x,
-                                    y,
-                                    c=color,
-                                    lw=line_width,
-                                    ls=line_style)
+        # If there is a head marker, adjust it
+        if head_marker:
+            artist.set_markevery((len(x)-1, 1))
             
-        # Use a previous artist
-        else:
-            # If there is a head marker, adjust it
-            if head_marker:
-                artist.set_markevery((len(x)-1, 1))
-            
-            # Update the line artist's data
-            artist.set_data(x, y)
+        # Update the line artist's data
+        artist.set_data(x, y)
             
         # Reset the axis limits
         axis.set_xlim(x_plot_lim[0],
                       x_plot_lim[1])
         axis.set_ylim(y_plot_lim[0],
                       y_plot_lim[1])
-        
-        # Return the line artist
-        return artist
     
     
     def _step_bar(self,
-                  labels,
-                  heights,
+                  width,
                   artist,
                   axis,
-                  colors,
-                  line_widths,
                   x_plot_lim):
         """
-        Rerenders a single bar type subplot. Does not update GUI.
+        Rerenders a single bar in a subplot. Does not update GUI.
 
         Parameters
         ----------
-        labels : array-like, shape(n,)
-            An array of the new bar name data.
-        heights : array-like, shape(n,)
-            An array of the new bar height data
-        artist : matplotlib.container.BarContainer
-            The artist that belongs to the axis. None if it does not exist yet.
+        width : float
+            The new bar width
+        artist : matplotlib.patches.Rectangle
+            The bar artist
         axis : matplotlib.axes
             The axis artist that defines the subplot being updated.
-        colors : matplotlib color string
-            The colors of the bars.
-        line_widths : float
-            The weight of the bar borders.
         x_plot_lim : [float, float]
             The limits to apply to the x axis of the plots. A value of None
             will apply automatically updating limits to that bound of the axis.
 
         Returns
         -------
-        artist : matplotlib.container.BarContainer
-            The same line artist that belongs to the axis.
-
-        """
-        # Makes sure we are not trying to plot empy data
-        for i in range(len(heights)):
-            h = heights[i]
-            if not (isinstance(h,int) or isinstance(h,float)):
-                heights[i] = 0.0
+        None.
         
-        # Create a new artist
-        if artist==None:
-            artist = axis.barh(labels,
-                               heights,
-                               align='center',
-                               color=colors,
-                               edgecolor='k',
-                               linewidth=line_widths)
+        """
+        # Makes sure we are not trying to plot empty data
+        if width == []:
+            width = [0.0]
+        
+        # Change the widths
+        artist.set_width(width[-1])
             
-        # Use a previous artist
-        else:
-            for i in range(len(heights)):
-                artist[i].set_width(heights[i])
-            
-        # Reset the y limits
+        # Reset the x limits
         axis.set_xlim(x_plot_lim[0],
                       x_plot_lim[1])
         
-        # Return the bar artist
+        # Return the bar container
         return artist
         
         
@@ -875,91 +1126,35 @@ class Animator():
             
             # Retrieve the line artist for each axis
             subplot_artists = self.artists[subplot]
-            subplot_colors = self.colors[subplot]
-            subplot_line_widths = self.line_widths[subplot]
-            subplot_line_styles = self.line_styles[subplot]
             
-            # Determine if a head marker will be drawn
-            head_marker = self.tails[subplot] != None
-            
-            # Update the plotted line data
-            if subplot_type == 'line':
+            # Determine if head markers are used for the line plots
+            head_marker = (self.tails[subplot] != None)
+
+            # Go through each artist one at a time
+            for artist_num in range(len(subplot_xs)):
+                # Get the x and y data of the artist
+                x = subplot_xs[artist_num]
+                y = subplot_ys[artist_num]
                 
-                # Go through each artist one at a time
-                for artist_num in range(len(subplot_xs)):
-                    # Get the x and y data of the artist
-                    x = subplot_xs[artist_num]
-                    y = subplot_ys[artist_num]
-                    
-                    # Get the artist
-                    artist = subplot_artists[artist_num]
-                    
-                    # Get the artists's color
-                    if subplot_colors == None:
-                        color = "k"
-                    else:
-                        color = subplot_colors[artist_num]
-                    
-                     # Get the line's line width
-                    if subplot_line_widths == None:
-                        line_width = 1.0
-                    else:
-                        line_width = subplot_line_widths[artist_num]
-                    
-                    # Get the line's line style
-                    if subplot_line_styles == None:
-                        line_style = "-"
-                    else:
-                        line_style = subplot_line_styles[artist_num]
-                    
-                    # Update the line
-                    new_artist = self._step_line(x=x,
-                                                 y=y,
-                                                 artist=artist,
-                                                 axis=subplot_axis,
-                                                 color=color,
-                                                 line_width=line_width,
-                                                 line_style=line_style,
-                                                 x_plot_lim=subplot_x_lim,
-                                                 y_plot_lim=subplot_y_lim,
-                                                 head_marker=head_marker)
-    
-                    # Store the artist that was drawn if it is new
-                    if artist==None:
-                        self.artists[subplot][artist_num] = new_artist
-                        
-                        # Add a legend if needed
-                        if self.labels[subplot] != None:
-                            subplot_axis.legend(self.labels[subplot],
-                                                loc="upper right")
-        
-            elif subplot_type == 'bar':
-                # Default the bars labels
-                if self.labels[subplot] == None:
-                    labels = [None]*len(subplot_ys)
-                else:
-                    labels = self.labels[subplot]
+                # Get the artist
+                artist = subplot_artists[artist_num]
                 
-                # Default the bars' colors
-                if subplot_colors == None:
-                    subplot_colors = 'k'
-                
-                 # Default the bars' line widths
-                if subplot_line_widths == None:
-                    subplot_line_widths = 0.0
-                        
-                # Step the bar chart
-                new_artist = self._step_bar(labels=labels,
-                                            heights=subplot_ys,
-                                            artist=subplot_artists[0],
-                                            axis=subplot_axis,
-                                            colors=subplot_colors,
-                                            line_widths=subplot_line_widths,
-                                            x_plot_lim=subplot_x_lim)
-                
-                # Store the line that was drawn if it is new
-                if subplot_artists[0]==None:
-                    self.artists[subplot][0] = new_artist
+                # Update the plotted line data
+                if subplot_type == 'line':
+                    self._step_line(x=x,
+                                    y=y,
+                                    artist=artist,
+                                    axis=subplot_axis,
+                                    x_plot_lim=subplot_x_lim,
+                                    y_plot_lim=subplot_y_lim,
+                                    head_marker=head_marker)
+                    
+                # Update the plotted bar data
+                elif subplot_type == 'bar':
+                    self._step_bar(width=x,
+                                   artist=artist,
+                                   axis=subplot_axis,
+                                   x_plot_lim=subplot_x_lim)
         
         # Manually cycle the GUI loop
         self.fig.canvas.draw_idle()

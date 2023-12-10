@@ -8,7 +8,7 @@ import condynsate
 #MAIN LOOP
 ###############################################################################
 # Create an instance of the simulator with visualization
-sim = condynsate.Simulator(visualization=True,
+sim = condynsate.Simulator(visualization=False,
                            animation=True,
                            animation_fr=15.)
 
@@ -45,9 +45,9 @@ plot3, artists3 = sim.add_subplot(n_artists=2,
                                   title="Gains",
                                   x_label="Values [-]",
                                   y_label="Names [-]",
-                                  colors=["r","b"],
-                                  labels=["Proportional","Derivative"],
-                                  line_widths=[2.0, 2.0],
+                                  labels=["Proportional", "Derivative"],
+                                  colors=["m", "c"],
+                                  line_widths=[1.0, 1.0],
                                   x_lim=[0.0, 10.0])
 sim.open_animator_gui()
 
@@ -95,7 +95,7 @@ while(not sim.is_done):
                           arrow_offset=0.52)
     ###########################################################################
     
-    # Plot angle, target angle, and torque
+    # # Plot angle, target angle, and torque
     sim.add_subplot_point(subplot_index=plot1,
                           artist_index=artists1[0],
                           x=sim.time,
@@ -110,10 +110,10 @@ while(not sim.is_done):
                           y=torque)
     sim.add_subplot_point(subplot_index=plot3,
                           artist_index=artists3[0],
-                          y=P)
+                          x=P)
     sim.add_subplot_point(subplot_index=plot3,
                           artist_index=artists3[1],
-                          y=D)
+                          x=D)
     
     # Collect keyboard IO data for changing the target angle
     if sim.is_pressed('a') and not sim.paused:
