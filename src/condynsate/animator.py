@@ -118,10 +118,10 @@ class Animator():
                     title=None,
                     x_label=None,
                     y_label=None,
-                    colors=None,
-                    labels=None,
                     x_lim=[None, None],
                     y_lim=[None, None],
+                    colors=None,
+                    labels=None,
                     line_widths=None,
                     line_styles=None,
                     tail=None):
@@ -132,7 +132,7 @@ class Animator():
         Parameters
         ----------
         n_artists : int, optional
-            The number of artists that can draw on the subplot.
+            The number of artists that draw on the subplot
             The default is 1.
         subplot_type: either 'line' or 'bar', optional
             The type of plot. May either be 'line' or 'bar'. The default
@@ -146,51 +146,71 @@ class Animator():
         y_label : string, optional
             The label to apply to the y axis. Will be written to the left of
             the subplot when rendered. The default is None.
-        colors : list of matplotlib color string, optional
-            The colors of each subplot artist. The default is None. When left 
-            as default, all artists plot in black. Must be length n_artists
-            if not None.
-        labels : list of strings, optional
-            The labels to apply to each artist in the subplot. The default is 
-            None. When left as none, no labels or legend will appear in the 
-            subplot. Must be length n_artists if not None.
         x_lim : [float, float], optional
             The limits to apply to the x axis of the subplot. A value of None
-            will apply automatically updating limits to that bound of the axis.
-            The default is [None, None].
+            will apply automatically updating limits to the corresponding
+            bound of the axis. For example [None, 10.] will fix the upper
+            bound to exactly 10, but the lower bound will freely change to
+            show all data.The default is [None, None].
         y_lim : [float, float], optional
             The limits to apply to the y axis of the subplot. A value of None
-            will apply automatically updating limits to that bound of the axis.
-            The default is [None, None].
-        line_widths : list of float, optional
-            The line weigth each artist uses. The default is None.
-            When set to None, defaults to 1.0 for all lines.
-            Must be length n_artists if not None.
+            will apply automatically updating limits to the corresponding
+            bound of the axis. For example [None, 10.] will fix the upper
+            bound to exactly 10, but the lower bound will freely change to
+            show all data.The default is [None, None].
+        colors : list of matplotlib color string, optional
+            A list of the color each artist draws in. Must have length
+            n_artists. If n_artists = 1, has the form ['COLOR']. When None,
+            all artists will default to drawing in black. The default is None.
+        labels : list of strings, optional
+            A list of the label applied to each artist. For line charts, 
+            the labels are shown in a legend in the top right of the plot. For
+            bar charts, the labels are shown on the y axis next to their 
+            corresponging bars. Must have length n_artists. If n_artists = 1,
+            has the form ['LABEL']. When None, no labels will be made for any
+            aritsts. The default is None.
+        line_widths : list of floats, optional
+            The line weigth each artist uses. For line plots, this is the
+            width of the plotted line, for bar charts, this is the width of 
+            the border around each bar. Must be length n_artists. If
+            n_artists = 1, has the form [LINE_WIDTH]. When set to None,
+            defaults to 1.0 for all lines. The default is None.
         line_styles : list of matplotlib line style string, optional
-            The line style each artist uses. The default is None. When 
-            set the None, defaults to solid for all artists. Only used if
-            subplot type is 'line'. Must be length n_artists if not None.
+            The line style each artist uses. For line plots, this is the
+            style of the plotted line, for bar charts, this argument is not
+            used and therefore ignored. Must be length n_artists. If
+            n_artists = 1, has the form ['LINE_STYLE']. When set to None,
+            defaults to 'solid' for all lines. The default is None.
         tail : int, optional
-            The number of points that are used to draw lines. Only the most 
-            recent data points are kept. A value of None will plot all points
-            in the plot data. The default is None. Only used if
-            subplot type is 'line'.
+            Specifies how many data points are used to draw a line. Only the
+            most recently added data points are kept. Any data points added
+            more than tail data points ago are discarded and not plotted. Only
+            valid for line plots, and applied to all artists in the plot. For 
+            bar plots, this argument is ignored and not used. A value of None
+            means that no data is ever discarded and all data points added to
+            the animator will be drawn. The default is None.
             
         Raises
         ------
         Exception
-            An argument is the wrong length.
+            At least one of the arguments colors, labels, line_widths, or 
+            line_styles do not have length n_artists.
         TypeError
-            An argument is the wrong type.
+            At least one of the arguments colors, labels, line_widths, or 
+            line_styles is not a list.
         
         Returns
         -------
         subplot_index : int
-            A unique integer identifier that allows future subplot interation.
+            A integer identifier that is unique to the subplot created. 
+            This allows future interaction with this subplot (adding data
+            points, etc.).
         artist_inds : tuple of ints
-            The unique integer identifiers of each line on the subplot.
-
+            A tuple of integer identifiers that are unique to the artist
+            created. This allows future interaction with these artists (adding
+            data points, etc.).
         """
+        
         # Ensure valid inputs
         self._validate_inputs(colors, 'colors', n_artists)
         self._validate_inputs(labels, 'labels', n_artists)
@@ -449,8 +469,8 @@ class Animator():
         Returns
         -------
         None.
-
         """
+        
         # Collect the current relevant information for the x axis
         data_range = self.x_data_ranges[subplot_index]
         fixed_lims = self.fixed_x_plot_lims[subplot_index]
