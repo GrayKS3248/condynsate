@@ -5,7 +5,36 @@ import condynsate
 
 
 ###############################################################################
-#MAIN LOOP
+#DESIGN YOUR CONTROLLER
+###############################################################################
+# This is the section where you make a controller.
+# Take the information collected by the sensors and somehow calculate
+# what torque you should apply to the wheel to drive the wheel to
+# some target angle. 
+def controller(**kwargs):
+    # PD method
+    try:
+        prop = kwargs['ang'] - kwargs['tag']
+        derv = kwargs['ang_vel']
+        P = kwargs['P']
+        D = kwargs['D']
+        torque = -P*prop - D*derv
+        if torque > 5.0:
+            torque = 5.0
+        elif torque < -5.0:
+            torque = -5.0
+            
+    # Single value method
+    except:
+        print("Did not get enough arguments to controller(). Passing")
+        torque = 0.0
+    
+    # Return the torque
+    return torque
+
+
+###############################################################################
+#BUILD THE SIMULATOR AND ANIMATOR
 ###############################################################################
 # Create an instance of the simulator with visualization
 sim = condynsate.Simulator(visualization=True,
@@ -49,20 +78,20 @@ plot3, artists3 = sim.add_subplot(n_artists=2,
                                   colors=["m", "c"],
                                   line_widths=[1.0, 1.0],
                                   x_lim=[0.0, 10.0])
-sim.open_animator_gui()
 
-# Set the target angle for the wheel
+
+###############################################################################
+#SIMULATION LOOP
+###############################################################################
+# Define the target angle and some useful constants before the simulation
 angle_tag = 3.1415926
-P = 3
-D = 2
+P = 0.0
+D = 0.0
 
-# Wait for user input
+# Open the animator GUI, wait for user input, then run the simulation  
+sim.open_animator_gui()
 sim.await_keypress(key="enter")
-
-# Run the simulation  
 while(not sim.is_done):
-    
-    
     ###########################################################################
     # SENSOR
     # Use a sensor to collect the absolute angle of the wheel and calculate
@@ -71,19 +100,16 @@ while(not sim.is_done):
                                 joint_name="ground_to_axle")
     angle = state['position']
     angle_vel = state['velocity']
+    
     ###########################################################################
     # CONTROLLER
-    # This is the section where you make a controller.
-    # Take the information collected by the sensors and somehow calculate
-    # what torque you should apply to the wheel to drive the wheel to
-    # some target angle. 
-    angle_error = angle - angle_tag
-    angle_vel_error = angle_vel - 0.0
-    torque = -P * angle_error - D*angle_vel_error
-    if torque > 5.:
-        torque=5.
-    elif torque < -5.:
-        torque = -5.
+    # Get the torque as calculated by the controller
+    torque = controller(tag=angle_tag,
+                        ang=angle,
+                        ang_vel=angle_vel,
+                        P=P,
+                        D=D)
+    
     ###########################################################################
     # ACTUATOR
     # Apply the controller calculated torque to the wheel using an actuator.
@@ -93,9 +119,10 @@ while(not sim.is_done):
                           show_arrow=True,
                           arrow_scale=0.3,
                           arrow_offset=0.52)
-    ###########################################################################
     
-    # # Plot angle, target angle, and torque
+    ###########################################################################
+    # UPDATE THE PLOTS
+    # Plot angle and target angle vs time
     sim.add_subplot_point(subplot_index=plot1,
                           artist_index=artists1[0],
                           x=sim.time,
@@ -104,10 +131,14 @@ while(not sim.is_done):
                           artist_index=artists1[1],
                           x=sim.time,
                           y=angle_tag)
+    
+    # Plot torque vs time
     sim.add_subplot_point(subplot_index=plot2,
                           artist_index=artists2[0],
                           x=sim.time,
                           y=torque)
+    
+    # Plot the P and D variables
     sim.add_subplot_point(subplot_index=plot3,
                           artist_index=artists3[0],
                           x=P)
@@ -115,6 +146,8 @@ while(not sim.is_done):
                           artist_index=artists3[1],
                           x=D)
     
+    ###########################################################################
+    # UPDATE THE TARGET ANGLE
     # Iterate the target angle
     angle_tag = sim.iterate_val(curr_val=angle_tag,
                                 down_key='a',
@@ -123,6 +156,15 @@ while(not sim.is_done):
                                 min_val=-3.1415927,
                                 max_val=3.1415927)
     
+    # Adjust the target arrow so that it is always 
+    # pointing in the target angle direction
+    sim.set_joint_position(urdf_obj=target_obj,
+                            joint_name='world_to_arrow',
+                            position=angle_tag,
+                            physics=False)
+    
+    ###########################################################################
+    # UPDATE THE CONTROL GAINS
     # Iterate the proportional and derivative gains
     P = sim.iterate_val(curr_val=P,
                         down_key='f',
@@ -136,14 +178,9 @@ while(not sim.is_done):
                         iter_val=0.02,
                         min_val=0,
                         max_val=10)
-            
-    # Adjust the target arrow so that it is always 
-    # pointing in the target angle direction
-    sim.set_joint_position(urdf_obj=target_obj,
-                            joint_name='world_to_arrow',
-                            position=angle_tag,
-                            physics=False)
-
+    
+    ###########################################################################
+    # STEP THE SIMULATION
     # Step the sim
     sim.step(real_time=True,
               update_vis=True,
