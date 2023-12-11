@@ -115,33 +115,27 @@ while(not sim.is_done):
                           artist_index=artists3[1],
                           x=D)
     
-    # Collect keyboard IO data for changing the target angle
-    if sim.is_pressed('a') and not sim.paused:
-        angle_tag = angle_tag + 0.005*6.2831854
-        if angle_tag > 3.1415927:
-            angle_tag = 3.1415927
-    elif sim.is_pressed('d') and not sim.paused:
-        angle_tag = angle_tag - 0.005*6.2831854
-        if angle_tag < -3.1415927:
-            angle_tag = -3.1415927
-
-    # Collect keyboard IO for changing gains
-    if sim.is_pressed('r'):
-        P = P + 0.005*4.0
-        if P > 10.:
-            P = 10.
-    elif sim.is_pressed('f'):
-        P = P - 0.005*4.0
-        if P < 0.:
-            P = 0.
-    if sim.is_pressed('t'):
-        D = D + 0.005*4.0
-        if D > 10.:
-            D = 10.
-    elif sim.is_pressed('g'):
-        D = D - 0.005*4.0
-        if D < 0.:
-            D = 0.
+    # Iterate the target angle
+    angle_tag = sim.iterate_val(curr_val=angle_tag,
+                                down_key='a',
+                                up_key='d',
+                                iter_val=0.03,
+                                min_val=-3.1415927,
+                                max_val=3.1415927)
+    
+    # Iterate the proportional and derivative gains
+    P = sim.iterate_val(curr_val=P,
+                        down_key='f',
+                        up_key='r',
+                        iter_val=0.02,
+                        min_val=0,
+                        max_val=10)
+    D = sim.iterate_val(curr_val=D,
+                        down_key='g',
+                        up_key='t',
+                        iter_val=0.02,
+                        min_val=0,
+                        max_val=10)
             
     # Adjust the target arrow so that it is always 
     # pointing in the target angle direction

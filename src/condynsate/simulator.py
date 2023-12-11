@@ -2827,14 +2827,17 @@ class Simulator:
         if self.is_pressed(down_key) and self.is_pressed(up_key):
             return curr_val
 
+        # Set the new val to the current value
+        new_val = curr_val
+
         # Listen to see if the down key is pressed
-        if self.is_pressed(down_key):
+        if self.is_pressed(up_key):
             new_val = curr_val + iter_val
             if new_val > max_val:
                 new_val = max_val
     
         # Listen to see if the up key is pressed
-        elif self.is_pressed(up_key):
+        elif self.is_pressed(down_key):
             new_val = curr_val - iter_val
             if new_val < min_val:
                 new_val = min_val
