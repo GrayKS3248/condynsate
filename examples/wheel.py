@@ -8,7 +8,7 @@ import condynsate
 #MAIN LOOP
 ###############################################################################
 # Create an instance of the simulator with visualization
-sim = condynsate.Simulator(visualization=False,
+sim = condynsate.Simulator(visualization=True,
                            animation=True,
                            animation_fr=15.)
 

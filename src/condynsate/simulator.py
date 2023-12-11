@@ -2777,6 +2777,71 @@ class Simulator:
         # Note that the simulation is started
         print("CONTINUING...")
       
+      
+    def iterate_val(self,
+                    curr_val,
+                    down_key,
+                    up_key,
+                    iter_val=0.0333,
+                    min_val=-np.inf,
+                    max_val=np.inf):
+        """
+        Iterates a current value by some amount every time this function is 
+        called according to which keys are pressed. If no keys are pressed,
+        no iteration occurs. If the down key is pressed, decrement the value.
+        If the up key is pressed, increment the value. If both the up and 
+        down keys are pressed, do nothing. The iterated value is clipped 
+        between [min_val and max_val].
+
+        Parameters
+        ----------
+        curr_val : numeric value
+            The current value which will be incremented or decremented.
+        down_key : string
+            A Keyboard string that specifies what must be depressed for 
+            decrementation to occur.
+        up_key : string
+            A Keyboard string that specifies what must be depressed for 
+            incrementation to occur.
+        iter_val : numeric value, optional
+            The value by which the current value is either incremented
+            or decremented. The default is 0.0333.
+        min_val : numeric value, optional
+            The minimum possible value that can be returned.
+            The default is -np.inf.
+        max_val : numeric value, optional
+            The maximum possible value that can be returned.
+            The default is np.inf.
+
+        Returns
+        -------
+        new_val : numeric value
+            The iterated value.
+
+        """
+        # Do nothing if the simulation is paused
+        if self.paused:
+            return curr_val
+
+        # Do nothing if both up and down keys are pressed
+        if self.is_pressed(down_key) and self.is_pressed(up_key):
+            return curr_val
+
+        # Listen to see if the down key is pressed
+        if self.is_pressed(down_key):
+            new_val = curr_val + iter_val
+            if new_val > max_val:
+                new_val = max_val
+    
+        # Listen to see if the up key is pressed
+        elif self.is_pressed(up_key):
+            new_val = curr_val - iter_val
+            if new_val < min_val:
+                new_val = min_val
+    
+        # Return the updated target value
+        return new_val
+      
         
     def reset(self):
         """
