@@ -123,12 +123,12 @@ B = np.array(B).astype(float)
 
 # Define our optimal control matrices
 Q = np.eye(4)
-Q[0,0] = 1./((np.pi/0.1)**2)
-Q[1,1] = 1./((np.pi/0.1)**2)
-Q[2,2] = 1./((np.pi/0.1)**2)
-Q[3,3] = 1./((np.pi/20.)**2)
+Q[0,0] = 1.
+Q[1,1] = 1.
+Q[2,2] = 1.
+Q[3,3] = 60.
 R = np.eye(1)
-R[0,0] = 1./((0.05)**2)
+R[0,0] = 400.
 
 # Get the control gains
 K, X, E = control.lqr(A, B, Q, R)
