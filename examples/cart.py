@@ -126,9 +126,9 @@ Q = np.eye(4)
 Q[0,0] = 1.
 Q[1,1] = 1.
 Q[2,2] = 1.
-Q[3,3] = 60.
+Q[3,3] = 1.
 R = np.eye(1)
-R[0,0] = 400.
+R[0,0] = 7.
 
 # Get the control gains
 K, X, E = control.lqr(A, B, Q, R)
@@ -195,20 +195,21 @@ cart_obj = sim.load_urdf(urdf_path='./cart_vis/cart.urdf',
                             update_vis=True)
 
 # Make plot for states
-plot1, artists1 = sim.add_subplot(n_artists=3,
+plot1, artists1 = sim.add_subplot(n_artists=2,
                                   subplot_type='line',
                                   title="States vs Time",
                                   x_label="Time [Seconds]",
                                   y_label="Angles [Rad]",
-                                  colors=["m", "c", "k"],
-                                  line_widths=[2.5, 2.5, 2.5],
-                                  line_styles=["-", "-", ":"],
-                                  labels=["Pendulum", "Wheel", "Target Wheel"])
+                                  colors=["m", "c"],
+                                  line_widths=[2.5, 2.5],
+                                  line_styles=["-", "-"],
+                                  labels=["Pendulum", "Wheel"])
 plot2, artists2 = sim.add_subplot(n_artists=1,
                                   subplot_type='line',
                                   title="Torque vs Time",
                                   x_label="Time [Seconds]",
                                   y_label="Torque [Nm]",
+                                  y_lim=[-5.,5.],
                                   colors=["r"],
                                   line_widths=[2.5],
                                   line_styles=["-"])
@@ -216,7 +217,7 @@ plot2, artists2 = sim.add_subplot(n_artists=1,
 # Give the pendulum an initial angle of some non-zero value
 sim.set_joint_position(urdf_obj=cart_obj,
                         joint_name='chassis_to_arm',
-                        position=.1,
+                        position=.25,
                         physics=False)
 
 # Run the simulation
@@ -255,39 +256,39 @@ while(not sim.is_done):
                         arm_velocity_e = 0.0,
                         wheel_velocity_e = 0.0,
                         arm_angle_e = 0.0,
-                        wheel_angle_e = target_wheel_angle,
+                        wheel_angle_e = 0.0,
                         torque_e = 0.0)
     
     # Limit the torque
-    if torque > 2.0:
-        torque = 2.0
-    if torque < -2.0:
-        torque = -2.0
+    if torque > 5.0:
+        torque = 5.0
+    if torque < -5.0:
+        torque = -5.0
     
     # Set wheel torques
     sim.set_joint_torque(urdf_obj=cart_obj,
                           joint_name='chassis_to_wheel_1',
                           torque=0.25*torque,
                           show_arrow=True,
-                          arrow_scale=0.5,
+                          arrow_scale=0.25,
                           arrow_offset=0.025)
     sim.set_joint_torque(urdf_obj=cart_obj,
                           joint_name='chassis_to_wheel_2',
                           torque=0.25*torque,
                           show_arrow=True,
-                          arrow_scale=0.5,
+                          arrow_scale=0.25,
                           arrow_offset=0.025)
     sim.set_joint_torque(urdf_obj=cart_obj,
                           joint_name='chassis_to_wheel_3',
                           torque=0.25*torque,
                           show_arrow=True,
-                          arrow_scale=0.5,
+                          arrow_scale=0.25,
                           arrow_offset=-0.025)
     sim.set_joint_torque(urdf_obj=cart_obj,
                           joint_name='chassis_to_wheel_4',
                           torque=0.25*torque,
                           show_arrow=True,
-                          arrow_scale=0.5,
+                          arrow_scale=0.25,
                           arrow_offset=-0.025)
     
     # Plot the state
@@ -299,22 +300,10 @@ while(not sim.is_done):
                           artist_index=artists1[1],
                           x=sim.time,
                           y=wheel_ang)
-    sim.add_subplot_point(subplot_index=plot1,
-                          artist_index=artists1[2],
-                          x=sim.time,
-                          y=target_wheel_angle)
     sim.add_subplot_point(subplot_index=plot2,
                           artist_index=artists2[0],
                           x=sim.time,
                           y=0.25*torque)
-    
-    # Update the target wheel angular position based on keyboard input
-    target_wheel_angle = sim.iterate_val(curr_val=target_wheel_angle,
-                                         iter_val=0.10,
-                                         up_key='w',
-                                         down_key='s',
-                                         max_val=20.,
-                                         min_val=-20.)
     
     # Step the sim
     sim.step(real_time=True,
