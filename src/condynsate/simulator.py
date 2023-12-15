@@ -30,8 +30,7 @@ class URDF_Obj:
                  urdf_id,
                  joint_map,
                  link_map,
-                 update_vis,
-                 initial_conds):
+                 update_vis):
         """
         Initialize an instance of the URDF_Obj class. This class is used to
         store information relating to a urdf described by a .urdf file.
@@ -49,7 +48,6 @@ class URDF_Obj:
         update_vis : bool
             A boolean flag that indicates whether this urdf will be updated
             by the visualizer each time step.
-        initial_conds : TODO
             
         Returns
         -------
@@ -60,7 +58,7 @@ class URDF_Obj:
         self.joint_map = joint_map
         self.link_map = link_map     
         self.update_vis = update_vis
-        self.initial_conds = initial_conds
+        self.initial_conds = {}
 
 
 ###############################################################################
@@ -269,17 +267,30 @@ class Simulator:
         # Get the joint and link maps for the urdf object
         joint_map, link_map = self._make_joint_and_link_maps(urdf_id)
         
-        # Record the initial conditions of the URDF
-        initial_conds = {'position' : position,
-                         'orientation' : orientation,
-                         'fixed' : fixed}
-        
         # Create urdf_obj and adjust the default state of its joints
         urdf_obj = URDF_Obj(urdf_id,
                             joint_map,
                             link_map,
-                            update_vis,
-                            initial_conds)
+                            update_vis)
+        
+        # Make an initial condition map for the base
+        initial_conds = {'position' : position,
+                         'orientation' : orientation}
+        
+        # Record the initial conditions of each joint
+        for key in joint_map:
+            joint_id = joint_map[key]
+            if joint_id == -1:
+                continue
+            state = self.get_joint_state(urdf_obj,key)
+            joint_initial_cond = {'position' : state['position'],
+                                  'velocity' : state['velocity']}
+            initial_conds[joint_id] = joint_initial_cond
+            
+        # Send the initial conditions to the urdf object
+        urdf_obj.initial_conds = initial_conds
+        
+        # Go through each joint and set friction and contact params
         for joint_name in joint_map:
             
             # Set the joint's friction parameters to model metal to metal
@@ -641,6 +652,7 @@ class Simulator:
                            joint_name,
                            position=0.,
                            physics=False,
+                           initial_cond=False,
                            color=False,
                            min_pos=None,
                            max_pos=None):
@@ -662,6 +674,11 @@ class Simulator:
             controller will be used to change joint position or whether
             the joint position will be reset immediately to the target
             position with zero end velocity. The default is False. 
+        initial_cond : bool, optional
+            A boolean flag that indicates whether the position set is an 
+            initial condition of the system. If it is an initial condition,
+            when the simulation is reset using tab, the joint position will be
+            set again.
         color : bool, optional
             A boolean flag that indicates whether to color the joint based on
             its position. The default is False.
@@ -696,7 +713,7 @@ class Simulator:
                 return
             
             # Set the position
-            if physics:
+            if physics and not initial_cond:
                 mode = self.engine.POSITION_CONTROL
                 position = [position]
                 self.engine.setJointMotorControlArray(urdf_id,
@@ -710,6 +727,10 @@ class Simulator:
                                             jointIndex=joint_id[0],
                                             targetValue=position,
                                             targetVelocity=0.0)
+                
+            # Update the initial conditions
+            if initial_cond:
+                urdf_obj.initial_conds[joint_id[0]]['position'] = position
            
             # Color the link based on the position
             if color and min_pos!=None and max_pos!=None:
@@ -723,6 +744,8 @@ class Simulator:
                           urdf_obj,
                           joint_name,
                           velocity=0.,
+                          physics=False,
+                          initial_cond=False,
                           color=False,
                           min_vel=-100.,
                           max_vel=100.):
@@ -739,6 +762,16 @@ class Simulator:
         velocity : float, optional
             The velocity in rad/s to be applied to the joint.
             The default is 0..
+        physics : bool, optional
+            A boolean flag that indicates whether physics based velocity
+            controller will be used to change joint velocity or whether
+            the joint velocity will be reset immediately to the target
+            velocity. The default is False. 
+        initial_cond : bool, optional
+            A boolean flag that indicates whether the velocity set is an 
+            initial condition of the system. If it is an initial condition,
+            when the simulation is reset using tab, the joint velocity will be
+            set again.
         color : bool, optional
             A boolean flag that indicates whether to color the joint based on
             its velocity. The default is False.
@@ -770,15 +803,29 @@ class Simulator:
             if joint_id[0] < 0:
                 return
             
-            # Set the velocity
-            mode = self.engine.VELOCITY_CONTROL
-            velocity = [velocity]
-            self.engine.setJointMotorControlArray(urdf_id,
-                                                  joint_id,
-                                                  mode,
-                                                  forces=[1000.],
-                                                  targetVelocities=velocity)
-            
+            # Set the velocity with physics
+            if physics and not initial_cond:
+                mode = self.engine.VELOCITY_CONTROL
+                target = [velocity]
+                self.engine.setJointMotorControlArray(urdf_id,
+                                                      joint_id,
+                                                      mode,
+                                                      forces=[1000.],
+                                                      targetVelocities=target)
+                
+            # Set the velocity without physics
+            else:
+                state = self.get_joint_state(urdf_obj=urdf_obj,
+                                             joint_name=joint_name)
+                curr_pos = state['position']
+                self.engine.resetJointState(bodyUniqueId=urdf_id,
+                                            jointIndex=joint_id[0],
+                                            targetValue=curr_pos,
+                                            targetVelocity=velocity)
+                
+            if initial_cond:
+                urdf_obj.initial_conds[joint_id[0]]['velocity'] = velocity
+                
             # Color the link based on the velocity
             if color:
                 self.set_color_from_vel(urdf_obj=urdf_obj,
@@ -1005,6 +1052,10 @@ class Simulator:
         if joint_name in joint_map:
             joint_id = [joint_map[joint_name]]
         else:
+            return
+        
+        # Don't attempt to get the base state
+        if joint_id == -1:
             return
         
         # Retrieve the joint states
@@ -2907,11 +2958,13 @@ class Simulator:
                 joint_id = urdf_obj.joint_map[joint_name]
                 if joint_id!=-1:
                     
-                    # Reset joint state to 0
+                    # Reset joint state to the initial conditions
+                    pos = urdf_obj.initial_conds[joint_id]['position']
+                    vel = urdf_obj.initial_conds[joint_id]['velocity']
                     self.engine.resetJointState(bodyUniqueId=urdf_obj.urdf_id,
                                                 jointIndex=joint_id,
-                                                targetValue=0.0,
-                                                targetVelocity=0.0)
+                                                targetValue=pos,
+                                                targetVelocity=vel)
                     
                     # Set the joint torque to 0
                     self.set_joint_torque(urdf_obj,

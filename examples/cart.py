@@ -128,7 +128,7 @@ Q[1,1] = 1.
 Q[2,2] = 1.
 Q[3,3] = 1.
 R = np.eye(1)
-R[0,0] = 7.
+R[0,0] = 10.
 
 # Get the control gains
 K, X, E = control.lqr(A, B, Q, R)
@@ -216,9 +216,9 @@ plot2, artists2 = sim.add_subplot(n_artists=1,
 
 # Give the pendulum an initial angle of some non-zero value
 sim.set_joint_position(urdf_obj=cart_obj,
-                        joint_name='chassis_to_arm',
-                        position=.25,
-                        physics=False)
+                       joint_name='chassis_to_arm',
+                       velocity=0.25,
+                       initial_cond=True)
 
 # Run the simulation
 sim.open_animator_gui()
