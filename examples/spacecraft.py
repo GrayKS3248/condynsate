@@ -6,7 +6,42 @@ import condynsate
 
 
 ###############################################################################
-#MAIN LOOP
+#BUILD A CONTROLLER
+###############################################################################
+def manual_controller(**kwargs):
+    # Get the simulator
+    sim = kwargs['sim']
+    
+    # Set the torque to min
+    torques = {'torque1' : 0.0,
+               'torque2' : 0.0,
+               'torque3' : 0.0,
+               'torque4' : 0.0,}
+    
+    # Listen for keyboard presses:
+    if sim.is_pressed('a'):
+        torques['torque1'] = torques['torque1'] - 1.0
+    if sim.is_pressed('q'):
+        torques['torque1'] = torques['torque1'] + 1.0
+    if sim.is_pressed('s'):
+        torques['torque2'] = torques['torque2'] - 1.0
+    if sim.is_pressed('w'):
+        torques['torque2'] = torques['torque2'] + 1.0
+    if sim.is_pressed('d'):
+        torques['torque3'] = torques['torque3'] - 1.0
+    if sim.is_pressed('e'):
+        torques['torque3'] = torques['torque3'] + 1.0
+    if sim.is_pressed('f'):
+        torques['torque4'] = torques['torque4'] - 1.0
+    if sim.is_pressed('r'):
+        torques['torque4'] = torques['torque4'] + 1.0
+        
+    # Return the manually set torque
+    return torques
+
+
+###############################################################################
+#BUILD THE SIMULATOR ENVIRONMENT
 ###############################################################################
 # Create an instance of the simulator with visualization
 sim = condynsate.Simulator(visualization=True,
@@ -73,95 +108,80 @@ sim.set_negx_pt_light(on=True,
 sim.set_ambient_light(on=True,
                       intensity=0.65)
 
-# Variables to track applied torque
-max_torque = 1.
-min_torque = -1.
+# Make plot for phase space
+plot1, artists1 = sim.add_subplot(n_artists=3,
+                                  subplot_type='line',
+                                  title="Euler Angles vs. Time",
+                                  x_label="Time [s]",
+                                  y_label="Angle [Rad]",
+                                  colors=['g', 'r', 'b'],
+                                  labels=['Roll', 'Pitch', 'Yaw'],
+                                  line_widths=[2.5, 2.5, 2.5],
+                                  line_styles=["-", "-", "-"],
+                                  h_zero_line=True)
 
-# Create desired plots then open the animator
-plot,lines = sim.add_subplot(n_lines=3,
-                             title="Angles vs Time",
-                             x_label="Time [s]",
-                             y_label="Angle [Rad]",
-                             colors=['r', 'g', 'b'],
-                             line_widths=[2.5, 2.5, 2.5],
-                             labels=['Roll','Pitch','Yaw'],
-                             y_lim=[-np.pi,np.pi])
-sim.open_animator_gui()
 
-# Wait for user input
-sim.await_keypress(key="enter")
-
+###############################################################################
+#SIMULATION LOOP
+###############################################################################
 # Run the simulation
-done = False
+sim.open_animator_gui()
+sim.await_keypress(key="enter")
 while(not sim.is_done):      
-    # Collect keyboard IO data for torques
-    if sim.is_pressed("a"):
-        torque_1 = min_torque
-    elif sim.is_pressed("q"):
-        torque_1 = max_torque
-    else:
-        torque_1 = 0.0
-    if sim.is_pressed("s"):
-        torque_2 = min_torque
-    elif sim.is_pressed("w"):
-        torque_2 = max_torque
-    else:
-        torque_2 = 0.0
-    if sim.is_pressed("d"):
-        torque_3 = min_torque
-    elif sim.is_pressed("e"):
-        torque_3 = max_torque
-    else:
-        torque_3 = 0.0
-    if sim.is_pressed("f"):
-        torque_4 = min_torque
-    elif sim.is_pressed("r"):
-        torque_4 = max_torque
-    else:
-        torque_4 = 0.0
-
+    ###########################################################################
+    # SENSOR
+    # Get the Euler angles of the craft
+    state = sim.get_base_state(urdf_obj=craft_obj,
+                               body_coords=True)
+    roll = state['roll']
+    pitch = state['pitch']
+    yaw = state['yaw']
+    
+    ###########################################################################
+    # CONTROLLER
+    torques =  manual_controller(sim=sim)
+    
+    ###########################################################################
+    # ACTUATOR
     # Set wheel torques
     sim.set_joint_torque(urdf_obj=craft_obj,
                         joint_name='bus_to_wheel_1',
-                        torque=torque_1,
+                        torque=torques['torque1'],
                         show_arrow=True,
                         arrow_scale=2.)
     sim.set_joint_torque(urdf_obj=craft_obj,
                         joint_name='bus_to_wheel_2',
-                        torque=torque_2,
+                        torque=torques['torque2'],
                         show_arrow=True,
                         arrow_scale=2.)
     sim.set_joint_torque(urdf_obj=craft_obj,
                         joint_name='bus_to_wheel_3',
-                        torque=torque_3,
+                        torque=torques['torque3'],
                         show_arrow=True,
                         arrow_scale=2.)
     sim.set_joint_torque(urdf_obj=craft_obj,
                         joint_name='bus_to_wheel_4',
-                        torque=torque_4,
+                        torque=torques['torque4'],
                         show_arrow=True,
                         arrow_scale=2.)
     
-    # Set the plot data
-    state = sim.get_base_state(urdf_obj=craft_obj,
-                                   body_coords=True)
-    roll = state['roll']
-    pitch = state['pitch']
-    yaw = state['yaw']
-    sim.add_subplot_point(subplot_index=plot,
-                          line_index=lines[0],
+    ###########################################################################
+    # UPDATE THE PLOT
+    sim.add_subplot_point(subplot_index=plot1,
+                          artist_index=artists1[0],
                           x=sim.time,
                           y=roll)
-    sim.add_subplot_point(subplot_index=plot,
-                          line_index=lines[1],
+    sim.add_subplot_point(subplot_index=plot1,
+                          artist_index=artists1[1],
                           x=sim.time,
                           y=pitch)
-    sim.add_subplot_point(subplot_index=plot,
-                          line_index=lines[2],
+    sim.add_subplot_point(subplot_index=plot1,
+                          artist_index=artists1[2],
                           x=sim.time,
                           y=yaw)
     
-    # Step the sim
+    ###########################################################################
+    # STEP THE SIMULATION
     sim.step(real_time=True,
              update_vis=True,
              update_ani=True)

@@ -851,7 +851,8 @@ class Animator():
                     
                 # Check if a legend should be added, and then add it if needed
                 if self.labels[subplot_index] != None:
-                    axis.legend(self.labels[subplot_index],
+                    axis.legend(self.artists[subplot_index],
+                                self.labels[subplot_index],
                                 loc="upper right")
                     
             # Make bar artists for subplot
