@@ -9,7 +9,7 @@ from sympy import diff, sin, cos, solve
 
 
 ###############################################################################
-#BUILD A CONTROLLER
+#DERIVE THE EQUATIONS OF MOTION
 ###############################################################################
 # Constants of the system
 mp = 1.0
@@ -92,6 +92,10 @@ sys = Matrix([soln[Derivative(omega_theta(t), t)],
               omega_theta(t),
               omega_phi(t)])
 
+
+###############################################################################
+#BUILD A CONTROLLER
+###############################################################################
 # Choose an equilibrium point
 omega_theta_e = 0.0
 omega_phi_e = 0.0
@@ -197,6 +201,7 @@ def manual_controller(**kwargs):
     # Return the manually set torque
     return torque
     
+
 ###############################################################################
 #BUILD THE SIMULATOR ENVIRONMENT
 ###############################################################################

@@ -6,7 +6,31 @@ import condynsate
 
 
 ###############################################################################
-#MAIN LOOP
+#BUILD A CONTROLLER
+###############################################################################
+def manual_controller(**kwargs):
+    # Get the simulator
+    sim = kwargs['sim']
+    
+    # Set the torque to min
+    torque = 0.0
+    
+    # Listen for keyboard presses:
+    if sim.is_pressed('d'):
+        torque = torque + 0.125
+    if sim.is_pressed('shift+d'):
+        torque = torque + 0.5
+    if sim.is_pressed('a'):
+        torque = torque - 0.125
+    if sim.is_pressed('shift+a'):
+        torque = torque - 0.5
+
+    # Return the manually set torque
+    return torque
+
+
+###############################################################################
+#BUILD THE SIMULATOR ENVIRONMENT
 ###############################################################################
 # Create an instance of the simulator with visualization
 sim = condynsate.Simulator(visualization=True,
@@ -31,36 +55,16 @@ cmg_obj = sim.load_urdf(urdf_path='./cmg_vis/cmg.urdf',
                         fixed=True,
                         update_vis=True)
 
-# Set joint damping
-sim.set_joint_damping(urdf_obj=cmg_obj,
-                      joint_name="world_to_outer",
-                      damping=0.01)
-sim.set_joint_damping(urdf_obj=cmg_obj,
-                      joint_name="outer_to_inner",
-                      damping=0.01)
-
-# Variables to track applied torque
-max_torque = 0.5
-min_torque = -0.5
-
-# Variables to track mass
-max_mass = 2.0
-min_mass = 0.0
-mass = 0.5*(max_mass + min_mass)
-
-# Variables to track wheel velocity
-max_vel = 100.0
-min_vel = 0.0
-vel = 0.5 * (max_vel + min_vel)
-
-# Create desired plots then open the animator
-plot, lines = sim.add_subplot(n_lines=1,
-                              title="Phase Space",
-                              x_label="θ [Rad]",
-                              y_label="L $[Kg•m^{2}•s^{-1}]$",
-                              colors=["r"],
-                              line_widths=[2.5],
-                              tail=800)
+# Make plot for phase space
+plot1, artists1 = sim.add_subplot(n_artists=1,
+                                  subplot_type='line',
+                                  title="Phasespace",
+                                  x_label="Momentum $[Kg•m•s^{-1}]$",
+                                  y_label="Rate $[Kg•m•s^{-2}]$",
+                                  colors=["m"],
+                                  line_widths=[2.5],
+                                  line_styles=["-"],
+                                  tail=750)
 sim.open_animator_gui()
 
 # Wait for user input

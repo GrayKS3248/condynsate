@@ -2594,6 +2594,8 @@ class Simulator:
                     y_label=None,
                     x_lim=[None, None],
                     y_lim=[None, None],
+                    h_zero_line=False,
+                    v_zero_line=False,
                     colors=None,
                     labels=None,
                     line_widths=None,
@@ -2632,6 +2634,12 @@ class Simulator:
             bound of the axis. For example [None, 10.] will fix the upper
             bound to exactly 10, but the lower bound will freely change to
             show all data.The default is [None, None].
+        h_zero_line : boolean, optional
+            A boolean flag that indicates whether a horizontal line will be
+            drawn on the y=0 line. The default is false
+        v_zero_line : boolean, optional
+            A boolean flag that indicates whether a vertical line will be
+            drawn on the x=0 line. The default is false
         colors : list of matplotlib color string, optional
             A list of the color each artist draws in. Must have length
             n_artists. If n_artists = 1, has the form ['COLOR']. When None,
@@ -2683,7 +2691,6 @@ class Simulator:
             A tuple of integer identifiers that are unique to the artist
             created. This allows future interaction with these artists (adding
             data points, etc.).
-
         """
         # If there is no animator, do not attempt to add a plot to it
         if not isinstance(self.ani, Animator):
@@ -2699,6 +2706,8 @@ class Simulator:
                                       labels=labels,
                                       x_lim=x_lim,
                                       y_lim=y_lim,
+                                      h_zero_line=h_zero_line,
+                                      v_zero_line=v_zero_line,
                                       line_widths=line_widths,
                                       line_styles=line_styles,
                                       tail=tail)

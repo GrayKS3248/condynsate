@@ -41,6 +41,9 @@ class Animator():
         self.types = []
         self.tails = []
         self.artists = []
+        self.n_plots = 0
+        self.h_zero_line = []
+        self.v_zero_line = []
         
         # Plot labels
         self.titles = []
@@ -48,7 +51,7 @@ class Animator():
         self.y_labels = []
         self.labels = []
         
-        # Line drawing parameters
+        # Artist parameters
         self.colors = []
         self.line_widths = []
         self.line_styles = []
@@ -67,7 +70,6 @@ class Animator():
         # Frame rate data
         self.fr = fr
         self.last_step_time = 0.0
-        self.n_plots = 0
     
     
     ###########################################################################
@@ -120,6 +122,8 @@ class Animator():
                     y_label=None,
                     x_lim=[None, None],
                     y_lim=[None, None],
+                    h_zero_line=False,
+                    v_zero_line=False,
                     colors=None,
                     labels=None,
                     line_widths=None,
@@ -158,6 +162,12 @@ class Animator():
             bound of the axis. For example [None, 10.] will fix the upper
             bound to exactly 10, but the lower bound will freely change to
             show all data.The default is [None, None].
+        h_zero_line : boolean, optional
+            A boolean flag that indicates whether a horizontal line will be
+            drawn on the y=0 line. The default is false
+        v_zero_line : boolean, optional
+            A boolean flag that indicates whether a vertical line will be
+            drawn on the x=0 line. The default is false
         colors : list of matplotlib color string, optional
             A list of the color each artist draws in. Must have length
             n_artists. If n_artists = 1, has the form ['COLOR']. When None,
@@ -239,6 +249,8 @@ class Animator():
         self.x_labels.append(x_label)
         self.y_labels.append(y_label)
         self.labels.append(labels)
+        self.h_zero_line.append(h_zero_line)
+        self.v_zero_line.append(v_zero_line)
         
         # Store line drawing parameters
         self.colors.append(colors)
@@ -325,7 +337,7 @@ class Animator():
 
         """
         # Get the length of all plot parameters
-        lens = np.zeros(18)
+        lens = np.zeros(20)
         lens[0] = len(self.xs)
         lens[1] = len(self.ys)
         lens[2] = len(self.types)
@@ -344,6 +356,8 @@ class Animator():
         lens[15] = len(self.fixed_y_plot_lims)
         lens[16] = len(self.x_plot_lims)
         lens[17] = len(self.y_plot_lims)
+        lens[18] = len(self.h_zero_line)
+        lens[19] = len(self.v_zero_line)
         
         # Make sure each plot has a full set of parameters
         check_val = lens[0]
@@ -506,7 +520,9 @@ class Animator():
                         x_label,
                         y_label,
                         x_plot_lim,
-                        y_plot_lim):
+                        y_plot_lim,
+                        h_zero_line,
+                        v_zero_line):
         """
         Creates a single subplot and sets axis artist setting. Subsequently 
         renders axis artis updates. Does not update GUI.
@@ -530,7 +546,13 @@ class Animator():
         y_plot_lim : [float, float]
             The limits to apply to the y axis of the plots. A value of None
             will apply automatically updating limits to that bound of the axis.
-
+        h_zero_line : boolean
+            A boolean flag that indicates whether a horizontal line will be
+            drawn on the y=0 line.
+        v_zero_line : boolean
+            A boolean flag that indicates whether a vertical line will be
+            drawn on the x=0 line.
+            
         Returns
         -------
         None.
@@ -551,6 +573,12 @@ class Animator():
         if y_plot_lim != [None, None]:
             axis.set_ylim(y_plot_lim[0],
                           y_plot_lim[1])
+        
+        # Add the zero lines
+        if h_zero_line:
+            axis.axhline(y=0, xmin=0, xmax=1, alpha=0.75, lw=0.75, c='k')
+        if v_zero_line:
+            axis.axvline(x=0, ymin=0, ymax=1, alpha=0.75, lw=0.75, c='k')
             
             
     def _get_artist_params(self,
@@ -785,6 +813,8 @@ class Animator():
             x_label = self.x_labels[subplot_index]
             y_label = self.y_labels[subplot_index]
             plt_type = self.types[subplot_index]
+            h_zero_line = self.h_zero_line[subplot_index]
+            v_zero_line = self.v_zero_line[subplot_index]
             
             # Retrieve the limit data
             self._update_limits(subplot_index)
@@ -797,7 +827,9 @@ class Animator():
                                  x_label=x_label,
                                  y_label=y_label,
                                  x_plot_lim=x_plot_lim,
-                                 y_plot_lim=y_plot_lim)
+                                 y_plot_lim=y_plot_lim,
+                                 h_zero_line=h_zero_line,
+                                 v_zero_line=v_zero_line)
             
             # Create line artists for subplot
             if plt_type == 'line':

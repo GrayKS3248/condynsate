@@ -5,7 +5,7 @@ import condynsate
 
 
 ###############################################################################
-#DESIGN YOUR CONTROLLER
+#BUILD A CONTROLLER
 ###############################################################################
 # This is the section where you make a controller.
 # Take the information collected by the sensors and somehow calculate
@@ -34,7 +34,7 @@ def controller(**kwargs):
 
 
 ###############################################################################
-#BUILD THE SIMULATOR AND ANIMATOR
+#BUILD THE SIMULATOR ENVIRONMENT
 ###############################################################################
 # Create an instance of the simulator with visualization
 sim = condynsate.Simulator(visualization=True,

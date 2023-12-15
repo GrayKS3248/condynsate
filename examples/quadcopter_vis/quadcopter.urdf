@@ -243,7 +243,7 @@
     <parent link="spar1"/>
     <child link="rotor1"/>
     <origin xyz="0 0.0875 -0.375" rpy="1.5707963267948966 0 3.141592653589793"/>
-    <axis xyz="0.0 0.0 1.0"/>
+    <axis xyz="0.0 0.0 -1.0"/>
   </joint>
   
   <joint name="spar2_to_rotor2" type="continuous">
@@ -257,7 +257,7 @@
     <parent link="spar3"/>
     <child link="rotor3"/>
     <origin xyz="0 0.0875 0.375" rpy="1.5707963267948966 0 3.141592653589793"/>
-    <axis xyz="0.0 0.0 1.0"/>
+    <axis xyz="0.0 0.0 -1.0"/>
   </joint>
   
   <joint name="spar4_to_rotor4" type="continuous">
