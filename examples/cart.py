@@ -236,28 +236,26 @@ plot1, artists1 = sim.add_subplot(n_artists=2,
                                   colors=["m", "c"],
                                   line_widths=[2.5, 2.5],
                                   line_styles=["-", "-"],
-                                  labels=["Pendulum [Deg]", "Wheel [Rad]"])
+                                  labels=["Pendulum [Deg]", "Wheel [Rad]"],
+                                  h_zero_line=True)
 plot2, artists2 = sim.add_subplot(n_artists=1,
                                   subplot_type='line',
                                   title="Torque vs Time",
                                   x_label="Time [Seconds]",
                                   y_label="Torque [Nm]",
                                   y_lim=[-5.,5.],
-                                  colors=["r"],
+                                  colors=["k"],
                                   line_widths=[2.5],
-                                  line_styles=["-"])
+                                  line_styles=["-"],
+                                  h_zero_line=True)
 
 # Give the pendulum an initial angle and speed
 initial_angle = 0.25
 initial_speed = 0.0
-
-# Set the initial angle
 sim.set_joint_position(urdf_obj=cart_obj,
                         joint_name='chassis_to_arm',
                         position=initial_angle,
                         initial_cond=True)
-
-# Set the initial velocity
 sim.set_joint_velocity(urdf_obj=cart_obj,
                         joint_name='chassis_to_arm',
                         velocity=initial_speed,

@@ -13,8 +13,8 @@ from sympy import diff, sin, cos, solve
 ###############################################################################
 # Constants of the system
 mp = 0.5
-ixx = 0.0198484375
-izz = 0.0153125
+ixx = 0.03
+izz = 0.04
 l = 1.5
 g = 9.81
 omega = 100.0
@@ -119,11 +119,11 @@ B = B_jac.subs({omega_theta(t) : omega_theta_e,
 # Define our state and input weights:
 Q = np.eye(4)
 Q[0,0] = 1.
-Q[1,1] = 1.
-Q[2,2] = 1.
-Q[3,3] = 1.
+Q[1,1] = 2.
+Q[2,2] = 5.
+Q[3,3] = 10.
 R = np.eye(1)
-R[0,0] = 1.
+R[0,0] = 10.
 
 # Get the control gains
 K, X, E = control.lqr(A, B, Q, R)
@@ -205,40 +205,49 @@ cmg_obj = sim.load_urdf(urdf_path='./cmg_vis/cmg.urdf',
                         fixed=True,
                         update_vis=True)
 
-# Apply damping to pendulum
-sim.set_joint_damping(urdf_obj=cmg_obj,
-                      joint_name='wall_to_frame_axle',
-                      damping=0.1)
-
-# Set the parameters (mass and wheel rate)
-sim.set_link_mass(urdf_obj=cmg_obj,
-                  link_name='mass',
-                  mass = mp)
+# Set the wheel rate and pendulum damping
 sim.set_joint_velocity(urdf_obj=cmg_obj,
                         joint_name='cage_to_wheel',
                         velocity = omega,
                         initial_cond=True)
-
-# Set initial frame angle and rate
-sim.set_joint_position(urdf_obj=cmg_obj,
-                        joint_name='wall_to_frame_axle',
-                        position = np.pi/11.0,
-                        initial_cond=True)
-sim.set_joint_velocity(urdf_obj=cmg_obj,
-                        joint_name='wall_to_frame_axle',
-                        velocity = 0.0,
-                        initial_cond=True)
+sim.set_joint_damping(urdf_obj=cmg_obj,
+                      joint_name='wall_to_frame_axle',
+                      damping=0.1)
 
 # Make plot for phase space
 plot1, artists1 = sim.add_subplot(n_artists=2,
                                   subplot_type='line',
-                                  title="Angles",
+                                  title="State",
                                   x_label="Time [s]",
-                                  y_label="Angles [Rad]",
+                                  y_label="Angles [Deg]",
                                   colors=["m", "c"],
                                   line_widths=[2.5, 2.5],
                                   line_styles=["-", "-"],
-                                  labels=['Pendulum', 'Cage'])
+                                  labels=['Pendulum', 'Cage'],
+                                  y_lim=[-90.,90],
+                                  h_zero_line=True)
+plot2, artists2 = sim.add_subplot(n_artists=1,
+                                  subplot_type='line',
+                                  title="Input",
+                                  x_label="Time [s]",
+                                  y_label="Torque [Nm]",
+                                  colors=["k"],
+                                  line_widths=[2.5],
+                                  line_styles=["-"],
+                                  y_lim=[-1.,1.],
+                                  h_zero_line=True)
+
+# Set initial frame angle and rate
+initial_frame_angle = np.pi/12.0
+initial_frame_rate = 0.0
+sim.set_joint_position(urdf_obj=cmg_obj,
+                        joint_name='wall_to_frame_axle',
+                        position = initial_frame_angle,
+                        initial_cond=True)
+sim.set_joint_velocity(urdf_obj=cmg_obj,
+                        joint_name='wall_to_frame_axle',
+                        velocity = initial_frame_rate,
+                        initial_cond=True)
 
 
 ###############################################################################
@@ -290,11 +299,15 @@ while(not sim.is_done):
     sim.add_subplot_point(subplot_index=plot1,
                           artist_index=artists1[0],
                           x=sim.time,
-                          y=frame_angle)
+                          y=frame_angle*180/np.pi)
     sim.add_subplot_point(subplot_index=plot1,
                           artist_index=artists1[1],
                           x=sim.time,
-                          y=cage_angle)
+                          y=cage_angle*180/np.pi)
+    sim.add_subplot_point(subplot_index=plot2,
+                          artist_index=artists2[0],
+                          x=sim.time,
+                          y=torque)
     
     ###########################################################################
     # STEP THE SIMULATION
