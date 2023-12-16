@@ -2845,6 +2845,13 @@ class Simulator:
         None.
 
         """
+        # Update the visualizer if it exists
+        if isinstance(self.vis, Visualizer):
+            for urdf_obj in self.urdf_objs:
+                if urdf_obj.update_vis:
+                    self._update_urdf_visual(urdf_obj)
+                    
+        # Tell user what to do
         print("PRESS "+key.upper()+" TO START SIMULATION.")
         print("PRESS ESC TO QUIT.")
         print("PRESS SPACE TO PAUSE/RESUME SIMULATION.")
@@ -2853,6 +2860,10 @@ class Simulator:
             # Ensure so the GUI remains interactive if simulation is suspended
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()
+                
+            # Termination condition
+            if self.is_pressed("esc"):
+                self.is_done = True
         
         # Note that the simulation is started
         print("CONTINUING...")

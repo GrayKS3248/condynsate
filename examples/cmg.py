@@ -3,11 +3,171 @@
 ###############################################################################
 import numpy as np
 import condynsate
+import control
+from sympy import Symbol, Matrix, Function, Derivative
+from sympy import diff, sin, cos, solve
+
+
+###############################################################################
+#DERIVE THE EQUATIONS OF MOTION
+###############################################################################
+# Constants of the system
+mp = 0.5
+ixx = 0.0198484375
+izz = 0.0153125
+l = 1.5
+g = 9.81
+omega = 100.0
+
+# Time is a symbol (variable)
+t = Symbol('t')
+
+# The generalized coordinates and the input torque are both functions of time.
+# This means that they are initialized as Functions.
+theta = Function('theta')
+phi = Function('phi')
+tau = Function('tau')
+
+# Get the kinetic and potential energy of the mass
+pos = Matrix([-l*sin(theta(t)),
+              0.0,
+              l*cos(theta(t))])
+vel = diff(pos,t)
+mass_KE = 0.5 * mp * (vel.T @ vel)[0,0]
+mass_PE = mp*g*l*cos(theta(t))
+
+# Get the rotational energy of the wheel
+wheel_rate = Matrix([Derivative(phi(t), t),
+                     Derivative(theta(t), t)*cos(phi(t)),
+                     omega - Derivative(theta(t), t)*sin(phi(t))])
+I = Matrix([[ixx, 0.0, 0.0],
+            [0.0, ixx, 0.0],
+            [0.0, 0.0, izz]])
+wheel_RE = (0.5 * (wheel_rate.T @ I @ wheel_rate))[0, 0]
+
+# Get the lagrangian
+L = (mass_KE + wheel_RE) - mass_PE
+
+# Get the equations of motion
+eq1 = diff(diff(L, Derivative(theta(t), t)), t) - diff(L, theta(t))
+eq2 = diff(diff(L, Derivative(phi(t), t)), t) - diff(L, phi(t)) - tau(t)
+
+# Make the new functions for change of variables
+omega_theta = Function('omega_theta')
+omega_phi = Function('omega_phi')
+
+# Make the change of variables
+eq1 = eq1.subs({Derivative(theta(t), (t, 2)) : Derivative(omega_theta(t), t), 
+                Derivative(phi(t), (t, 2))   : Derivative(omega_phi(t), t),
+                Derivative(theta(t), t)      : omega_theta(t),
+                Derivative(phi(t), t)        : omega_phi(t)})
+eq2 = eq2.subs({Derivative(theta(t), (t, 2)) : Derivative(omega_theta(t), t), 
+                Derivative(phi(t), (t, 2))   : Derivative(omega_phi(t), t),
+                Derivative(theta(t), t)      : omega_theta(t),
+                Derivative(phi(t), t)        : omega_phi(t)})
+
+# Solve the equations for Derivative(omega_theta(t), t) and 
+# Derivative(omega_phi(t), t)
+soln = solve([eq1, eq2],
+              Derivative(omega_theta(t), t),
+              Derivative(omega_phi(t), t))
+
+# Build the equations of motion vector
+sys = Matrix([soln[Derivative(omega_theta(t), t)],
+              soln[Derivative(omega_phi(t), t)],
+              omega_theta(t),
+              omega_phi(t)])
 
 
 ###############################################################################
 #BUILD A CONTROLLER
 ###############################################################################
+# Choose an equilibrium point
+omega_theta_e = 0.0
+omega_phi_e = 0.0
+theta_e = 0.0
+phi_e = 0.0
+tau_e = 0.0
+
+# Take the state jacobian (all the partial derivatives of state variables)
+# of the equations of motion vector
+x = Matrix([omega_theta(t),
+            omega_phi(t),
+            theta(t),
+            phi(t)])
+A_jac = sys.jacobian(x)
+
+# Evaluate the state jacobian at the equilibrium point
+A = A_jac.subs({omega_theta(t) : omega_theta_e, 
+                omega_phi(t)   : omega_phi_e,
+                theta(t)       : theta_e,
+                phi(t)         : phi_e,
+                tau(t)         : tau_e})
+
+# Take the input jacobian (all the partial derivatives of input variables)
+# of the equations of motion vector
+u = Matrix([tau(t)])
+B_jac = sys.jacobian(u)
+
+# Evaluate the input jacobian at the equilibrium point
+B = B_jac.subs({omega_theta(t) : omega_theta_e, 
+                omega_phi(t)   : omega_phi_e,
+                theta(t)       : theta_e,
+                phi(t)         : phi_e,
+                tau(t)         : tau_e})
+
+# Define our state and input weights:
+Q = np.eye(4)
+Q[0,0] = 1.
+Q[1,1] = 1.
+Q[2,2] = 1.
+Q[3,3] = 1.
+R = np.eye(1)
+R[0,0] = 1.
+
+# Get the control gains
+K, X, E = control.lqr(A, B, Q, R)
+
+# Make the controller
+def controller(**kwargs):
+    # Gather the states measured via sensors
+    omega_theta = kwargs['frame_rate']
+    omega_phi = kwargs['cage_rate']
+    theta = kwargs['frame_angle']
+    phi = kwargs['cage_angle']
+
+    # Gather the equilibrium state values
+    omega_theta_e = kwargs['equil_frame_rate']
+    omega_phi_e = kwargs['equil_cage_rate']
+    theta_e = kwargs['equil_frame_angle']
+    phi_e = kwargs['equil_cage_angle']
+    tau_e = kwargs['equil_torque']
+
+    # Gather the gains
+    K = kwargs['gains']
+
+    # Build the state vector
+    x = np.array([omega_theta - omega_theta_e,
+                  omega_phi - omega_phi_e,
+                  theta - theta_e,
+                  phi - phi_e])
+
+    # Apply the gains using the formula u = -Kx
+    u = -K@x
+
+    # Convert the input vector to real inputs
+    tau = u[0] + tau_e
+
+    # Limit the torque to between -0.5 and 0.5 Nm
+    if tau > 1.0:
+        tau = 1.0
+    elif tau < -1.0:
+        tau = -1.0
+
+    # Return the controller calculated torque
+    return tau
+
+# Make a manual controller
 def manual_controller(**kwargs):
     # Get the simulator
     sim = kwargs['sim']
@@ -37,124 +197,108 @@ sim = condynsate.Simulator(visualization=True,
                            animation=True,
                            animation_fr=15.)
 
-# Load urdf objects
-ground_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
-                           tex_path='./cmg_vis/check.png',
-                           position=[0., 0., -3.],
-                           fixed=True,
-                           update_vis=False)
-wall_obj = sim.load_urdf(urdf_path='./cmg_vis/plane.urdf',
-                         tex_path='./cmg_vis/concrete.png',
-                         roll=0.5*np.pi,
-                         yaw=np.pi,
-                         fixed=True,
-                         update_vis=False)
+# # Load urdf objects
 cmg_obj = sim.load_urdf(urdf_path='./cmg_vis/cmg.urdf',
-                        position=[0., 1.1, 0.],
-                        pitch=-0.5*np.pi,
+                        roll=np.pi/2,
+                        yaw=3*np.pi/4.,
+                        pitch=np.pi,
                         fixed=True,
                         update_vis=True)
 
 # Apply damping to pendulum
 sim.set_joint_damping(urdf_obj=cmg_obj,
-                      joint_name='world_to_frame',
-                      damping=0.3)
+                      joint_name='wall_to_frame_axle',
+                      damping=0.1)
+
+# Set the parameters (mass and wheel rate)
+sim.set_link_mass(urdf_obj=cmg_obj,
+                  link_name='mass',
+                  mass = mp)
+sim.set_joint_velocity(urdf_obj=cmg_obj,
+                        joint_name='cage_to_wheel',
+                        velocity = omega,
+                        initial_cond=True)
+
+# Set initial frame angle and rate
+sim.set_joint_position(urdf_obj=cmg_obj,
+                        joint_name='wall_to_frame_axle',
+                        position = np.pi/11.0,
+                        initial_cond=True)
+sim.set_joint_velocity(urdf_obj=cmg_obj,
+                        joint_name='wall_to_frame_axle',
+                        velocity = 0.0,
+                        initial_cond=True)
 
 # Make plot for phase space
-plot1, artists1 = sim.add_subplot(n_artists=1,
+plot1, artists1 = sim.add_subplot(n_artists=2,
                                   subplot_type='line',
-                                  title="Phasespace",
-                                  x_label="Rate $[Rad-s^{-1}]$",
-                                  y_label="Angle $[Rad]$",
-                                  colors=["m"],
-                                  line_widths=[2.5],
-                                  line_styles=["-"],
-                                  h_zero_line=True,
-                                  v_zero_line=True,
-                                  tail=800)
+                                  title="Angles",
+                                  x_label="Time [s]",
+                                  y_label="Angles [Rad]",
+                                  colors=["m", "c"],
+                                  line_widths=[2.5, 2.5],
+                                  line_styles=["-", "-"],
+                                  labels=['Pendulum', 'Cage'])
+
 
 ###############################################################################
 #SIMULATION LOOP
 ###############################################################################
 # Run the simulation
-mass = 1.0
-min_mass = 0.0
-max_mass = 5.0
-wheel_vel = 0.0
-min_wheel_vel = 0.0
-max_wheel_vel = 100.
 sim.open_animator_gui()
 sim.await_keypress(key="enter")
 while(not sim.is_done):    
     ###########################################################################
     # SENSOR
-    # Get the pendulum angle
-    state = sim.get_joint_state(urdf_obj=cmg_obj,
-                                joint_name="world_to_frame")
-    angle = state['position']
-    angle_vel = state['velocity']
+    # Get the frame angle and rate
+    frame_state = sim.get_joint_state(urdf_obj=cmg_obj,
+                                joint_name="wall_to_frame_axle")
+    frame_angle = frame_state['position']
+    frame_rate = frame_state['velocity']
+    
+    # Get the cage angle and rate
+    cage_state = sim.get_joint_state(urdf_obj=cmg_obj,
+                                joint_name="frame_to_cage_axle")
+    cage_angle = cage_state['position']
+    cage_rate = cage_state['velocity']
     
     ###########################################################################
     # CONTROLLER
-    torque =  manual_controller(sim=sim)
+    torque =  controller(frame_angle=frame_angle,
+                          frame_rate=frame_rate,
+                          cage_angle=cage_angle,
+                          cage_rate=cage_rate,
+                          equil_frame_angle=theta_e,
+                          equil_frame_rate=omega_theta_e,
+                          equil_cage_angle=phi_e,
+                          equil_cage_rate=omega_phi_e,
+                          equil_torque=tau_e,
+                          gains=K)
+    # torque =  manual_controller(sim=sim)
 
     ###########################################################################
     # ACTUATOR
     # Set the CMG wheel torque
     sim.set_joint_torque(urdf_obj=cmg_obj,
-                         joint_name="frame_to_cage",
-                         torque=torque,
-                         color=True,
-                         min_torque=-0.5,
-                         max_torque=0.5)
+                          joint_name="frame_to_cage_axle",
+                          torque=torque,
+                          show_arrow=True,
+                          arrow_scale=1.)
     
     ###########################################################################
     # UPDATE THE PLOT
     sim.add_subplot_point(subplot_index=plot1,
                           artist_index=artists1[0],
-                          x=angle_vel,
-                          y=angle)
-    
-    ###########################################################################
-    # SET THE VARIABLE SIMULATION PARAMETERS
-    # Set the ball mass
-    sim.set_link_mass(urdf_obj=cmg_obj,
-                      link_name='mass',
-                      mass = mass,
-                      color=True,
-                      min_mass=min_mass,
-                      max_mass=max_mass)
-    
-    # Set the wheel velocity
-    sim.set_joint_velocity(urdf_obj=cmg_obj,
-                           joint_name='cage_to_wheel',
-                           velocity = wheel_vel,
-                           physics=False,
-                           color=True,
-                           min_vel=min_wheel_vel,
-                           max_vel=max_wheel_vel)
-    
-    ###########################################################################
-    # UI TO CHANGE MASS AND WHEEL VELOCITY
-    # Update the mass
-    mass = sim.iterate_val(curr_val=mass,
-                           down_key='q',
-                           up_key='e',
-                           iter_val=0.05,
-                           min_val=min_mass,
-                           max_val=max_mass)
-    
-    # Update the wheel vel
-    wheel_vel = sim.iterate_val(curr_val=wheel_vel,
-                                down_key='s',
-                                up_key='w',
-                                iter_val=0.5,
-                                min_val=min_wheel_vel,
-                                max_val=max_wheel_vel)
+                          x=sim.time,
+                          y=frame_angle)
+    sim.add_subplot_point(subplot_index=plot1,
+                          artist_index=artists1[1],
+                          x=sim.time,
+                          y=cage_angle)
     
     ###########################################################################
     # STEP THE SIMULATION
     sim.step(real_time=True,
-             update_vis=True,
-             update_ani=True)
+              update_vis=True,
+              update_ani=True)
             

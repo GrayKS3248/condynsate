@@ -19,13 +19,6 @@ l = 1.0
 r = 0.25
 g = 9.81
 
-# Equilibrium
-omega_theta_e = 0.0
-omega_phi_e = 0.0
-theta_e = 0.0
-phi_e = 0.0
-tau_e = 0.0
-
 # Time is a symbol (variable)
 t = Symbol('t')
 
