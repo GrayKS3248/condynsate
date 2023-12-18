@@ -5,7 +5,7 @@
  [condynsate](https://github.com/GrayKS3248/condynsate) is a dynamic system simulation and visualization tool built with [PyBullet](https://pybullet.org/wordpress/) and [MeshCat](https://github.com/meshcat-dev/meshcat-python). It automatically simulates multiple objects and their interactions as described by [.urdf](http://wiki.ros.org/urdf), [.stl](https://en.wikipedia.org/wiki/STL_(file_format)), and [.obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) files and can render real time visualizations in a web browser.
 
 ## Windows Installation
-#### 1. Install Git for Windows (optional)
+#### 1. Install Git for Windows
 If you do not have git already installed, download the most recent git installer for windows 64 from the [git-scm website](https://git-scm.com/download/win) or just click [here](https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Git-VERSION-64-bit and will be in your default downloads folder C:\Users\USER NAME\Downloads. Once the wizard is running, click **next**.
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_1.png?raw=true" alt="git_1" width="495" height="375"/>
@@ -131,6 +131,68 @@ You should get a response that lists the version of Miniconda you just installed
 
 Miniconda is now installed on your machine.
 
-## Usage
+#### 2. Install Condynsate in a Miniconda virtual environment
+To install condynsate in a Miniconda virtual environment, open **Anaconda Prompt (Miniconda3)** and type
+```
+conda create -n condynsate python==3.10
+```
+Press enter.
 
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_1.png?raw=true" alt="condynsate_1" width="495" height="375"/>
+
+When prompted, type 
+```
+y
+```
+then press enter.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_2.png?raw=true" alt="condynsate_2" width="495" height="375"/>
+
+When complete, type
+```
+conda activate condynsate
+```
+then press enter.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_3.png?raw=true" alt="condynsate_3" width="495" height="375"/>
+
+You can confirm the virtual environment is activated when 
+```
+(base)
+```
+changes to 
+```
+(condynsate)
+```
+at the begining of the prompt line. Once the virtual environment is activated, type
+```
+pip install condynsate[edu]
+```
+and press enter. This installs condynsate and some other optional dependencies that are helpful when using condynsate.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_4.png?raw=true" alt="condynsate_4" width="495" height="375"/>
+
+Once the installation is complete, you can confirm that condynsate has been successfully installed and the virtual environment is set up correctly by typing
+```
+python
+```
+and pressing enter. This starts a Python shell in your Anaconda prompt. Next type
+```
+import condynsate
+```
+and press enter. Finally type
+```
+condynsate.__version__
+```
+and press enter. If condynsate is installed correctly, the current version will be shown.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_5.png?raw=true" alt="condynsate_5" width="495" height="375"/>
+
+Condynsate is now installed on your machine. You may type 
+```
+quit()
+```
+to quit the Python shell and exit out of the Anaconda prompt.
+
+## Usage
 For examples of usage, see [examples](https://github.com/GrayKS3248/condynsate/tree/main/examples).
