@@ -38,13 +38,17 @@ dependencies = [
     "pybullet >= 3.2.5",
     "meshcat >= 0.3.2",
     "PyQt5 >= 5.15.10",
-    "control >= 0.9.4",
-    "sympy >= 1.12",
+
 ]
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
-dev = []
+edu = [    
+    "control >= 0.9.4",
+    "sympy >= 1.12",
+    "spyder >= 5.5.0",
+    "notebook >= 7.0.6",
+]
 
 [project.urls]
 Homepage = "https://github.com/GrayKS3248/condynsate"
