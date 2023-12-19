@@ -58,6 +58,26 @@ Make sure nothing is checked then click **install**
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_13.png?raw=true" alt="git_13" width="495" height="375"/>
 
+Click **finish**
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_14.png?raw=true" alt="git_14" width="495" height="375"/>
+
+Navigate to **C:\Program Files\Git** in your file explorer.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_15.png?raw=true" alt="git_15" width="495" height="375"/>
+
+To create a desktop shortcut to git-cmd (the application that will be used to pull and push git repositories), right click on **git-cmd**, navigate to **Send to**, then click **Desktop (create shortcut)**
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_16.png?raw=true" alt="git_16" width="495" height="375"/>
+
+To verify that git is installed properly, open **git-cmd** and type 
+```
+Git --version
+```
+You should get a response that lists the version of Git you just installed.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_17.png?raw=true" alt="git_17" width="495" height="375"/>
+
 #### 2. Install Miniconda for windows
 
 From source:
