@@ -26,6 +26,13 @@ Select **Use Git from Git Bash only** then click **next**.
 
 ![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_5.png?raw=true)
 
+Select **Use bundled OpenSSH** then click **next**
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_6.png?raw=true" alt="git_6" width="200" height="200"/>
+
+![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_6.png?raw=true)
+
+
 #### 2. Install Miniconda for windows
 
 From source:
