@@ -8,29 +8,27 @@
 #### 1. Install Git for windows (optional)
 If you do not have git already installed, download the most recent git installer for windows 64 from the [git-scm website](https://git-scm.com/download/win) or just click [here](https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Git-VERSION-64-bit and will be in your default downloads folder C:\Users\USER NAME\Downloads. Once the wizard is running, click **next**.
 
-![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_1.png?raw=true)
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_1.png?raw=true" alt="git_1" width="660" height="500"/>
 
 Click **next**.
 
-![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_2.png?raw=true)
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_2.png?raw=true" alt="git_2" width="660" height="500"/>
 
 Click **next**.
 
-![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_3.png?raw=true)
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_3.png?raw=true" alt="git_3" width="660" height="500"/>
 
 Click **next**.
 
-![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_4.png?raw=true)
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_4.png?raw=true" alt="git_4" width="660" height="500"/>
 
 Select **Use Git from Git Bash only** then click **next**.
 
-![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_5.png?raw=true)
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_5.png?raw=true" alt="git_5" width="660" height="500"/>
 
 Select **Use bundled OpenSSH** then click **next**
 
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_6.png?raw=true" alt="git_6" width="200" height="200"/>
-
-![alt text](https://github.com/GrayKS3248/condynsate/blob/main/images/git_6.png?raw=true)
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_6.png?raw=true" alt="git_6" width="660" height="500"/>
 
 
 #### 2. Install Miniconda for windows
