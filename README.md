@@ -6,7 +6,7 @@
 
 ## Windows Installation
 #### 1. Install Git for Windows
-If you do not have git already installed, download the most recent git installer for windows 64 from the [git-scm website](https://git-scm.com/download/win) or just click [here](https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Git-VERSION-64-bit and will be in your default downloads folder C:\Users\USER NAME\Downloads. Once the wizard is running, click **next**.
+If you do not have Git already installed, download the most recent Git installer for Windows 64 from the [git-scm website](https://git-scm.com/download/win) or just click [here](https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Git-VERSION-64-bit and will be in your default downloads folder C:\Users\USER NAME\Downloads. Once the wizard is running, click **next**.
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_1.png?raw=true" alt="git_1" width="495" height="375"/>
 
@@ -70,11 +70,11 @@ Navigate to **C:\Program Files\Git** in your file explorer.
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_16.png?raw=true" alt="git_16" width="495" height="375"/>
 
-To create a desktop shortcut to git-cmd (the application that will be used to pull and push git repositories), right click on **git-cmd**, navigate to **Send to**, then click **Desktop (create shortcut)**.
+To create a desktop shortcut to git-cmd (the application that will be used to pull and push Git repositories), right click on **git-cmd**, navigate to **Send to**, then click **Desktop (create shortcut)**.
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_17.png?raw=true" alt="git_17" width="495" height="375"/>
 
-To verify that git is installed properly, open **git-cmd** and type 
+To verify that Git is installed properly, open **git-cmd** and type 
 ```
 Git --version
 ```
@@ -85,7 +85,7 @@ You should get a response that lists the version of Git you just installed.
 Git is now installed on your machine.
 
 #### 2. Install Miniconda for Windows
-If you do not have miniconda already installed, download the most recent miniconda installer for windows 64 from the [miniconda website](https://docs.conda.io/projects/miniconda/en/latest/) or just click [here](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Miniconda3-latest-Windows-x86_64 and will be in your default downloads folder C:\Users\USER NAME\Downloads. Once the wizard is running, click **next**.
+If you do not have Miniconda already installed, download the most recent Miniconda installer for Windows 64 from the [miniconda website](https://docs.conda.io/projects/miniconda/en/latest/) or just click [here](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Miniconda3-latest-Windows-x86_64 and will be in your default downloads folder C:\Users\USER NAME\Downloads. Once the wizard is running, click **next**.
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/conda_1.png?raw=true" alt="conda_1" width="495" height="375"/>
 
@@ -121,7 +121,7 @@ To create a desktop shortcut to Anaconda Prompt (the application that will be us
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/conda_9.png?raw=true" alt="conda_9" width="495" height="375"/>
 
-To verify that git is installed properly, open **Anaconda Prompt (Miniconda3)** and type 
+To verify that Miniconda is installed properly, open **Anaconda Prompt (Miniconda3)** and type 
 ```
 conda --version
 ```
@@ -193,6 +193,64 @@ Condynsate is now installed on your machine. You may type
 quit()
 ```
 to quit the Python shell and exit out of the Anaconda prompt.
+
+## Linux Installation
+#### 1. Install Miniconda for Linux
+If you do not have Miniconda already installed, these four commands quickly and quietly install the latest 64-bit version of the installer and then clean up after themselves. 
+```
+mkdir -p ~/miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
+bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
+rm -rf ~/miniconda3/miniconda.sh
+```
+
+After installing, initialize your newly-installed Miniconda. 
+```
+~/miniconda3/bin/conda init bash
+```
+
+To verify that Miniconda is installed properly, open **Anaconda Prompt (Miniconda3)** and type 
+```
+conda --version
+```
+
+You should get a response that lists the version of Miniconda you just installed.
+
+#### 2. Install Condynsate in a Miniconda virtual environment
+To install condynsate in a Miniconda virtual environment, open **Anaconda Prompt (Miniconda3)** and create a new virtual environment with python 3.10.
+```
+conda create -n condynsate python==3.10
+```
+
+When complete activate the new environment
+```
+conda activate condynsate
+```
+You can confirm the virtual environment is activated when 
+```
+(base)
+```
+changes to 
+```
+(condynsate)
+```
+
+Install condynsate with edu dependencies to the environment using the pip package manager: 
+```
+pip install condynsate[edu]
+```
+
+Once the installation is complete, you can confirm that condynsate has been successfully installed and the virtual environment is set up correctly by running the following three commands:
+```
+python
+import condynsate
+condynsate.__version__
+```
+If condynsate is installed correctly, the current version will be shown. Condynsate is now installed on your machine. You may type 
+```
+quit()
+```
+to quit the Python shell.
 
 ## Usage
 For examples of usage, see [examples](https://github.com/GrayKS3248/condynsate/tree/main/examples).
