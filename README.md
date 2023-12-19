@@ -117,7 +117,19 @@ Navigate to the Windows Start Menu folder located at **C:\Users\USER NAME\AppDat
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/conda_8.png?raw=true" alt="conda_8" width="495" height="375"/>
 
-To create a desktop shortcut to Anaconda Prompt (the application that will be used interact with Miniconda), right click on **Ana**, navigate to **Send to**, then click **Desktop (create shortcut)**.
+To create a desktop shortcut to Anaconda Prompt (the application that will be used interact with Miniconda), right click on **Anaconda Prompt (Miniconda3)**, navigate to **Send to**, then click **Desktop (create shortcut)**.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/conda_9.png?raw=true" alt="conda_9" width="495" height="375"/>
+
+To verify that git is installed properly, open **Anaconda Prompt (Miniconda3)** and type 
+```
+conda --version
+```
+You should get a response that lists the version of Git you just installed.
+
+<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/conda_10.png?raw=true" alt="conda_10" width="495" height="375"/>
+
+Miniconda is now installed on your machine.
 
 ## Usage
 
