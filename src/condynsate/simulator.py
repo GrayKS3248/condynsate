@@ -293,18 +293,17 @@ class Simulator:
         # Go through each joint and set friction and contact params
         for joint_name in joint_map:
             
-            # Set the joint's friction parameters to model metal to metal
-            # friction
+            # Set the joint's friction parameters to very sticky
             self.set_joint_friction_params(urdf_obj=urdf_obj,
                                            joint_name=joint_name,
-                                           lateral_friction=1.0,
+                                           lateral_friction=100.0,
                                            spinning_friction=0.0,
                                            rolling_friction=0.0)
             
             # Set the joint's contact parameters to model stiff metal contact
             self.set_joint_contact_params(urdf_obj=urdf_obj,
                                           joint_name=joint_name,
-                                          restitution=0.5,
+                                          restitution=0.0,
                                           contact_damping=-1.0,
                                           contact_stiffness=-1.0)
             

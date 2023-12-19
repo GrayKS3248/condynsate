@@ -248,6 +248,10 @@ sim.set_joint_velocity(urdf_obj=cmg_obj,
                         joint_name='wall_to_frame_axle',
                         velocity = initial_frame_rate,
                         initial_cond=True)
+sim.set_joint_position(urdf_obj=cmg_obj,
+                        joint_name='frame_to_cage_axle',
+                        position = np.pi/12.,
+                        initial_cond=True)
 
 
 ###############################################################################
