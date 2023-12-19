@@ -6,6 +6,11 @@
 
 ## Installation
 
+The reccomended installation method is via a virtual miniconda environment. To install miniconda:
+### On Windows
+* 1 Install Git for windows
+* Install Miniconda for windows
+
 From source:
 
 ```
