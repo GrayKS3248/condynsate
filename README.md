@@ -18,7 +18,7 @@ Click **next**.
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_3.png?raw=true" alt="git_3" width="495" height="375"/>
 
-Click **next**.
+Select **Let Git decide** then click **next**.
 
 <img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_4.png?raw=true" alt="git_4" width="495" height="375"/>
 
