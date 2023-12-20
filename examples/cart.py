@@ -363,6 +363,6 @@ while(not sim.is_done):
     ###########################################################################
     # STEP THE SIMULATION
     sim.step(real_time=True,
-              update_vis=True,
-              update_ani=True)
+             update_vis=True,
+             update_ani=True)
             

@@ -2854,7 +2854,7 @@ class Simulator:
         print("PRESS "+key.upper()+" TO START SIMULATION.")
         print("PRESS ESC TO QUIT.")
         print("PRESS SPACE TO PAUSE/RESUME SIMULATION.")
-        print("PRESS TAB TO RESET SIMULATION.")
+        print("PRESS BACKSPACE TO RESET SIMULATION.")
         while not self.is_pressed("enter"):
             # Ensure so the GUI remains interactive if simulation is suspended
             if isinstance(self.ani, Animator):
@@ -2951,9 +2951,6 @@ class Simulator:
         if self.paused:
             return
         
-        # Note that the simulation is resetting to the user
-        print("RESETTING...")
-        
         # Note the simulation is no longer done and reset the time
         self.is_done = False
         self.time = 0.
@@ -2995,19 +2992,6 @@ class Simulator:
         # Reset the plots
         self.reset_plots()
         
-        # Update the visualizer if it exists
-        if isinstance(self.vis, Visualizer):
-            for urdf_obj in self.urdf_objs:
-                if urdf_obj.update_vis:
-                    self._update_urdf_visual(urdf_obj)
-        
-        # Update the animator if it exists
-        if isinstance(self.ani, Animator):
-            self.ani.step()
-    
-        # Wait one half second to prevent multiple resets
-        time.sleep(0.5)
-        
         
     def step(self,
              real_time=True,
@@ -3041,27 +3025,31 @@ class Simulator:
         # Collect keyboard IO for termination
         if self.is_pressed("esc"):
             self.is_done = True
-            return 
+            return -1 # Return end code
         
-        # Handle pause condition
-        if self.is_pressed("space"):
-            self.paused = not self.paused
-            if self.paused:
-                print("PAUSING...")
-            else:
-                print("RESUMING...")
-            start_time = time.time()
-            ani_exists = isinstance(self.ani, Animator)
-            while time.time() - start_time < 0.2:
-                    if ani_exists:
-                        self.ani.flush_events()
-                    else:
-                        time.sleep(0.2)
+        # Suspend if paused or resume if space is pressed
         if self.paused:
+            time.sleep(0.05)
+
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()
-            return
+                    
+            if self.is_pressed("space"):
+                self.paused = False
+                print("RESUME")
+                time.sleep(0.2)
+                return 1 # Return end pause code
+
+            return 2 # Return paused code
             
+        # Reset upon request
+        if self.is_pressed("backspace"):
+            self.reset()
+            time.sleep(0.2)
+            print("RESET")
+            return 3 # Return reset code
+        
+        # IF NOT PAUSED, NOT ENDING, AND NOT RESETTING
         # Calculate suspend time if running in real time
         if real_time:
             time_since_last_step = time.time() - self.last_step_time
@@ -3086,7 +3074,16 @@ class Simulator:
         if update_ani and isinstance(self.ani, Animator):
             self.ani.step()
         
-        # Collect keyboard IO for simulation reset
-        if self.is_pressed("tab"):
-            self.reset()
+        # Pause upon request
+        if self.is_pressed("space"):
+            self.paused = True
+            
+            if isinstance(self.ani, Animator):
+                self.ani.flush_events()
+            
+            print("PAUSED")
+            time.sleep(0.2)
+            return 4 # Return start pause code
+        
+        return 0 # Return normal code
             

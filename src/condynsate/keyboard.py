@@ -10,6 +10,7 @@ from pynput import keyboard
 from pynput.keyboard import Key as k
 import signal
 import sys
+import time
 
 
 ###############################################################################
@@ -206,6 +207,8 @@ class Keys:
         
         # Stop the listener gracefully
         if leave:
+            # Wait for 0.5 seconds before leaving
+            time.sleep(0.5)
             print("Termination command detected. " + 
                   "Terminating keyboard listener. " + 
                   "Goodbye")
