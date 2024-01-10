@@ -18,7 +18,10 @@ Ic = np.diag([0.0022, 0.0022, 0.0042])
 mr = 0.01
 Ic = np.diag([0.00036, 0.00036, 0.00070])
 l = 1.0
+h = 0.0875
 g = 9.81
+kf = 0.0032
+
 
 # Time is a symbol (variable)
 t = Symbol('t')
@@ -31,16 +34,33 @@ z = Function('z')
 roll = Function('roll')
 pitch = Function('pitch')
 yaw = Function('yaw')
-vx = Function('vx')
-vy = Function('vy')
-vz = Function('vz')
-wx = Function('wx')
-wy = Function('wy')
-wz = Function('wz')
+phi1 = Function('phi1')
+phi2 = Function('phi2')
+phi3 = Function('phi3')
+phi4 = Function('phi4')
 t1 = Function('t1')
 t2 = Function('t2')
 t3 = Function('t3')
 t4 = Function('t4')
+
+# Get the energies of the core
+pos = Matrix([ x(t), y(t), z(t) ])
+vel = diff(pos, t)
+ori = Matrix([ roll(t), pitch(t), yaw(t) ])
+ang_vel = diff(ori, t)
+core_KE = 0.5 * mc * (vel.T @ vel)[0,0]
+core_RE = 0.5 * (ang_vel.T @ Ic @ ang_vel)[0,0]
+core_PE = mc * g * z(t)
+
+# Get the energies of the rotors
+pos_1 = Matrix([ x(t),   y(t)+l, z(t)+h ])
+pos_2 = Matrix([ x(t)+l, y(t),   z(t)+h ])
+pos_3 = Matrix([ x(t),   y(t)-l, z(t)+h ])
+pos_4 = Matrix([ x(t)-l, y(t),   z(t)+h ])
+vel_1 = diff(pos_1, t)
+vel_2 = diff(pos_2, t)
+vel_3 = diff(pos_3, t)
+vel_4 = diff(pos_4, t)
 
 
 ###############################################################################
@@ -250,11 +270,10 @@ class course:
 # Create an instance of the simulator with visualization
 sim = condynsate.Simulator(visualization=True,
                            animation=True,
-                           animation_fr=15.)
+                           animation_fr=5.)
 
 # Load the ground
 ground_obj = sim.load_urdf(urdf_path='./quadcopter_vis/plane.urdf',
-                           tex_path='./quadcopter_vis/wave.png',
                            position=[0., 0., -0.051],
                            fixed=True,
                            update_vis=False)
@@ -307,16 +326,16 @@ course = course(sim, quad_obj,
 # Apply damping to rotors
 sim.set_joint_damping(urdf_obj=quad_obj,
                       joint_name='spar1_to_rotor1',
-                      damping=0.01)
+                      damping=0.003)
 sim.set_joint_damping(urdf_obj=quad_obj,
                       joint_name='spar2_to_rotor2',
-                      damping=0.01)
+                      damping=0.003)
 sim.set_joint_damping(urdf_obj=quad_obj,
                       joint_name='spar3_to_rotor3',
-                      damping=0.01)
+                      damping=0.003)
 sim.set_joint_damping(urdf_obj=quad_obj,
                       joint_name='spar4_to_rotor4',
-                      damping=0.01)
+                      damping=0.003)
 
 # Make plot for ground track
 plot1, artists1 = sim.add_subplot(n_artists=3,
@@ -363,7 +382,17 @@ plot4, artists4 = sim.add_subplot(n_artists=3,
                                   line_widths=[2.5, 2.5, 2.5],
                                   line_styles=["-", "-", "-"],
                                   labels=['roll', 'pitch', 'yaw'])
-
+plot5, artists5 = sim.add_subplot(n_artists=4,
+                                  subplot_type='line',
+                                  title="Rotor Speed",
+                                  x_label="Time [s]",
+                                  y_label="Speed [rad/s]",
+                                  x_lim=[0.0, None],
+                                  y_lim=[0, 350],
+                                  colors=["r", "g", "b", "m"],
+                                  line_widths=[2.5, 2.5, 2.5, 2.5],
+                                  line_styles=["-", "-", "-", "-"],
+                                  labels=['r1', 'r2', 'r3', 'r4'])
 
 ###############################################################################
 #SIMULATION LOOP
@@ -481,28 +510,45 @@ while(not sim.is_done):
                           artist_index=artists4[2],
                           x=sim.time,
                           y=yaw)
+    sim.add_subplot_point(subplot_index=plot5,
+                          artist_index=artists5[0],
+                          x=sim.time,
+                          y=rotor1_vel)
+    sim.add_subplot_point(subplot_index=plot5,
+                          artist_index=artists5[1],
+                          x=sim.time,
+                          y=rotor2_vel)
+    sim.add_subplot_point(subplot_index=plot5,
+                          artist_index=artists5[2],
+                          x=sim.time,
+                          y=rotor3_vel)
+    sim.add_subplot_point(subplot_index=plot5,
+                          artist_index=artists5[3],
+                          x=sim.time,
+                          y=rotor4_vel)
+    
     
     ###########################################################################
     # ROTOR PHYSICS
     # Set rotor force based on velocity
     sim.apply_force_to_link(urdf_obj=quad_obj,
                             link_name='rotor1',
-                            force=[0., 0., 0.01*rotor1_vel],
+                            force=[0., 0., 0.0032*rotor1_vel],
                             show_arrow=True,
                             arrow_scale=0.40)
     sim.apply_force_to_link(urdf_obj=quad_obj,
                             link_name='rotor2',
-                            force=[0., 0., 0.01*rotor2_vel],
+                            force=[0., 0., 0.0032*rotor2_vel],
                             show_arrow=True,
                             arrow_scale=0.40)
     sim.apply_force_to_link(urdf_obj=quad_obj,
                             link_name='rotor3',
-                            force=[0., 0., 0.01*rotor3_vel],
+                            force=[0., 0., 0.0032*rotor3_vel],
                             show_arrow=True,
                             arrow_scale=0.40)
     sim.apply_force_to_link(urdf_obj=quad_obj,
                             link_name='rotor4',
-                            force=[0., 0., 0.01*rotor4_vel],
+                            force=[0., 0., 0.0032*rotor4_vel],
                             show_arrow=True,
                             arrow_scale=0.40)
     

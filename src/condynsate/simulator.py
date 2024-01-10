@@ -17,6 +17,7 @@ from condynsate.utils import format_path,format_RGB,wxyz_to_xyzw,xyzw_to_wxyz
 from condynsate.utils import xyzw_quat_mult, get_rot_from_2_vecs
 from condynsate.keyboard import Keys
 from matplotlib import colormaps as cmaps
+from pathlib import Path
 
 
 ###############################################################################
@@ -71,6 +72,7 @@ class Simulator:
     """
     def __init__(self,
                  visualization=True,
+                 visualization_fr = 30.,
                  animation=True,
                  animation_fr = 10.,
                  gravity=[0., 0., -9.81]):
@@ -82,6 +84,9 @@ class Simulator:
         visualization : bool, optional
             A boolean flag that indicates whether the simulation will be 
             visualized in meshcat. The default is True.
+        visualization_fr : float, optional
+            The frame rate (frames per second) at which the visualizer is
+            updated. The default is 30..
         animation : bool, optional
             A boolean flag that indicates whether animated plots are created
             in real time. The default is True.
@@ -109,6 +114,8 @@ class Simulator:
         self.time = 0.0
         self.dt = 0.01
         self.last_step_time = time.time()
+        self.last_vis_time = time.time()
+        self.visualization_fr = visualization_fr
         self.engine.setPhysicsEngineParameter(
             fixedTimeStep=self.dt,
             numSubSteps=4,
@@ -174,7 +181,7 @@ class Simulator:
     ###########################################################################
     def load_urdf(self,
                   urdf_path,
-                  tex_path='../shapes/check.png',
+                  tex_path=None,
                   position = [0., 0., 0.],
                   wxyz_quaternion = [1., 0., 0., 0.],
                   roll=None,
@@ -196,7 +203,7 @@ class Simulator:
         tex_path : string, optional
             The path pointing towards a texture file. This texture is applied
             only to static .obj objects.
-            The default is './examples/cmg_vis/check.png'.
+            The default is None which loads './examples/cmg_vis/check.png'.
         position : array-like, shape (3,) optional
             The initial position of the urdf. The default is [0., 0., 0.].
         wxyz_quaternion : array-like, shape (4,) optional
@@ -324,6 +331,11 @@ class Simulator:
                 self._disable_joint_vel_con(urdf_obj=urdf_obj,
                                             joint_name=joint_name)
 
+                # Increase the maximum joint speed to 1000
+                self._set_max_joint_vel(urdf_obj=urdf_obj,
+                                        joint_name=joint_name,
+                                        max_vel=1000.)
+
                 # Enable the force and torque sensor
                 self.set_joint_force_sensor(urdf_obj=urdf_obj,
                                             joint_name=joint_name,
@@ -331,6 +343,10 @@ class Simulator:
 
         # Add urdf objects to the visualizer if visualization is occuring
         if isinstance(self.vis, Visualizer):
+            if tex_path == None:
+                condynsate_path = Path(__file__).parents[2]
+                condynsate_path = condynsate_path.absolute().as_posix()
+                tex_path = condynsate_path + "/shapes/check.png"
             self.add_urdf_to_visualizer(urdf_obj=urdf_obj,
                                         tex_path=tex_path)
 
@@ -424,6 +440,21 @@ class Simulator:
                                                   mode,
                                                   forces=[0])
             
+            
+    def _set_max_joint_vel(self,
+                            urdf_obj,
+                            joint_name,
+                            max_vel=1000.):
+        # Gather information from urdf_obj
+        urdf_id = urdf_obj.urdf_id
+        joint_map = urdf_obj.joint_map
+        
+        # Set the max joint velocity
+        if joint_name in joint_map:
+            joint_id = joint_map[joint_name]
+            self.engine.changeDynamics(urdf_id,
+                                       joint_id,
+                                       maxJointVelocity=max_vel)
             
     ###########################################################################
     #JOINT SETTERS
@@ -1787,7 +1818,7 @@ class Simulator:
     ###########################################################################
     def add_urdf_to_visualizer(self,
                                urdf_obj,
-                               tex_path='./cmg_vis/check.png'):
+                               tex_path=None):
         """
         Adds urdfs to the Visualizer. URDFs describe systems assembles from
         .stl and .obj links.
@@ -1820,6 +1851,10 @@ class Simulator:
         
         # Make the URDF name and format the texture path
         urdf_name = str(urdf_obj.urdf_id)
+        if tex_path == None:
+            condynsate_path = Path(__file__).parents[2]
+            condynsate_path = condynsate_path.absolute().as_posix()
+            tex_path = condynsate_path + "/shapes/check.png"
         tex_path = format_path(tex_path)
         
         # Loop through all the links
@@ -1862,7 +1897,7 @@ class Simulator:
         ----------
         urdf_obj : URDF_Obj, optional
             A URDF_Obj whose links are being updated.
-
+            
         Returns
         -------
         None.
@@ -3068,7 +3103,9 @@ class Simulator:
         self.time = self.time + self.dt
         
         # Update the visualizer if it exists
-        if update_vis and isinstance(self.vis, Visualizer):
+        time_since_last_vis = time.time() - self.last_vis_time
+        vis_time_okay =  time_since_last_vis >= (1. / self.visualization_fr)
+        if vis_time_okay and update_vis and isinstance(self.vis, Visualizer):
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
