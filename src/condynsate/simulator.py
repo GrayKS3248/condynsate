@@ -676,8 +676,8 @@ class Simulator:
         initial_cond : bool, optional
             A boolean flag that indicates whether the position set is an 
             initial condition of the system. If it is an initial condition,
-            when the simulation is reset using tab, the joint position will be
-            set again.
+            when the simulation is reset using backspace, the joint position
+            will be set again.
         color : bool, optional
             A boolean flag that indicates whether to color the joint based on
             its position. The default is False.
@@ -769,8 +769,8 @@ class Simulator:
         initial_cond : bool, optional
             A boolean flag that indicates whether the velocity set is an 
             initial condition of the system. If it is an initial condition,
-            when the simulation is reset using tab, the joint velocity will be
-            set again.
+            when the simulation is reset using backspace, the joint velocity
+            will be set again.
         color : bool, optional
             A boolean flag that indicates whether to color the joint based on
             its velocity. The default is False.
@@ -1310,12 +1310,11 @@ class Simulator:
         
         if body_coords:
             # Get the rotation matrix of the body in the world
-            R_body_to_world = self.engine.getMatrixFromQuaternion(xyzw_ori)
-            R_body_to_world = np.array(R_body_to_world)
-            R_body_to_world = np.reshape(R_body_to_world, (3,3))
+            R_world_to_body = self.engine.getMatrixFromQuaternion(xyzw_ori)
+            R_world_to_body = np.array(R_world_to_body)
+            R_world_to_body = np.reshape(R_world_to_body, (3,3))
             
             # Get the body velocities in body coordinates
-            R_world_to_body = R_body_to_world.T
             vel_body = R_world_to_body @ vel_world
             ang_vel_body =  R_world_to_body @ ang_vel_world
             
@@ -1979,11 +1978,11 @@ class Simulator:
     #VISUALIZATION COLOR MANIPULATION
     ###########################################################################
     def set_link_color(self,
-                          urdf_obj,
-                          link_name,
-                          color=[91, 155, 213],
-                          transparent = False,
-                          opacity = 1.0):
+                       urdf_obj,
+                       link_name,
+                       color=[91, 155, 213],
+                       transparent = False,
+                       opacity = 1.0):
         """
         Allows the user to change the color, transparency, and opacity
         of an existing urdf in the simulation. The position and orientation
@@ -2810,7 +2809,7 @@ class Simulator:
         key : string
             The key to be detected. May be alpha numeric ("a", "A", "1", "!",
             "`", etc.) or some special keys. The special keys are as follows:
-            "space", "enter", "backspace", "tab", "shift", "alt", "tab",
+            "space", "enter", "backspace", "tab", "shift", "alt",
             "ctrl", and "esc". The following modifiers can also be used:
             "shift+", "alt+", and "ctrl+". Modifiers are added with the
             following format: "shift+a", "ctrl+a", "alt+a", "shift+ctrl+alt+a",
@@ -2863,9 +2862,12 @@ class Simulator:
             # Termination condition
             if self.is_pressed("esc"):
                 self.is_done = True
-        
-        # Note that the simulation is started
-        print("CONTINUING...")
+                print("QUITTING...")
+                break
+            
+            # Note that the simulation is started
+            if self.is_pressed("enter"):
+                print("CONTINUING...")
       
       
     def iterate_val(self,
@@ -3025,6 +3027,7 @@ class Simulator:
         # Collect keyboard IO for termination
         if self.is_pressed("esc"):
             self.is_done = True
+            print("QUITTING...")
             return -1 # Return end code
         
         # Suspend if paused or resume if space is pressed
