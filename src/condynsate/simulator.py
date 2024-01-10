@@ -933,9 +933,12 @@ class Simulator:
         arr_exists = joint_name in self.ccw_arr_map
         if (not show_arrow) and vis_exists and arr_exists:
             arrow_name = str(self.ccw_arr_map[joint_name])
+            path = Path(__file__).parents[2]
+            path = path.absolute().as_posix()
+            path = path + "/shapes/arrow_ccw.stl"
             self.vis.set_link_color(urdf_name = "Torque Arrows",
                                     link_name = arrow_name,
-                                    stl_path="../shapes/arrow_ccw.stl", 
+                                    stl_path=path, 
                                     color = [0, 0, 0],
                                     transparent = True,
                                     e = 0.0)
@@ -988,9 +991,12 @@ class Simulator:
             # If the arrow already exists, only update its position and ori
             if link_name in self.ccw_arr_map:
                 arrow_name = str(self.ccw_arr_map[link_name])
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_ccw.stl"
                 self.vis.set_link_color(urdf_name = "Torque Arrows",
                                         link_name = arrow_name,
-                                        stl_path="../shapes/arrow_ccw.stl", 
+                                        stl_path=path, 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
@@ -1007,9 +1013,12 @@ class Simulator:
                 arrow_name = str(self.ccw_arr_map[link_name])
                 
                 # Add an arrow to the visualizer
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_ccw.stl"
                 self.vis.add_stl(urdf_name="Torque Arrows",
                                  link_name=arrow_name,
-                                 stl_path="../shapes/arrow_ccw.stl",
+                                 stl_path=path,
                                  color = [0, 0, 0],
                                  transparent=False,
                                  opacity = 1.0,
@@ -1541,9 +1550,12 @@ class Simulator:
         arr_exists = 'COM' in self.lin_arr_map
         if (not show_arrow) and vis_exists and arr_exists:
             arrow_name = str(self.lin_arr_map['COM'])
+            path = Path(__file__).parents[2]
+            path = path.absolute().as_posix()
+            path = path + "/shapes/arrow_lin.stl"
             self.vis.set_link_color(urdf_name = "Force Arrows",
                                     link_name = arrow_name,
-                                    stl_path="../shapes/arrow_lin.stl", 
+                                    stl_path=path, 
                                     color = [0, 0, 0],
                                     transparent = True,
                                     opacity = 0.0)
@@ -1561,9 +1573,12 @@ class Simulator:
             # If the arrow already exists, only update its position and ori
             if 'COM' in self.lin_arr_map:
                 arrow_name = str(self.lin_arr_map['COM'])
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_lin.stl"
                 self.vis.set_link_color(urdf_name = "Force Arrows",
                                         link_name = arrow_name,
-                                        stl_path="../shapes/arrow_lin.stl", 
+                                        stl_path=path, 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
@@ -1578,11 +1593,14 @@ class Simulator:
                 # Add the arrow to the linear arrow map
                 self.lin_arr_map['COM'] = len(self.lin_arr_map)
                 arrow_name = str(self.lin_arr_map['COM'])
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_lin.stl"
                 
                 # Add an arrow to the visualizer
                 self.vis.add_stl(urdf_name="Force Arrows",
                                  link_name=arrow_name,
-                                 stl_path="../shapes/arrow_lin.stl",
+                                 stl_path=path,
                                  color = [0, 0, 0],
                                  transparent=False,
                                  opacity = 1.0,
@@ -1650,10 +1668,13 @@ class Simulator:
         vis_exists = isinstance(self.vis, Visualizer)
         arr_exists = 'COM' in self.ccw_arr_map
         if (not show_arrow) and vis_exists and arr_exists:
-            arrow_name = str(self.lin_arr_map['COM'])
+            arrow_name = str(self.lin_arr_map['COM'])    
+            path = Path(__file__).parents[2]
+            path = path.absolute().as_posix()
+            path = path + "/shapes/arrow_ccw.stl"
             self.vis.set_link_color(urdf_name = "Torque Arrows",
                                     link_name = arrow_name,
-                                    stl_path="../shapes/arrow_ccw.stl", 
+                                    stl_path=path, 
                                     color = [0, 0, 0],
                                     transparent = True,
                                     opacity = 0.0)
@@ -1671,9 +1692,12 @@ class Simulator:
             # If the arrow already exists, only update its position and ori
             if 'COM' in self.ccw_arr_map:
                 arrow_name = str(self.ccw_arr_map['COM'])
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_ccw.stl"
                 self.vis.set_link_color(urdf_name = "Torque Arrows",
                                         link_name = arrow_name,
-                                        stl_path="../shapes/arrow_ccw.stl", 
+                                        stl_path=path, 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
@@ -1688,11 +1712,14 @@ class Simulator:
                 # Add the arrow to the linear arrow map
                 self.ccw_arr_map['COM'] = len(self.ccw_arr_map)
                 arrow_name = str(self.ccw_arr_map['COM'])
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_ccw.stl"
                 
                 # Add an arrow to the visualizer
                 self.vis.add_stl(urdf_name="Torque Arrows",
                                  link_name=arrow_name,
-                                 stl_path="../shapes/arrow_ccw.stl",
+                                 stl_path=path,
                                  color = [0, 0, 0],
                                  transparent=False,
                                  opacity = 1.0,
@@ -1745,9 +1772,12 @@ class Simulator:
         arr_exists = link_name in self.lin_arr_map
         if (not show_arrow) and vis_exists and arr_exists:
             arrow_name = str(self.lin_arr_map[link_name])
+            path = Path(__file__).parents[2]
+            path = path.absolute().as_posix()
+            path = path + "/shapes/arrow_lin.stl"
             self.vis.set_link_color(urdf_name = "Force Arrows",
                                     link_name = arrow_name,
-                                    stl_path="../shapes/arrow_lin.stl", 
+                                    stl_path=path, 
                                     color = [0, 0, 0],
                                     transparent = True,
                                     opacity = 0.0)
@@ -1783,9 +1813,12 @@ class Simulator:
             # If the arrow already exists, only update its position and ori
             if link_name in self.lin_arr_map:
                 arrow_name = str(self.lin_arr_map[link_name])
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_lin.stl"
                 self.vis.set_link_color(urdf_name = "Force Arrows",
                                         link_name = arrow_name,
-                                        stl_path="../shapes/arrow_lin.stl", 
+                                        stl_path=path, 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
@@ -1800,11 +1833,14 @@ class Simulator:
                 # Add the arrow to the linear arrow map
                 self.lin_arr_map[link_name] = len(self.lin_arr_map)
                 arrow_name = str(self.lin_arr_map[link_name])
+                path = Path(__file__).parents[2]
+                path = path.absolute().as_posix()
+                path = path + "/shapes/arrow_lin.stl"
                 
                 # Add an arrow to the visualizer
                 self.vis.add_stl(urdf_name="Force Arrows",
                                  link_name=arrow_name,
-                                 stl_path="../shapes/arrow_lin.stl",
+                                 stl_path=path,
                                  color = [0, 0, 0],
                                  transparent=False,
                                  opacity = 1.0,
