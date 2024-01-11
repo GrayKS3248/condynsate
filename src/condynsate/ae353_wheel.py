@@ -5,7 +5,7 @@ This modules provides a backend for the ae353 wheel example
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-import condynsate
+from condynsate.simulator import Simulator
 from pathlib import Path
 
 
@@ -15,9 +15,9 @@ from pathlib import Path
 class Wheel_sim():
     def __init__(self,
                  visualization=True,
-                 visualization_fr=30.,
+                 visualization_fr=24.,
                  animation=True,
-                 animation_fr=15.):
+                 animation_fr=10.):
         """
         Initializes an instance of the wheel simulation class.
 
@@ -28,7 +28,7 @@ class Wheel_sim():
             visualized in meshcat. The default is True.
         visualization_fr : float, optional
             The frame rate (frames per second) at which the visualizer is
-            updated. The default is 30..
+            updated. The default is 24..
         animation : bool, optional
             A boolean flag that indicates whether animated plots are created
             in real time. The default is True.
@@ -52,10 +52,10 @@ class Wheel_sim():
         self.D = 0.0
 
         # Initialize and instance of the simulator
-        self.sim = condynsate.Simulator(visualization=visualization,
-                                        visualization_fr=visualization_fr,
-                                        animation=animation,
-                                        animation_fr=animation_fr)
+        self.sim = Simulator(visualization=visualization,
+                             visualization_fr=visualization_fr,
+                             animation=animation,
+                             animation_fr=animation_fr)
         
         # Load urdf objects
         if visualization:
@@ -127,8 +127,8 @@ class Wheel_sim():
                 
                 Returns
                 -------
-                torque : float
-                The value of torque calculated
+                inputs : list of one float
+                The value of torque calculated by the controller
                 
                 
                 controller.reset()
@@ -139,6 +139,7 @@ class Wheel_sim():
                 Returns
                 -------
                 None.
+                
                 
         initial_angle : Float, optional
             The initial angle of the wheel in radians. The wheel is set to 
@@ -175,13 +176,7 @@ class Wheel_sim():
         self.angle_tag = initial_target_angle
         self.P = initial_P
         self.D = initial_D
-        
-        
-        
-        
-        # Await the enter command
-        self.sim.await_keypress(key='enter')
-        
+
         # Reset the controller
         controller.reset()
         
@@ -192,8 +187,9 @@ class Wheel_sim():
         P_history = []
         D_history = []
         torque_history = []
-        
+
         # Run the simulation loop
+        self.sim.await_keypress(key='enter')
         while(not self.sim.is_done):
             ##################################################################
             # SENSOR

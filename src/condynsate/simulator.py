@@ -3104,16 +3104,13 @@ class Simulator:
         # Suspend if paused or resume if space is pressed
         if self.paused:
             time.sleep(0.05)
-
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()
-                    
             if self.is_pressed("space"):
                 self.paused = False
                 print("RESUME")
                 time.sleep(0.2)
                 return 1 # Return end pause code
-
             return 2 # Return paused code
             
         # Reset upon request
@@ -3124,22 +3121,13 @@ class Simulator:
             return 3 # Return reset code
         
         # IF NOT PAUSED, NOT ENDING, AND NOT RESETTING
-        # Calculate suspend time if running in real time
-        if real_time:
-            time_since_last_step = time.time() - self.last_step_time
-            time_to_wait = self.dt - time_since_last_step
-            if time_to_wait > 0:
-                time.sleep(time_to_wait)
-            
         # Step the physics engine
+        curr_step_time = time.time()
         self.engine.stepSimulation()
-        
-        # Update the time
-        self.last_step_time = time.time()
         self.time = self.time + self.dt
         
         # Update the visualizer if it exists
-        time_since_last_vis = time.time() - self.last_vis_time
+        time_since_last_vis = curr_step_time - self.last_vis_time
         vis_time_okay =  time_since_last_vis >= (1. / self.visualization_fr)
         if vis_time_okay and update_vis and isinstance(self.vis, Visualizer):
             for urdf_obj in self.urdf_objs:
@@ -3153,13 +3141,19 @@ class Simulator:
         # Pause upon request
         if self.is_pressed("space"):
             self.paused = True
-            
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()
-            
             print("PAUSED")
             time.sleep(0.2)
             return 4 # Return start pause code
         
+        # Calculate suspend time if running in real time
+        if real_time:
+            time_since_last_step = curr_step_time - self.last_step_time
+            time_to_wait = self.dt - time_since_last_step
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
+        self.last_step_time = curr_step_time
+                
         return 0 # Return normal code
             
