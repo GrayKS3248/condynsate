@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "condynsate"
-version = "0.3.20"
+version = "0.3.22"
 description = "Simulates and visualizes articulated systems in real time"
 readme = "README.md"
 authors = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
@@ -52,3 +52,9 @@ edu = [
 
 [project.urls]
 Homepage = "https://github.com/GrayKS3248/condynsate"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.*"]
