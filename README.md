@@ -2,130 +2,26 @@
 
  [condynsate](https://github.com/GrayKS3248/condynsate) is a dynamic system simulation and visualization tool built with [PyBullet](https://pybullet.org/wordpress/) and [MeshCat](https://github.com/meshcat-dev/meshcat-python). It automatically simulates multiple objects and their interactions as described by [.urdf](http://wiki.ros.org/urdf), [.stl](https://en.wikipedia.org/wiki/STL_(file_format)), and [.obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) files and can render real time visualizations in a web browser.
 
-# Windows Installation
-## 1. Install Git for Windows
-If you do not have Git already installed, download the most recent Git installer for Windows 64 from the [git-scm website](https://git-scm.com/download/win) or just click [here](https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Git-VERSION-64-bit and will be in your default downloads folder C:\Users\USER NAME\Downloads. 
 
-* Once the wizard is running, click **next**.
 
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_1.png?raw=true" alt="git_1" width="495" height="375"/>
+# Installation without Virtual Environment (not recommended)
 
-
-
-* Click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_2.png?raw=true" alt="git_2" width="495" height="375"/>
-
-
-
-* Click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_3.png?raw=true" alt="git_3" width="495" height="375"/>
-
-
-
-* Click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_4.png?raw=true" alt="git_4" width="495" height="375"/>
-
-
-
-* Select **Let Git decide** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_5.png?raw=true" alt="git_5" width="495" height="375"/>
-
-
-
-* Select **Use Git from Git Bash only** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_6.png?raw=true" alt="git_6" width="495" height="375"/>
-
-
-
-* Select **Use bundled OpenSSH** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_7.png?raw=true" alt="git_7" width="495" height="375"/>
-
-
-
-* Select **Use the OpenSSL library** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_8.png?raw=true" alt="git_8" width="495" height="375"/>
-
-
-
-* Select **Checkout Windows-style, commit Unix-style line endings** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_9.png?raw=true" alt="git_9" width="495" height="375"/>
-
-
-
-* Select **Use Windows' default console window** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_10.png?raw=true" alt="git_10" width="495" height="375"/>
-
-
-
-* Select **Fast-forward or merge** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_11.png?raw=true" alt="git_11" width="495" height="375"/>
-
-
-
-* Select **Git Credential Manager** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_12.png?raw=true" alt="git_12" width="495" height="375"/>
-
-
-
-* Check only **Enable file system caching** then click **next**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_13.png?raw=true" alt="git_13" width="495" height="375"/>
-
-
-
-* Make sure nothing is checked then click **install**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_14.png?raw=true" alt="git_14" width="495" height="375"/>
-
-
-
-* Once installation is finished, click **finish**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_15.png?raw=true" alt="git_15" width="495" height="375"/>
-
-
-
-* Navigate to **C:\Program Files\Git** in your file explorer.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_16.png?raw=true" alt="git_16" width="495" height="375"/>
-
-
-
-* To create a desktop shortcut to git-cmd (the application that will be used to pull and push Git repositories), right click on **git-cmd**, navigate to **Send to**, then click **Desktop (create shortcut)**.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_17.png?raw=true" alt="git_17" width="495" height="375"/>
-
-
-
-* To verify that Git is installed properly, open **git-cmd** and type 
+For a base installation:
 
 ```bash
-Git --version
+pip install condynsate
+```
+
+To include optional packages helpful in education settings:
+
+```bash
+pip install condynsate[edu]
 ```
 
 
-* You should get a response that lists the version of Git you just installed.
 
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/git_18.png?raw=true" alt="git_18" width="495" height="375"/>
-
-
-
-Git is now installed on your machine.
-
-
-
-## 2. Install Miniconda for Windows
+# Recommended Windows Installation (Miniconda)
+## 1. Install Miniconda for Windows
 If you do not have Miniconda already installed, download the most recent Miniconda installer for Windows 64 from the [miniconda website](https://docs.conda.io/projects/miniconda/en/latest/) or just click [here](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe) to download it automatically. Once the .exe is downloaded, run it. The .exe file has the format Miniconda3-latest-Windows-x86_64 and will be in your default downloads folder C:\Users\USER NAME\Downloads. 
 
 * Once the wizard is running, click **next**.
@@ -199,7 +95,7 @@ Miniconda is now installed on your machine.
 
 
 
-## 3. Install condynsate in a Miniconda virtual environment
+## 2. Install condynsate in a Miniconda virtual environment
 To install condynsate in a Miniconda virtual environment, open **Anaconda Prompt (Miniconda3)** and type
 
 ```bash
@@ -280,7 +176,7 @@ to quit the Python shell and exit out of the Anaconda prompt.
 
 
 
-# Linux Installation
+# Recommended Linux Installation (Miniconda)
 ## 1. Install Miniconda for Linux
 If you do not have Miniconda already installed, run these four commands in the terminal to quickly and quietly install the latest 64-bit version of the installer. To open the terminal press **ctrl+alt+t**.
 
@@ -344,7 +240,7 @@ to quit the Python shell.
 
 
 
-# MacOS Installation
+# Recommended MacOS Installation (Miniconda)
 
 ## 1. Install Miniconda for MacOS
 
@@ -376,60 +272,7 @@ You should get a response that lists the version of Miniconda you just installed
 
 
 
-## 2. Install Git for MacOS
-
-If you do not have Git already installed, install it via Homebew. First, open the terminal. To open the terminal do one of the following:
-
-- Click the Launchpad icon ![img](https://help.apple.com/assets/63FFD63D71728623E706DB4F/63FFD63E71728623E706DB56/en_US/a1f94c9ca0de21571b88a8bf9aef36b8.png) in the Dock, type Terminal in the search field, then click Terminal.
-- In the Finder ![img](https://help.apple.com/assets/63FFD63D71728623E706DB4F/63FFD63E71728623E706DB56/en_US/058e4af8e726290f491044219d2eee73.png), open the /Applications/Utilities folder, then double-click Terminal.
-
-Ensure that you are in the base conda environment by running the command:
-
-```bash
-conda deactivate
-```
-
-The left hand side of the prompt line in the terminal should read
-
-```bash
-(base)
-```
-
-Next, type the command:
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-**Restart the terminal.** This will install [Homebrew](https://brew.sh/) on your machine. Homebrew is a package manager for MacOS. Next , install Git via Homebrew. Open a new instanace of the terminal. Ensure that you are in the base conda environment by running the command:
-
-```bash
-conda deactivate
-```
-
-The left hand side of the prompt line in the terminal should read
-
-```bash
-(base)
-```
-
-Next, type the command:
-
-```bash
-brew install git
-```
-
-This installs Git to your system. To verify that Git installed correctly,  run the command 
-
-```bash
-git --version
-```
-
-You should get a response that lists the version of Git you just installed. If you do not, more help on installation can be found [here](https://git-scm.com/download/mac).
-
-
-
-## 3. Install condynsate in a Miniconda virtual environment
+## 2. Install condynsate in a Miniconda virtual environment
 
 To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.10. To open the terminal do one of the following:
 
