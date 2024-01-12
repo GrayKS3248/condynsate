@@ -45,19 +45,22 @@ functions&nbsp;that&nbsp;are&nbsp;used&nbsp;by&nbsp;it.</tt></p>
 <font color="#000000" face="helvetica, arial"><a name="Simulator">class <strong>Simulator</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#Simulator">Simulator</a>(visualization=True,&nbsp;animation=True,&nbsp;animation_fr=10.0,&nbsp;gravity=[0.0,&nbsp;0.0,&nbsp;-9.81])<br>
+<td colspan=2><tt><a href="#Simulator">Simulator</a>(visualization=True,&nbsp;visualization_fr=30.0,&nbsp;animation=True,&nbsp;animation_fr=10.0,&nbsp;gravity=[0.0,&nbsp;0.0,&nbsp;-9.81])<br>
 &nbsp;<br>
 <a href="#Simulator">Simulator</a>&nbsp;manages&nbsp;the&nbsp;PyBullet&nbsp;based&nbsp;simulation&nbsp;of&nbsp;dynamic&nbsp;objects&nbsp;and&nbsp;<br>
 handles&nbsp;automatic&nbsp;visualization<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Simulator-__init__"><strong>__init__</strong></a>(self, visualization=True, animation=True, animation_fr=10.0, gravity=[0.0, 0.0, -9.81])</dt><dd><tt>Initializes&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#Simulator">Simulator</a>&nbsp;class.<br>
+<dl><dt><a name="Simulator-__init__"><strong>__init__</strong></a>(self, visualization=True, visualization_fr=30.0, animation=True, animation_fr=10.0, gravity=[0.0, 0.0, -9.81])</dt><dd><tt>Initializes&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;<a href="#Simulator">Simulator</a>&nbsp;class.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
 visualization&nbsp;:&nbsp;bool,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;simulation&nbsp;will&nbsp;be&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;visualized&nbsp;in&nbsp;meshcat.&nbsp;The&nbsp;default&nbsp;is&nbsp;True.<br>
+visualization_fr&nbsp;:&nbsp;float,&nbsp;optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;frame&nbsp;rate&nbsp;(frames&nbsp;per&nbsp;second)&nbsp;at&nbsp;which&nbsp;the&nbsp;visualizer&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;updated.&nbsp;The&nbsp;default&nbsp;is&nbsp;30..<br>
 animation&nbsp;:&nbsp;bool,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;animated&nbsp;plots&nbsp;are&nbsp;created<br>
 &nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;real&nbsp;time.&nbsp;The&nbsp;default&nbsp;is&nbsp;True.<br>
@@ -181,7 +184,7 @@ Returns<br>
 -------<br>
 None.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-add_urdf_to_visualizer"><strong>add_urdf_to_visualizer</strong></a>(self, urdf_obj, tex_path='./cmg_vis/check.png')</dt><dd><tt>Adds&nbsp;urdfs&nbsp;to&nbsp;the&nbsp;Visualizer.&nbsp;URDFs&nbsp;describe&nbsp;systems&nbsp;assembles&nbsp;from<br>
+<dl><dt><a name="Simulator-add_urdf_to_visualizer"><strong>add_urdf_to_visualizer</strong></a>(self, urdf_obj, tex_path=None)</dt><dd><tt>Adds&nbsp;urdfs&nbsp;to&nbsp;the&nbsp;Visualizer.&nbsp;URDFs&nbsp;describe&nbsp;systems&nbsp;assembles&nbsp;from<br>
 .stl&nbsp;and&nbsp;.obj&nbsp;links.<br>
 &nbsp;<br>
 Parameters<br>
@@ -417,7 +420,7 @@ Parameters<br>
 key&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;key&nbsp;to&nbsp;be&nbsp;detected.&nbsp;May&nbsp;be&nbsp;alpha&nbsp;numeric&nbsp;("a",&nbsp;"A",&nbsp;"1",&nbsp;"!",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"`",&nbsp;etc.)&nbsp;or&nbsp;some&nbsp;special&nbsp;keys.&nbsp;The&nbsp;special&nbsp;keys&nbsp;are&nbsp;as&nbsp;follows:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"space",&nbsp;"enter",&nbsp;"backspace",&nbsp;"tab",&nbsp;"shift",&nbsp;"alt",&nbsp;"tab",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"space",&nbsp;"enter",&nbsp;"backspace",&nbsp;"tab",&nbsp;"shift",&nbsp;"alt",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"ctrl",&nbsp;and&nbsp;"esc".&nbsp;The&nbsp;following&nbsp;modifiers&nbsp;can&nbsp;also&nbsp;be&nbsp;used:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"shift+",&nbsp;"alt+",&nbsp;and&nbsp;"ctrl+".&nbsp;Modifiers&nbsp;are&nbsp;added&nbsp;with&nbsp;the<br>
 &nbsp;&nbsp;&nbsp;&nbsp;following&nbsp;format:&nbsp;"shift+a",&nbsp;"ctrl+a",&nbsp;"alt+a",&nbsp;"shift+ctrl+alt+a",<br>
@@ -461,7 +464,7 @@ Returns<br>
 new_val&nbsp;:&nbsp;numeric&nbsp;value<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;iterated&nbsp;value.</tt></dd></dl>
 
-<dl><dt><a name="Simulator-load_urdf"><strong>load_urdf</strong></a>(self, urdf_path, tex_path='../shapes/check.png', position=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0], roll=None, pitch=None, yaw=None, fixed=False, update_vis=True)</dt><dd><tt>Loads&nbsp;a&nbsp;URDF&nbsp;to&nbsp;the&nbsp;simulation&nbsp;engine.&nbsp;All&nbsp;joint's<br>
+<dl><dt><a name="Simulator-load_urdf"><strong>load_urdf</strong></a>(self, urdf_path, tex_path=None, position=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0], roll=None, pitch=None, yaw=None, fixed=False, update_vis=True)</dt><dd><tt>Loads&nbsp;a&nbsp;URDF&nbsp;to&nbsp;the&nbsp;simulation&nbsp;engine.&nbsp;All&nbsp;joint's<br>
 velocity&nbsp;control&nbsp;is&nbsp;disabled&nbsp;(this&nbsp;allows&nbsp;the&nbsp;joint&nbsp;to&nbsp;move&nbsp;freely),<br>
 angular&nbsp;and&nbsp;linear&nbsp;damping&nbsp;is&nbsp;set&nbsp;to&nbsp;0&nbsp;(eliminates&nbsp;air&nbsp;resistance),&nbsp;and&nbsp;<br>
 joint&nbsp;dampling&nbsp;is&nbsp;set&nbsp;to&nbsp;0&nbsp;(eliminates&nbsp;joint&nbsp;friction).<br>
@@ -474,7 +477,7 @@ urdf_path&nbsp;:&nbsp;string<br>
 tex_path&nbsp;:&nbsp;string,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;path&nbsp;pointing&nbsp;towards&nbsp;a&nbsp;texture&nbsp;file.&nbsp;This&nbsp;texture&nbsp;is&nbsp;applied<br>
 &nbsp;&nbsp;&nbsp;&nbsp;only&nbsp;to&nbsp;static&nbsp;.obj&nbsp;objects.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;'./examples/cmg_vis/check.png'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;None&nbsp;which&nbsp;loads&nbsp;'./examples/cmg_vis/check.png'.<br>
 position&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(3,)&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;initial&nbsp;position&nbsp;of&nbsp;the&nbsp;urdf.&nbsp;The&nbsp;default&nbsp;is&nbsp;[0.,&nbsp;0.,&nbsp;0.].<br>
 wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;shape&nbsp;(4,)&nbsp;optional<br>
@@ -783,8 +786,8 @@ physics&nbsp;:&nbsp;bool,&nbsp;optional<br>
 initial_cond&nbsp;:&nbsp;bool,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;position&nbsp;set&nbsp;is&nbsp;an&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;initial&nbsp;condition&nbsp;of&nbsp;the&nbsp;system.&nbsp;If&nbsp;it&nbsp;is&nbsp;an&nbsp;initial&nbsp;condition,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;simulation&nbsp;is&nbsp;reset&nbsp;using&nbsp;tab,&nbsp;the&nbsp;joint&nbsp;position&nbsp;will&nbsp;be<br>
-&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;again.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;simulation&nbsp;is&nbsp;reset&nbsp;using&nbsp;backspace,&nbsp;the&nbsp;joint&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;be&nbsp;set&nbsp;again.<br>
 color&nbsp;:&nbsp;bool,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;to&nbsp;color&nbsp;the&nbsp;joint&nbsp;based&nbsp;on<br>
 &nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;position.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
@@ -855,8 +858,8 @@ physics&nbsp;:&nbsp;bool,&nbsp;optional<br>
 initial_cond&nbsp;:&nbsp;bool,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;the&nbsp;velocity&nbsp;set&nbsp;is&nbsp;an&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;initial&nbsp;condition&nbsp;of&nbsp;the&nbsp;system.&nbsp;If&nbsp;it&nbsp;is&nbsp;an&nbsp;initial&nbsp;condition,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;simulation&nbsp;is&nbsp;reset&nbsp;using&nbsp;tab,&nbsp;the&nbsp;joint&nbsp;velocity&nbsp;will&nbsp;be<br>
-&nbsp;&nbsp;&nbsp;&nbsp;set&nbsp;again.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;when&nbsp;the&nbsp;simulation&nbsp;is&nbsp;reset&nbsp;using&nbsp;backspace,&nbsp;the&nbsp;joint&nbsp;velocity<br>
+&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;be&nbsp;set&nbsp;again.<br>
 color&nbsp;:&nbsp;bool,&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;boolean&nbsp;flag&nbsp;that&nbsp;indicates&nbsp;whether&nbsp;to&nbsp;color&nbsp;the&nbsp;joint&nbsp;based&nbsp;on<br>
 &nbsp;&nbsp;&nbsp;&nbsp;its&nbsp;velocity.&nbsp;The&nbsp;default&nbsp;is&nbsp;False.<br>
