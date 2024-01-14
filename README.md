@@ -87,10 +87,6 @@ conda --version
 
 * You should get a response that lists the version of Miniconda you just installed.
 
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/conda_10.png?raw=true" alt="conda_10" width="495" height="375"/>
-
-
-
 Miniconda is now installed on your machine.
 
 
