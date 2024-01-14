@@ -6,6 +6,8 @@
 
 # Installation without Virtual Environment (not recommended)
 
+condynsate requires python => 3.8.1, < 3.9.
+
 For a base installation:
 
 ```bash
@@ -91,6 +93,8 @@ Miniconda is now installed on your machine.
 
 
 
+
+
 ## 2. Install condynsate in a Miniconda virtual environment
 To install condynsate in a Miniconda virtual environment, open **Anaconda Prompt (Miniconda3)** and type
 
@@ -152,6 +156,8 @@ to quit the Python shell and exit out of the Anaconda prompt.
 
 
 
+
+
 # Recommended Linux Installation (Miniconda)
 ## 1. Install Miniconda for Linux
 If you do not have Miniconda already installed, run these four commands in the terminal to quickly and quietly install the latest 64-bit version of the installer. To open the terminal press **ctrl+alt+t**.
@@ -178,8 +184,10 @@ You should get a response that lists the version of Miniconda you just installed
 
 
 
+
+
 ## 2. Install condynsate in a Miniconda virtual environment
-To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.8. To open the terminal press **ctrl+alt+t**. When the terminal is open, run the command:
+To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.8.18. To open the terminal press **ctrl+alt+t**. When the terminal is open, run the command:
 ```bash
 conda create -n condynsate python==3.8.18
 ```
@@ -216,6 +224,8 @@ to quit the Python shell.
 
 
 
+
+
 # Recommended MacOS Installation (Miniconda)
 
 ## 1. Install Miniconda for MacOS
@@ -248,9 +258,11 @@ You should get a response that lists the version of Miniconda you just installed
 
 
 
+
+
 ## 2. Install condynsate in a Miniconda virtual environment
 
-To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.8. To open the terminal do one of the following:
+To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.8.18. To open the terminal do one of the following:
 
 - Click the Launchpad icon ![img](https://help.apple.com/assets/63FFD63D71728623E706DB4F/63FFD63E71728623E706DB56/en_US/a1f94c9ca0de21571b88a8bf9aef36b8.png) in the Dock, type Terminal in the search field, then click Terminal.
 - In the Finder ![img](https://help.apple.com/assets/63FFD63D71728623E706DB4F/63FFD63E71728623E706DB56/en_US/058e4af8e726290f491044219d2eee73.png), open the /Applications/Utilities folder, then double-click Terminal.
@@ -300,6 +312,8 @@ quit()
 ```
 
 to quit the Python shell.
+
+
 
 
 
