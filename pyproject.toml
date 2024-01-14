@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "condynsate"
-version = "0.3.22"
+version = "0.4.0"
 description = "Simulates and visualizes articulated systems in real time"
 readme = "README.md"
 authors = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
@@ -32,22 +32,22 @@ keywords = [
     "matplotlib"
 ]
 dependencies = [
-    "numpy >= 1.24.3",
-    "pynput >= 1.7.6",
-    "matplotlib >= 3.7.1",
-    "pybullet >= 3.2.5",
-    "meshcat >= 0.3.2",
-    "PyQt5 >= 5.15.10",
+    "numpy==1.24.4",
+    "pynput==1.7.6",
+    "matplotlib==3.7.4",
+    "pybullet==3.2.6",
+    "meshcat==0.3.2",
+    "PyQt5==5.15.10",
 
 ]
-requires-python = ">=3.10"
+requires-python = "==3.8"
 
 [project.optional-dependencies]
 edu = [    
-    "control >= 0.9.4",
-    "sympy >= 1.12",
-    "spyder >= 5.5.0",
-    "notebook >= 7.0.6",
+    "control==0.9.4",
+    "sympy==1.12",
+    "spyder==5.5.0",
+    "notebook==7.0.6",
 ]
 
 [project.urls]
