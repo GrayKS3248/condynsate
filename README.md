@@ -103,10 +103,6 @@ conda create -n condynsate python==3.8
 ```
 Press enter.
 
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_1.png?raw=true" alt="condynsate_1" width="495" height="375"/>
-
-
-
 When prompted, type 
 
 ```bash
@@ -114,20 +110,12 @@ y
 ```
 then press enter.
 
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_2.png?raw=true" alt="condynsate_2" width="495" height="375"/>
-
-
-
 When complete, type
 
 ```bash
 conda activate condynsate
 ```
 then press enter.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_3.png?raw=true" alt="condynsate_3" width="495" height="375"/>
-
-
 
 You can confirm the virtual environment is activated when 
 
@@ -144,10 +132,6 @@ pip install condynsate[edu]
 ```
 and press enter. This installs condynsate and some other optional dependencies that are helpful when using condynsate.
 
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_4.png?raw=true" alt="condynsate_4" width="495" height="375"/>
-
-
-
 Once the installation is complete, you can confirm that condynsate has been successfully installed and the virtual environment is set up correctly by typing
 
 ```bash
@@ -162,10 +146,6 @@ and press enter. Finally type
 condynsate.__version__
 ```
 and press enter. If condynsate is installed correctly, the current version will be shown.
-
-<img src="https://github.com/GrayKS3248/condynsate/blob/main/images/condynsate_5.png?raw=true" alt="condynsate_5" width="495" height="375"/>
-
-
 
 condynsate is now installed on your machine. You may type 
 
