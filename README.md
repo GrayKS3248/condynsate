@@ -99,7 +99,7 @@ Miniconda is now installed on your machine.
 To install condynsate in a Miniconda virtual environment, open **Anaconda Prompt (Miniconda3)** and type
 
 ```bash
-conda create -n condynsate python==3.10
+conda create -n condynsate python==3.8
 ```
 Press enter.
 
@@ -203,9 +203,9 @@ You should get a response that lists the version of Miniconda you just installed
 
 
 ## 2. Install condynsate in a Miniconda virtual environment
-To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.10. To open the terminal press **ctrl+alt+t**. When the terminal is open, run the command:
+To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.8. To open the terminal press **ctrl+alt+t**. When the terminal is open, run the command:
 ```bash
-conda create -n condynsate python==3.10
+conda create -n condynsate python==3.8
 ```
 
 When complete activate the new environment
@@ -274,7 +274,7 @@ You should get a response that lists the version of Miniconda you just installed
 
 ## 2. Install condynsate in a Miniconda virtual environment
 
-To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.10. To open the terminal do one of the following:
+To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.8. To open the terminal do one of the following:
 
 - Click the Launchpad icon ![img](https://help.apple.com/assets/63FFD63D71728623E706DB4F/63FFD63E71728623E706DB56/en_US/a1f94c9ca0de21571b88a8bf9aef36b8.png) in the Dock, type Terminal in the search field, then click Terminal.
 - In the Finder ![img](https://help.apple.com/assets/63FFD63D71728623E706DB4F/63FFD63E71728623E706DB56/en_US/058e4af8e726290f491044219d2eee73.png), open the /Applications/Utilities folder, then double-click Terminal.
@@ -282,7 +282,7 @@ To install condynsate in a Miniconda virtual environment, open the terminal and 
 When the terminal is open, run the command: 
 
 ```bash
-conda create -n condynsate python==3.10
+conda create -n condynsate python==3.8
 ```
 
 When complete activate the new environment
