@@ -131,11 +131,11 @@ then press enter.
 
 You can confirm the virtual environment is activated when 
 
-```
+```bash
 (base)
 ```
 changes to 
-```
+```bash
 (condynsate)
 ```
 at the begining of the prompt line. Once the virtual environment is activated, type
