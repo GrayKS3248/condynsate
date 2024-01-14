@@ -3,4 +3,4 @@ from .visualizer import Visualizer
 from .animator import Animator
 from .keyboard import Keys
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"

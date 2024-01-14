@@ -95,7 +95,7 @@ Miniconda is now installed on your machine.
 To install condynsate in a Miniconda virtual environment, open **Anaconda Prompt (Miniconda3)** and type
 
 ```bash
-conda create -n condynsate python==3.8
+conda create -n condynsate python==3.8.18
 ```
 Press enter.
 
@@ -181,7 +181,7 @@ You should get a response that lists the version of Miniconda you just installed
 ## 2. Install condynsate in a Miniconda virtual environment
 To install condynsate in a Miniconda virtual environment, open the terminal and create a new virtual environment with python 3.8. To open the terminal press **ctrl+alt+t**. When the terminal is open, run the command:
 ```bash
-conda create -n condynsate python==3.8
+conda create -n condynsate python==3.8.18
 ```
 
 When complete activate the new environment
@@ -258,7 +258,7 @@ To install condynsate in a Miniconda virtual environment, open the terminal and 
 When the terminal is open, run the command: 
 
 ```bash
-conda create -n condynsate python==3.8
+conda create -n condynsate python==3.8.18
 ```
 
 When complete activate the new environment
