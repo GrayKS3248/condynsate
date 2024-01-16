@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "condynsate"
-version = "0.4.1"
+version = "0.5.0"
 description = "Simulates and visualizes articulated systems in real time"
 readme = "README.md"
 authors = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
@@ -14,9 +14,11 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Natural Language :: English", 
-    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
     "Topic :: Education :: Computer Aided Instruction (CAI)",
     "Topic :: Scientific/Engineering :: Visualization"
 ]
@@ -33,23 +35,16 @@ keywords = [
     "matplotlib"
 ]
 dependencies = [
-    "numpy==1.24.4",
-    "pynput==1.7.6",
-    "matplotlib==3.7.4",
-    "pybullet==3.2.6",
-    "meshcat==0.3.2",
-    "PyQt5==5.15.10",
-
+    "control",
+    "matplotlib",
+    "meshcat",
+    "notebook",
+    "numpy",
+    "pybullet",
+    "pynput",
+    "sympy",
 ]
-requires-python = "==3.8.18"
-
-[project.optional-dependencies]
-edu = [    
-    "control==0.9.4",
-    "sympy==1.12",
-    "spyder==5.5.0",
-    "notebook==7.0.6",
-]
+requires-python = ">=3.8"
 
 [project.urls]
 Homepage = "https://github.com/GrayKS3248/condynsate"
