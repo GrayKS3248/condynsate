@@ -3069,7 +3069,8 @@ class Simulator:
     def step(self,
              real_time=True,
              update_vis=True,
-             update_ani=True):
+             update_ani=True,
+             max_time=None):
         """
         Takes a single step of the simulation. In this step, the physics
         engine, the Visualizer (3D visualization of urdfs), and the Animator
@@ -3089,6 +3090,9 @@ class Simulator:
         update_ani : bool, optional
             A boolean flag that indicates whether the Animator is updated.
             The default is True.
+        max_time : float or None, optional
+            The maximum amount of simulated seconds the simulator is allowed to
+            run. If None, the simulation will run until "ESC" is pressed.
 
         Returns
         -------
@@ -3154,6 +3158,12 @@ class Simulator:
             if time_to_wait > 0:
                 time.sleep(time_to_wait)
         self.last_step_time = curr_step_time
-                
+    
+        # Check for max time
+        if max_time != None:
+            if self.time > max_time:
+                self.is_done = True
+                return 5 # Return time out code
+    
         return 0 # Return normal code
             
