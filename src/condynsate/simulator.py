@@ -71,6 +71,7 @@ class Simulator:
     handles automatic visualization
     """
     def __init__(self,
+                 keyboard=True,
                  visualization=True,
                  visualization_fr = 30.,
                  animation=True,
@@ -81,6 +82,9 @@ class Simulator:
 
         Parameters
         ----------
+        keyboard : bool, optional
+            A boolean flag that indicates whether the simulator will allow
+            the use of keyboard interactivity. The default is True.
         visualization : bool, optional
             A boolean flag that indicates whether the simulation will be 
             visualized in meshcat. The default is True.
@@ -142,7 +146,11 @@ class Simulator:
             self.ani=None
             
         # Start the keyboard listener
-        self.keys = Keys()
+        self.keyboard = keyboard
+        if self.keyboard:
+            self.keys = Keys()
+        else:
+            self.keys = None
         
         # Keep track if the simulation is done or not
         self.is_done = False
@@ -2890,10 +2898,15 @@ class Simulator:
         Returns
         -------
         bool
-            A boolean flag to indicate whether the desired key is pressed.
+            A boolean flag to indicate whether the desired key is pressed. If
+            the keyboard is disabled, always returns False.
 
         """
-        return self.keys.is_pressed(key)
+        # Make sure that the keyboard exists
+        if (self.keyboard and isinstance(self.keys, Keys)):
+            return self.keys.is_pressed(key)
+        else:
+            return False
         
         
     def await_keypress(self,
@@ -2919,26 +2932,41 @@ class Simulator:
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
-                    
-        # Tell user what to do
-        print("PRESS "+key.upper()+" TO START SIMULATION.")
-        print("PRESS ESC TO QUIT.")
-        print("PRESS SPACE TO PAUSE/RESUME SIMULATION.")
-        print("PRESS BACKSPACE TO RESET SIMULATION.")
-        while not self.is_pressed("enter"):
-            # Ensure so the GUI remains interactive if simulation is suspended
-            if isinstance(self.ani, Animator):
-                self.ani.flush_events()
-                
-            # Termination condition
-            if self.is_pressed("esc"):
-                self.is_done = True
-                print("QUITTING...")
-                break
+        
+        # If there is a keyboard
+        if (self.keyboard and isinstance(self.keys, Keys)):
+            # Tell user what to do
+            print("PRESS "+key.upper()+" TO START SIMULATION.")
+            print("PRESS ESC TO QUIT.")
+            print("PRESS SPACE TO PAUSE/RESUME SIMULATION.")
+            print("PRESS BACKSPACE TO RESET SIMULATION.")
             
-            # Note that the simulation is started
-            if self.is_pressed("enter"):
-                print("CONTINUING...")
+            # Await keypress
+            while True:
+                # Ensure so the GUI remains interactive
+                if isinstance(self.ani, Animator):
+                    self.ani.flush_events()
+                    
+                # Termination condition
+                if self.is_pressed("esc"):
+                    self.is_done = True
+                    print("QUITTING...")
+                    return
+                
+                # Start condition
+                if self.is_pressed(key):
+                    print("CONTINUING...")
+                    return
+            
+        # If there is not a keyboard, wait 1 second then return
+        else:
+            start_time = time.time()
+            while (time.time() - start_time) < 1.0:
+                # Ensure so the GUI remains interactive
+                if isinstance(self.ani, Animator):
+                    self.ani.flush_events()
+                time.sleep(0.05)
+            return
       
       
     def iterate_val(self,
@@ -3092,13 +3120,20 @@ class Simulator:
             The default is True.
         max_time : float or None, optional
             The maximum amount of simulated seconds the simulator is allowed to
-            run. If None, the simulation will run until "ESC" is pressed.
+            run. If None, the simulation will run until "ESC" is pressed. If
+            None and there is no keyboard interactivity, max time is set to 
+            10.0 seconds.
 
         Returns
         -------
         None.
 
         """
+        # Make sure that if there is not keyboard, the simulation only lasts
+        # 10.0 seconds
+        if (not self.keyboard) and (max_time == None):
+            max_time = 10.0
+            
         # Collect keyboard IO for termination
         if self.is_pressed("esc"):
             self.is_done = True
