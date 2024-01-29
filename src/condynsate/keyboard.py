@@ -9,7 +9,6 @@ This modules provides keyboard listening for I/O
 from pynput import keyboard
 from pynput.keyboard import Key as k
 import signal
-import sys
 import time
 
 
@@ -71,7 +70,6 @@ class Keys:
               "Terminating keyboard listener. " + 
               "Goodbye.")
         self.listener.stop()
-        sys.exit()
         
         
     def _get_key_string(self,
