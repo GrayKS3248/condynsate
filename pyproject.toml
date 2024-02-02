@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "condynsate"
-version = "0.5.4"
+version = "0.5.5"
 description = "Simulates and visualizes articulated systems in real time"
 readme = "README.md"
 authors = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
@@ -42,6 +42,7 @@ dependencies = [
     "numpy",
     "pybullet",
     "pynput",
+    "pyside6",
     "sympy",
 ]
 requires-python = ">=3.8"
