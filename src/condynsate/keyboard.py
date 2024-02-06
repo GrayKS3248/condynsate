@@ -44,6 +44,7 @@ class Keys:
         self.listener = keyboard.Listener(on_press=self._on_press,
                                           on_release=self._on_release)
         self.listener.start()
+        self.running = True
 
 
     def _signal_handler(self,
@@ -69,6 +70,7 @@ class Keys:
         print("Exit command detected. " +
               "Terminating keyboard listener. " + 
               "Goodbye.")
+        self.running=False
         self.listener.stop()
         
         
@@ -166,8 +168,6 @@ class Keys:
         # Add the key string to the key buffer
         key_str = self._get_key_string(key)
         self._add_to_buffer(key_str)
-        #print(self.key_buffer)
-        #print(self.mod_key_buffer)
 
 
     def _on_release(self,
@@ -196,8 +196,6 @@ class Keys:
         
         # Remove the released key from the key buffer
         self._remove_from_buffer(key_str)
-        #print(self.key_buffer)
-        #print(self.mod_key_buffer)
         
         # If the buffer is empty, note that no keys are down
         if len(self.key_buffer) == 0 and len(self.mod_key_buffer):
@@ -210,6 +208,7 @@ class Keys:
             print("Termination command detected. " + 
                   "Terminating keyboard listener. " + 
                   "Goodbye")
+            self.running=False
             return False
         
         

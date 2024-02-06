@@ -147,8 +147,10 @@ class Simulator:
             
         # Start the keyboard listener
         self.keyboard = keyboard
+        self.keyboard_running = False
         if self.keyboard:
             self.keys = Keys()
+            self.keyboard_running = True
         else:
             self.keys = None
         
@@ -3133,13 +3135,21 @@ class Simulator:
         # 10.0 seconds
         if (not self.keyboard) and (max_time == None):
             max_time = 10.0
-            
+
+        # If the keyboard is supposed to be running, but it is not,
+        # terminate the simulation
+        if self.keyboard and isinstance(self.keys, Keys):
+            if not self.keys.running:
+                self.is_done = True
+                print("KEYBOARD LOST. QUITTING...")
+                return -2 # Return LOS end code
+
         # Collect keyboard IO for termination
         if self.is_pressed("esc"):
             self.is_done = True
             print("QUITTING...")
             return -1 # Return end code
-        
+
         # Suspend if paused or resume if space is pressed
         if self.paused:
             time.sleep(0.05)
@@ -3151,20 +3161,20 @@ class Simulator:
                 time.sleep(0.2)
                 return 1 # Return end pause code
             return 2 # Return paused code
-            
+  
         # Reset upon request
         if self.is_pressed("backspace"):
             self.reset()
             time.sleep(0.2)
             print("RESET")
             return 3 # Return reset code
-        
+
         # IF NOT PAUSED, NOT ENDING, AND NOT RESETTING
         # Step the physics engine
         curr_step_time = time.time()
         self.engine.stepSimulation()
         self.time = self.time + self.dt
-        
+
         # Update the visualizer if it exists
         time_since_last_vis = curr_step_time - self.last_vis_time
         vis_time_okay =  time_since_last_vis >= (1. / self.visualization_fr)
@@ -3172,11 +3182,11 @@ class Simulator:
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
-                    
+       
         # Update the animator if it exists
         if update_ani and isinstance(self.ani, Animator):
             self.ani.step()
-        
+
         # Pause upon request
         if self.is_pressed("space"):
             self.paused = True
@@ -3185,7 +3195,7 @@ class Simulator:
             print("PAUSED")
             time.sleep(0.2)
             return 4 # Return start pause code
-        
+
         # Calculate suspend time if running in real time
         if real_time:
             time_since_last_step = curr_step_time - self.last_step_time
@@ -3193,12 +3203,12 @@ class Simulator:
             if time_to_wait > 0:
                 time.sleep(time_to_wait)
         self.last_step_time = curr_step_time
-    
+
         # Check for max time
         if max_time != None:
             if self.time > max_time:
                 self.is_done = True
                 return 5 # Return time out code
-    
+
         return 0 # Return normal code
             
