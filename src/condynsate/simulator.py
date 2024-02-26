@@ -1329,13 +1329,16 @@ class Simulator:
                 The (x,y,z) world coordinates of the base of the urdf.
             'roll' : float
                 The Euler angle roll of the base of the urdf
-                that define the body's orientation in the world.
+                that define the body's orientation in the world. Rotation
+                of the body about the world's x-axis
             'pitch' : float
                 The Euler angle pitch of the base of the urdf
-                that define the body's orientation in the world.
+                that define the body's orientation in the world. Rotation
+                of the body about the world's y-axis
             'yaw' : float
                 The Euler angle yaw of the base of the urdf
-                that define the body's orientation in the world.
+                that define the body's orientation in the world. Rotation
+                of the body about the world's z-axis
             'velocity' : array-like, shape (3,)
                 The linear velocity of the base of the urdf in either world 
                 coords or body coords.
@@ -1347,44 +1350,54 @@ class Simulator:
         # Get object id
         urdf_id = urdf_obj.urdf_id
         
-        # Retrieve pos, rpy, and vel (in world coordinates) data
-        pos, xyzw_ori = self.engine.getBasePositionAndOrientation(urdf_id)
+        # Retrieve position and orientation in world coordinates
+        O, Q = self.engine.getBasePositionAndOrientation(urdf_id)
+        O_inW = O
+        xyzw_ori = Q
+        
+        # Convert the orientation quaternion the Euler angles
         rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
-        vel_world, ang_vel_world = self.engine.getBaseVelocity(urdf_id)
+        
+        # Retrieve the velocities in world coordinates
+        vel_inW, ang_vel_inW = self.engine.getBaseVelocity(urdf_id)
         
         # Format the base state data
-        pos = np.array(pos)
+        O_inW = np.array(O_inW)
         rpy = np.array(rpy)
-        vel_world = np.array(vel_world)
-        ang_vel_world = np.array(ang_vel_world)
+        vel_inW = np.array(vel_inW)
+        ang_vel_inW = np.array(ang_vel_inW)
         
         if body_coords:
-            # Get the rotation matrix of the body in the world
-            R_world_to_body = self.engine.getMatrixFromQuaternion(xyzw_ori)
-            R_world_to_body = np.array(R_world_to_body)
-            R_world_to_body = np.reshape(R_world_to_body, (3,3))
-            
+            # Get the rotation matrix of the body in world coords
+            # This rotation matrix takes vectors in body coordinate
+            # and places them in world coordinates.
+            R_ofB_inW = self.engine.getMatrixFromQuaternion(xyzw_ori)
+            R_ofB_inW = np.array(R_ofB_inW)
+            R_ofB_inW = np.reshape(R_ofB_inW, (3,3))
+            R_ofW_inB = R_ofB_inW.T
+             
             # Get the body velocities in body coordinates
-            vel_body = R_world_to_body @ vel_world
-            ang_vel_body =  R_world_to_body @ ang_vel_world
-            
-            # Make the dictionary
-            state = {'position' : pos,
+            vel_inB = R_ofW_inB @ vel_inW
+            ang_vel_inB =  R_ofW_inB @ ang_vel_inW
+        
+            # Make the dictionary in body coords and return the base state
+            state = {'position' : O_inW,
                      'roll' : rpy[0],
                      'pitch' : rpy[1],
                      'yaw' : rpy[2],
-                     'velocity' : vel_body,
-                     'angular velocity' : ang_vel_body}
+                     'velocity' : vel_inB,
+                     'angular velocity' : ang_vel_inB}
             return state
         
-        # Make the dictionary
-        state = {'position' : pos,
-                 'roll' : rpy[0],
-                 'pitch' : rpy[1],
-                 'yaw' : rpy[2],
-                 'velocity' : vel_world,
-                 'angular velocity' : ang_vel_world}
-        return state
+        else:
+            # Make the dictionary in world coords and return the base state
+            state = {'position' : O_inW,
+                     'roll' : rpy[0],
+                     'pitch' : rpy[1],
+                     'yaw' : rpy[2],
+                     'velocity' : vel_inW,
+                     'angular velocity' : ang_vel_inW}
+            return state
     
     
     def get_center_of_mass(self,
