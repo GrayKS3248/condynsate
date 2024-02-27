@@ -198,6 +198,46 @@ def wxyz_from_euler(roll, pitch, yaw):
     return wxyz_quaternion
 
 
+def R_ofB_inW_from_euler(roll, pitch, yaw):
+    """
+    Gets the orientation of a body in world coordinates from the euler angles
+    of the body.
+
+    Parameters
+    ----------
+    roll : float
+        The roll angle in rad.
+    pitch : float
+        The pitch angle in rad.
+    yaw : float
+        The yaw angle in rad.
+
+    Returns
+    -------
+    R_ofC_inW : array-like, shape(3,3)
+        The orientation of the body in world coordinates. This rotation matrix
+        takes vectors in body coordinates to world coordinates .
+
+    """
+    cx = np.cos(roll)
+    sx = np.sin(roll)
+    cy = np.cos(pitch)
+    sy = np.sin(pitch)
+    cz = np.cos(yaw)
+    sz = np.sin(yaw)
+    Rx = np.array([[1., 0., 0.],
+                   [0., cx, -sx],
+                   [0., sx, cx]])
+    Ry = np.array([[cy, 0., sy],
+                   [0., 1., 0.],
+                   [-sy, 0., cy]])
+    Rz = np.array([[cz, -sz, 0.],
+                   [sz, cz, 0.],
+                   [0., 0., 1.]])
+    R_ofB_inW = Rz@Ry@Rx
+    return R_ofB_inW
+
+
 def format_path(unformatted_path):
     """
     Converts an unformatted relative path to a formatted Windows path string

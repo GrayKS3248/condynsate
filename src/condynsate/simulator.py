@@ -1330,21 +1330,31 @@ class Simulator:
             'roll' : float
                 The Euler angle roll of the base of the urdf
                 that define the body's orientation in the world. Rotation
-                of the body about the world's x-axis
+                of the body about the world's x-axis.
             'pitch' : float
                 The Euler angle pitch of the base of the urdf
                 that define the body's orientation in the world. Rotation
-                of the body about the world's y-axis
+                of the body about the world's y-axis.
             'yaw' : float
                 The Euler angle yaw of the base of the urdf
                 that define the body's orientation in the world. Rotation
-                of the body about the world's z-axis
+                of the body about the world's z-axis.
+            'R of world in body' : array-like, shape(3,3):
+                The rotation matrix that takes vectors in world coordinates 
+                to body coordinates. For example, let V_inB be a 3vector
+                written in body coordinates. Let V_inW be a 2vector 
+                written in world coordinates. Then:
+                V_inB = R_ofWorld_inBody @ V_inW
             'velocity' : array-like, shape (3,)
                 The linear velocity of the base of the urdf in either world 
-                coords or body coords.
+                coords or body coords. Ordered as either
+                (vx_inW, vy_inW, vz_inW) or (vx_inB, vy_inB, vz_inB).
             'angular velocity' : array-like, shape (3,)
                 The angular velocity of the base of the urdf in either world 
-                coords or body coords.
+                coords or body coords. Ordered as either
+                (wx_inW, wy_inW, wz_inW), or (wx_inB, wy_inB, wz_inB). When
+                written in world coordinates, exactly equal to the roll rate,
+                the pitch rate, and the yaw rate.
 
         """
         # Get object id
@@ -1357,6 +1367,18 @@ class Simulator:
         
         # Convert the orientation quaternion the Euler angles
         rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
+
+        # Get the rotation matrix of the body in world coords
+        # This rotation matrix takes vectors in body coordinates
+        # and places them in world coordinates.
+        R_ofB_inW = self.engine.getMatrixFromQuaternion(xyzw_ori)
+        R_ofB_inW = np.array(R_ofB_inW)
+        R_ofB_inW = np.reshape(R_ofB_inW, (3,3))
+        
+        # Get the rotation matrix of the world in body coords
+        # This rotation matrix takes vectors in world coordinates
+        # and places them in body coordinates.
+        R_ofW_inB = R_ofB_inW.T
         
         # Retrieve the velocities in world coordinates
         vel_inW, ang_vel_inW = self.engine.getBaseVelocity(urdf_id)
@@ -1368,14 +1390,6 @@ class Simulator:
         ang_vel_inW = np.array(ang_vel_inW)
         
         if body_coords:
-            # Get the rotation matrix of the body in world coords
-            # This rotation matrix takes vectors in body coordinate
-            # and places them in world coordinates.
-            R_ofB_inW = self.engine.getMatrixFromQuaternion(xyzw_ori)
-            R_ofB_inW = np.array(R_ofB_inW)
-            R_ofB_inW = np.reshape(R_ofB_inW, (3,3))
-            R_ofW_inB = R_ofB_inW.T
-             
             # Get the body velocities in body coordinates
             vel_inB = R_ofW_inB @ vel_inW
             ang_vel_inB =  R_ofW_inB @ ang_vel_inW
@@ -1385,6 +1399,7 @@ class Simulator:
                      'roll' : rpy[0],
                      'pitch' : rpy[1],
                      'yaw' : rpy[2],
+                     'R of world in body' : R_ofW_inB,
                      'velocity' : vel_inB,
                      'angular velocity' : ang_vel_inB}
             return state
@@ -1395,6 +1410,7 @@ class Simulator:
                      'roll' : rpy[0],
                      'pitch' : rpy[1],
                      'yaw' : rpy[2],
+                     'R of world in body' : R_ofW_inB,
                      'velocity' : vel_inW,
                      'angular velocity' : ang_vel_inW}
             return state
