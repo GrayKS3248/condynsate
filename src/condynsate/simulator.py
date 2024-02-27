@@ -265,18 +265,18 @@ class Simulator:
         
         # If no euler angles are specified, use the quaternion to set the
         # initial orientation of the urdf object
-        if roll==None and pitch==None and yaw==None: 
+        if roll is None and pitch is None and yaw is None: 
             xyzw_ori = wxyz_to_xyzw(wxyz_quaternion)
         
         # If any euler angles are specified, use the euler angles to set the
         # initial orientation of the urdf object
         # Any unspecified euler angles are set to 0.0
         else:
-            if roll==None:
+            if roll is None:
                 roll=0.0
-            if pitch==None:
+            if pitch is None:
                 pitch=0.0
-            if yaw==None:
+            if yaw is None:
                 yaw=0.0
             euler_angles = [roll, pitch,  yaw]
             xyzw_ori = self.engine.getQuaternionFromEuler(euler_angles)
@@ -1387,18 +1387,18 @@ class Simulator:
         
         # If no euler angles are specified, use the quaternion to set the
         # initial orientation of the urdf object
-        if roll==None and pitch==None and yaw==None: 
+        if roll is None and pitch is None and yaw is None: 
             xyzw_ori = wxyz_to_xyzw(wxyz_ori)
         
         # If any euler angles are specified, use the euler angles to set the
         # initial orientation of the urdf object
         # Any unspecified euler angles are set to 0.0
         else:
-            if roll==None:
+            if roll is None:
                 roll=0.0
-            if pitch==None:
+            if pitch is None:
                 pitch=0.0
-            if yaw==None:
+            if yaw is None:
                 yaw=0.0
             euler_angles = [roll, pitch,  yaw]
             xyzw_ori = self.engine.getQuaternionFromEuler(euler_angles)
@@ -1475,13 +1475,13 @@ class Simulator:
     
     def set_base_state(self,
                        urdf_obj,
-                       position = [0., 0., 0.],
-                       wxyz_quaternion = [1., 0., 0., 0.],
+                       position=None,
+                       wxyz_quaternion=None,
                        roll=None,
                        pitch=None,
                        yaw=None,
-                       velocity = [0., 0., 0.],
-                       ang_velocity = [0., 0., 0.],
+                       velocity=None,
+                       ang_velocity=None,
                        body_coords=False,
                        initial_cond=False):
         """
@@ -1495,25 +1495,28 @@ class Simulator:
             loaded into the simulation.
         position : array-like, shape (3,)
             The position of the urdf.
-            The default is [0., 0., 0.].
+            The default is None. When none, current state does not change.
         wxyz_ori : array-like, shape (4,)
             A wxyz quaternion that describes the orientation of the
             urdf. When roll, pitch, and yaw all have None type, the
             quaternion is used. If any roll, pitch, or yaw have non None type,
             the quaternion is ignored.
-            The default is [1., 0., 0., 0.].
+            The default is None. When none, current state does not change.
         roll : float
-            The roll angle of the urdf. The default is None.
+            The roll angle of the urdf. The default is None. When none,
+            current state does not change.
         pitch : float
-            The pitch angle of the urdf. The default is None.
+            The pitch angle of the urdf. The default is None. When none,
+            current state does not change.
         yaw : float
-            The yaw angle of the urdf. The default is None.
+            The yaw angle of the urdf. The default is None. When none,
+            current state does not change.
         velocity : array-like, shape (3,)
             The velocity to be set in either world or body coords.
-            The default is [0., 0., 0.].
+            The default is None. When none, current state does not change.
         ang_velocity : array-like, shape (3,)
             The angular velocity to be set in either world or body coords.
-            The default is [0., 0., 0.].
+            The default is None. When none, current state does not change.
         body_coords : bool
             A boolean flag that indicates whether the passed velocities are in
             world coords or body coords. The default is False.
@@ -1528,6 +1531,43 @@ class Simulator:
         None.
 
         """
+        # Get the current state
+        current_state = self.get_base_state(urdf_obj=urdf_obj,
+                                            body_coords=False)
+        
+        # If the position is not specified, set the current position
+        if position is None:
+            position = current_state['position']
+    
+        # If neither the orientation nor roll are specified,
+        # set the current roll
+        if wxyz_quaternion is None and roll is None:
+            roll = current_state['roll']
+            
+        # If neither the orientation nor pitch are specified,
+        # set the current pitch
+        if wxyz_quaternion is None and pitch is None: 
+            pitch = current_state['pitch']
+            
+        # If neither the orientation nor yaw are specified,
+        # set the current yaw
+        if wxyz_quaternion is None and yaw is None:
+            yaw = current_state['yaw']
+        
+        # If the orientation is specified, ensure Euler angles are all None
+        if wxyz_quaternion!=None:
+            roll = None
+            pitch = None
+            yaw = None
+        
+        # If the orientation and roll is None, set the current roll
+        if velocity is None:
+            velocity = current_state['velocity']
+            
+        # If the orientation and roll is None, set the current roll
+        if ang_velocity is None:
+            ang_velocity = current_state['angular velocity']
+        
         # Set position and orientation
         position, xyzw_ori = self._set_base_pos(urdf_obj=urdf_obj,
                                                 position=position,
