@@ -197,6 +197,9 @@ class Simulator:
                   roll=None,
                   pitch=None,
                   yaw=None,
+                  velocity=[0., 0., 0.],
+                  ang_velocity=[0., 0., 0.],
+                  body_coords=False,
                   fixed=False,
                   update_vis=True):
         """
@@ -227,6 +230,15 @@ class Simulator:
             The initial pitch angle of the urdf. The default is None.
         yaw : float, optional
             The initial yaw angle of the urdf. The default is None.
+        velocity : array-like, shape (3,)
+            The velocity to be set in either world or body coords.
+            The default is [0., 0., 0.].
+        ang_velocity : array-like, shape (3,)
+            The angular velocity to be set in either world or body coords.
+            The default is [0., 0., 0.].
+        body_coords : bool
+            A boolean flag that indicates whether the passed velocities are in
+            world coords or body coords. The default is False.
         fixed : bool, optional
             A boolean flag that indicates whether the base joint of the
             loaded urdf is fixed. The default is False.
@@ -254,7 +266,7 @@ class Simulator:
         # If no euler angles are specified, use the quaternion to set the
         # initial orientation of the urdf object
         if roll==None and pitch==None and yaw==None: 
-            orientation = wxyz_to_xyzw(wxyz_quaternion)
+            xyzw_ori = wxyz_to_xyzw(wxyz_quaternion)
         
         # If any euler angles are specified, use the euler angles to set the
         # initial orientation of the urdf object
@@ -267,7 +279,7 @@ class Simulator:
             if yaw==None:
                 yaw=0.0
             euler_angles = [roll, pitch,  yaw]
-            orientation = self.engine.getQuaternionFromEuler(euler_angles)
+            xyzw_ori = self.engine.getQuaternionFromEuler(euler_angles)
         
         # Use implicit cylinder for collision and physics calculation
         # Specifies to the engine to use the inertia from the urdf file
@@ -278,8 +290,35 @@ class Simulator:
         urdf_id = self.engine.loadURDF(urdf_path,
                                        flags=(f1 | f2),
                                        basePosition=position,
-                                       baseOrientation=orientation,
+                                       baseOrientation=xyzw_ori,
                                        useFixedBase=fixed)
+        
+        # If the velocities are passed in body coordinates, convert them
+        # to world coordinates before setting them
+        if body_coords:
+            R_ofB_inW = self.engine.getMatrixFromQuaternion(xyzw_ori)
+            R_ofB_inW = np.array(R_ofB_inW)
+            R_ofB_inW = np.reshape(R_ofB_inW, (3,3))
+            v_inB = np.array(velocity)
+            w_inB = np.array(ang_velocity)
+            v_inW = R_ofB_inW @ v_inB
+            w_inW = R_ofB_inW @ w_inB
+        
+        # If the velocities are already in world coords, do nothing
+        else:
+            v_inW = np.array(velocity)
+            w_inW = np.array(ang_velocity)
+            
+        # Set the base velocity and angular velocity
+        self.engine.resetBaseVelocity(objectUniqueId=urdf_id,
+                                      linearVelocity=v_inW,
+                                      angularVelocity=w_inW)
+        
+        # Make an initial condition map for the base
+        initial_conds = {'position' : position,
+                         'orientation' : xyzw_ori,
+                         'velocity' : v_inW,
+                         'angular velocity' : w_inW}
         
         # Get the joint and link maps for the urdf object
         joint_map, link_map = self._make_joint_and_link_maps(urdf_id)
@@ -289,10 +328,6 @@ class Simulator:
                             joint_map,
                             link_map,
                             update_vis)
-        
-        # Make an initial condition map for the base
-        initial_conds = {'position' : position,
-                         'orientation' : orientation}
         
         # Record the initial conditions of each joint
         for key in joint_map:
@@ -781,14 +816,14 @@ class Simulator:
                 
     
     def set_joint_velocity(self,
-                          urdf_obj,
-                          joint_name,
-                          velocity=0.,
-                          physics=False,
-                          initial_cond=False,
-                          color=False,
-                          min_vel=-100.,
-                          max_vel=100.):
+                           urdf_obj,
+                           joint_name,
+                           velocity=0.,
+                           physics=False,
+                           initial_cond=False,
+                           color=False,
+                           min_vel=-100.,
+                           max_vel=100.):
         """
         Sets the velocity of a joint of a urdf.
 
@@ -1301,7 +1336,220 @@ class Simulator:
         info = self.engine.getDynamicsInfo(urdf_id,link_id)
         mass = info[0]
         return mass
+    
+    
+    ###########################################################################
+    #BODY SETTERS
+    ###########################################################################
+    def _set_base_pos(self,
+                      urdf_obj,
+                      position,
+                      wxyz_ori,
+                      roll,
+                      pitch,
+                      yaw):
+        """
+        Sets the base position and orientation of the body. Does not use
+        physics.
 
+        Parameters
+        ----------
+        urdf_path : string
+            The path to the .urdf file that describes the urdf to be
+            loaded into the simulation.
+        position : array-like, shape (3,)
+            The position of the urdf.
+        wxyz_ori : array-like, shape (4,)
+            A wxyz quaternion that describes the orientation of the
+            urdf. When roll, pitch, and yaw all have None type, the
+            quaternion is used. If any roll, pitch, or yaw have non None type,
+            the quaternion is ignored.
+        roll : float
+            The roll angle of the urdf.
+        pitch : float
+            The pitch angle of the urdf.
+        yaw : float
+            The yaw angle of the urdf.
+
+        Returns
+        -------
+        position : array-like, shape (3,)
+            The position set to the urdf.
+        xyzw_ori : array-like, shape (4,)
+            The xyzw quaternion set to the urdf.
+
+        """
+        # Get the urdf ID
+        i = urdf_obj.urdf_id
+        
+        # Get the initial position of the urdf object in world coordinates
+        position = np.array(position)
+        
+        # If no euler angles are specified, use the quaternion to set the
+        # initial orientation of the urdf object
+        if roll==None and pitch==None and yaw==None: 
+            xyzw_ori = wxyz_to_xyzw(wxyz_ori)
+        
+        # If any euler angles are specified, use the euler angles to set the
+        # initial orientation of the urdf object
+        # Any unspecified euler angles are set to 0.0
+        else:
+            if roll==None:
+                roll=0.0
+            if pitch==None:
+                pitch=0.0
+            if yaw==None:
+                yaw=0.0
+            euler_angles = [roll, pitch,  yaw]
+            xyzw_ori = self.engine.getQuaternionFromEuler(euler_angles)
+        
+        # Set the base position and orientation
+        self.engine.resetBasePositionAndOrientation(bodyUniqueId=i,
+                                                    posObj=position,
+                                                    ornObj=xyzw_ori)
+        
+        # Return the set position and orientation
+        return position, xyzw_ori
+    
+    
+    def _set_base_vel(self,
+                      urdf_obj,
+                      xyzw_ori,
+                      velocity,
+                      ang_velocity,
+                      body_coords):
+        """
+        Sets the velocity and angular velocity of a urdf. Does not use physics.
+
+        Parameters
+        ----------
+        urdf_path : string
+            The path to the .urdf file that describes the urdf to be
+            loaded into the simulation.
+        xyzw_ori : array-like, shape (4,)
+            A xyzw quaternion that describes the orientation of the
+            urdf.
+        velocity : array-like, shape (3,)
+            The velocity to be set in either world or body coords.
+        ang_velocity : array-like, shape (3,)
+            The angular velocity to be set in either world or body coords.
+        body_coords : bool
+            A boolean flag that indicates whether the passed velocities are in
+            world coords or body coords.
+
+        Returns
+        -------
+        v_inW : array-like, shape (3,)
+            The velocity set in world coords.
+        w_inW : array-like, shape (3,)
+            The angular velocity set in world coords.
+
+        """
+        # Get the urdf ID
+        i = urdf_obj.urdf_id
+        
+        # If the velocities are passed in body coordinates, convert them
+        # to world coordinates before setting them
+        if body_coords:
+            R_ofB_inW = self.engine.getMatrixFromQuaternion(xyzw_ori)
+            R_ofB_inW = np.array(R_ofB_inW)
+            R_ofB_inW = np.reshape(R_ofB_inW, (3,3))
+            v_inB = np.array(velocity)
+            w_inB = np.array(ang_velocity)
+            v_inW = R_ofB_inW @ v_inB
+            w_inW = R_ofB_inW @ w_inB
+        
+        # If the velocities are already in world coords, do nothing
+        else:
+            v_inW = np.array(velocity)
+            w_inW = np.array(ang_velocity)
+            
+        # Set the base velocity and angular velocity
+        self.engine.resetBaseVelocity(objectUniqueId=i,
+                                      linearVelocity=v_inW,
+                                      angularVelocity=w_inW)
+        
+        # Return the set velocities
+        return v_inW, w_inW
+    
+    
+    def set_base_state(self,
+                       urdf_obj,
+                       position = [0., 0., 0.],
+                       wxyz_quaternion = [1., 0., 0., 0.],
+                       roll=None,
+                       pitch=None,
+                       yaw=None,
+                       velocity = [0., 0., 0.],
+                       ang_velocity = [0., 0., 0.],
+                       body_coords=False,
+                       initial_cond=False):
+        """
+        Sets the position, orientation, linear velocity, and angular velocity
+        of a urdf. Does not use physics.
+
+        Parameters
+        ----------
+        urdf_path : string
+            The path to the .urdf file that describes the urdf to be
+            loaded into the simulation.
+        position : array-like, shape (3,)
+            The position of the urdf.
+            The default is [0., 0., 0.].
+        wxyz_ori : array-like, shape (4,)
+            A wxyz quaternion that describes the orientation of the
+            urdf. When roll, pitch, and yaw all have None type, the
+            quaternion is used. If any roll, pitch, or yaw have non None type,
+            the quaternion is ignored.
+            The default is [1., 0., 0., 0.].
+        roll : float
+            The roll angle of the urdf. The default is None.
+        pitch : float
+            The pitch angle of the urdf. The default is None.
+        yaw : float
+            The yaw angle of the urdf. The default is None.
+        velocity : array-like, shape (3,)
+            The velocity to be set in either world or body coords.
+            The default is [0., 0., 0.].
+        ang_velocity : array-like, shape (3,)
+            The angular velocity to be set in either world or body coords.
+            The default is [0., 0., 0.].
+        body_coords : bool
+            A boolean flag that indicates whether the passed velocities are in
+            world coords or body coords. The default is False.
+        initial_cond : bool, optional
+            A boolean flag that indicates whether or not
+            the state set is an initial condition. If it is an initial
+            condition, whenever the reset() function is called, this state will
+            be set. The default is False.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Set position and orientation
+        position, xyzw_ori = self._set_base_pos(urdf_obj=urdf_obj,
+                                                position=position,
+                                                wxyz_ori=wxyz_quaternion,
+                                                roll=roll,
+                                                pitch=pitch,
+                                                yaw=yaw)
+        
+        # Set linear and angular velocities
+        v_inW, w_inW = self._set_base_vel(urdf_obj=urdf_obj,
+                                          xyzw_ori=xyzw_ori,
+                                          velocity=velocity,
+                                          ang_velocity=ang_velocity,
+                                          body_coords=body_coords)
+        
+        # Handle the initial conditions
+        if initial_cond:
+            urdf_obj.initial_conds['position'] = position
+            urdf_obj.initial_conds['orientation'] = xyzw_ori
+            urdf_obj.initial_conds['velocity'] = v_inW
+            urdf_obj.initial_conds['angular velocity'] = w_inW
+        
 
     ###########################################################################
     #BODY GETTERS
@@ -3095,9 +3343,14 @@ class Simulator:
             i = urdf_obj.urdf_id
             p = urdf_obj.initial_conds['position']
             o = urdf_obj.initial_conds['orientation']
+            v = urdf_obj.initial_conds['velocity']
+            w = urdf_obj.initial_conds['angular velocity']
             self.engine.resetBasePositionAndOrientation(bodyUniqueId=i,
                                                         posObj=p,
                                                         ornObj=o)
+            self.engine.resetBaseVelocity(objectUniqueId=i,
+                                          linearVelocity=v,
+                                          angularVelocity=w)
             
             # Reset each joint
             for joint_name in urdf_obj.joint_map.keys():
