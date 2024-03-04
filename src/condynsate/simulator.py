@@ -1531,41 +1531,50 @@ class Simulator:
         None.
 
         """
+        # Determine what is being set
+        set_pos = not (position is None) 
+        set_quat = not (wxyz_quaternion is None)
+        set_roll = not (roll is None)
+        set_pitch = not (pitch is None)
+        set_yaw = not (yaw is None)
+        set_vel = not (velocity is None) 
+        set_ang_vel = not (ang_velocity is None)
+        
         # Get the current state
         current_state = self.get_base_state(urdf_obj=urdf_obj,
                                             body_coords=False)
         
         # If the position is not specified, set the current position
-        if position is None:
+        if not set_pos:
             position = current_state['position']
     
         # If neither the orientation nor roll are specified,
         # set the current roll
-        if wxyz_quaternion is None and roll is None:
+        if (not set_quat) and (not set_roll):
             roll = current_state['roll']
             
         # If neither the orientation nor pitch are specified,
         # set the current pitch
-        if wxyz_quaternion is None and pitch is None: 
+        if (not set_quat) and (not set_pitch): 
             pitch = current_state['pitch']
             
         # If neither the orientation nor yaw are specified,
         # set the current yaw
-        if wxyz_quaternion is None and yaw is None:
+        if (not set_quat) and (not set_yaw):
             yaw = current_state['yaw']
         
         # If the orientation is specified, ensure Euler angles are all None
-        if wxyz_quaternion!=None:
+        if set_quat:
             roll = None
             pitch = None
             yaw = None
         
         # If the orientation and roll is None, set the current roll
-        if velocity is None:
+        if (not set_vel):
             velocity = current_state['velocity']
             
         # If the orientation and roll is None, set the current roll
-        if ang_velocity is None:
+        if (not set_ang_vel):
             ang_velocity = current_state['angular velocity']
         
         # Set position and orientation
