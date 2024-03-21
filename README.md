@@ -2,8 +2,6 @@
 
  [condynsate](https://github.com/GrayKS3248/condynsate) is a dynamic system simulation and visualization tool built with [PyBullet](https://pybullet.org/wordpress/) and [MeshCat](https://github.com/meshcat-dev/meshcat-python). It automatically simulates multiple objects and their interactions as described by [.urdf](http://wiki.ros.org/urdf), [.stl](https://en.wikipedia.org/wiki/STL_(file_format)), and [.obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) files and can render real time visualizations in a web browser.
 
-
-
 # Installation
 
 ## From Source
@@ -25,8 +23,6 @@ pip install condynsate
     ```bash
     conda --version
     ```
-    
-    
 
 * **Create a new virtual environment**
   
@@ -43,8 +39,6 @@ pip install condynsate
     ```
   
   * You can confirm the virtual environment is activated when environment name on the left side of the command line changes from ``(base)`` to``(ENVNAME)``
-    
-    
 
 * **Install dependencies from Conda-Forge:**
   
@@ -61,8 +55,6 @@ pip install condynsate
     ```bash
     conda install -y python=3 numpy pynput matplotlib pybullet control sympy notebook
     ```
-    
-    
 
 * **Install condynsate using pip**
   
@@ -81,8 +73,6 @@ pip install condynsate
     condynsate.__version__ 
     ```
 
- 
-
 # Usage
 
-For examples of usage, see [examples](https://github.com/GrayKS3248/condynsate/tree/main/examples).
+For examples of usage, see [examples](https://github.com/w-chang/ae353-sp24/tree/main/Projects).
