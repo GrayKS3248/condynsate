@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<robot name="shootingstar">
+  <material name = "altgeld">
+    <color rgba = "0.8666666667 0.203921568627451 0.011764705882353 1" />
+  </material>
+
+  <link name="shootingstar_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.0"/>
+      <inertia ixx="0.0" ixy="0" ixz="0" iyy="0.0" iyz="0" izz="0.0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="sphere.stl" scale="0.25 0.25 0.25"/>
+      </geometry>
+      <material name="altgeld"/>
+    </visual>
+  </link>
+</robot>

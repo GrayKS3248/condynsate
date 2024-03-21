@@ -75,4 +75,4 @@ pip install condynsate
 
 # Usage
 
-For examples of usage, see [examples](https://github.com/w-chang/ae353-sp24/tree/main/Projects).
+For examples of usage, see [examples](https://github.com/GrayKS3248/condynsate/tree/main/examples).

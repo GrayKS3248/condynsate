@@ -1,0 +1,270 @@
+<?xml version="1.0" ?>
+
+<robot name="station">
+    
+    <material name="industrial-blue">
+        <color rgba="0.113725 0.3450980 0.654901 1" />
+    </material>
+    
+    <material name="arches-blue">
+        <color rgba="0.0 0.6235294 0.831372 1" />
+    </material>
+    
+    <material name = "heritage-orange">
+        <color rgba = "0.96078 0.50980 0.11764 1" />
+    </material>
+    
+    <material name="red">
+        <color rgba="1 0 0 1"/>
+    </material>
+        
+    
+    <link name="space">
+    </link>
+
+    <link name="ring" concave="yes">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="Hollow_Cylinder.stl" scale="42.11 42.11 5"/>
+            </geometry>
+            <material name = "industrial-blue"/>
+        </visual>
+        <collision concave="yes">
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="Hollow_Cylinder.stl" scale="42.11 42.11 5"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="start_1">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cube.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cube.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
+    <link name="start_2">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cube.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cube.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
+    <link name="quater_1">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="quater_2">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
+    <link name="half_1">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="half_2">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="three_quater_1">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="three_quater_2">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+            <material name = "arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2 2 0.3"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
+
+    <joint name="space_to_ring" type="continuous">
+        <parent link = "space" />
+        <child link = "ring" />
+        <origin rpy="0 0 0" xyz = "0 0 0" />
+        <axis xyz = "0 0 1" />
+    </joint>
+    
+    <joint name="ring_to_start_1" type="fixed">
+        <parent link = "ring" />
+        <child link = "start_1" />
+        <origin rpy="0 0 0" xyz = "19.72 0 5.15" />
+    </joint>
+    
+    <joint name="ring_to_start_2" type="fixed">
+        <parent link = "ring" />
+        <child link = "start_2" />
+        <origin rpy="0 0 0" xyz = "19.72 0 -0.15" />
+    </joint>
+    
+    <joint name="ring_to_quater_1" type="fixed">
+        <parent link = "ring" />
+        <child link = "quater_1" />
+        <origin rpy="0 0 0" xyz = "0 -19.72 5.15" />
+    </joint>
+    
+    <joint name="ring_to_quater_2" type="fixed">
+        <parent link = "ring" />
+        <child link = "quater_2" />
+        <origin rpy="0 0 0" xyz = "0 -19.72 -0.15" />
+    </joint>
+    
+    <joint name="ring_to_half_1" type="fixed">
+        <parent link = "ring" />
+        <child link = "half_1" />
+        <origin rpy="0 0 0" xyz = "-19.72 0 5.15" />
+    </joint>
+    
+    <joint name="ring_to_half_2" type="fixed">
+        <parent link = "ring" />
+        <child link = "half_2" />
+        <origin rpy="0 0 0" xyz = "-19.72 0 -0.15" />
+    </joint>
+    
+    <joint name="ring_to_three_quater_1" type="fixed">
+        <parent link = "ring" />
+        <child link = "three_quater_1" />
+        <origin rpy="0 0 0" xyz = "0 19.72 5.15" />
+    </joint>
+    
+    <joint name="ring_to_three_quater_2" type="fixed">
+        <parent link = "ring" />
+        <child link = "three_quater_2" />
+        <origin rpy="0 0 0" xyz = "0 19.72 -0.15" />
+    </joint>
+
+</robot>

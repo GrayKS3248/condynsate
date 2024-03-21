@@ -1,0 +1,97 @@
+<?xml version="1.0" ?>
+<robot name="wheel">
+
+    <material name="industrial-blue">
+        <color rgba="0.1137254901 0.3450980392 0.654901960 1" />
+    </material>
+    
+    <material name="arches-blue">
+        <color rgba="0.0 0.62352941176 0.831372549 1" />
+    </material>
+    
+    <material name = "heritage-orange">
+        <color rgba = "0.96078431 0.50980392 0.11764706 1" />
+    </material>
+      
+      
+    <link name="ground">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="plane_big.obj" scale="1.0 1.0 1.0"/>
+            </geometry>
+            <material name = "steel"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="axle">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.5 0.5 0.333"/>
+            </geometry>
+            <material name = "arches-blue"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="wheel">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="2.0 2.0 0.333"/>
+            </geometry>
+            <material name = "industrial-blue"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="1.0"/>
+            <inertia ixx="0.25924" ixy="0" ixz="0" iyy="0.25924" iyz="0" izz="0.5"/>
+        </inertial>
+    </link>
+    
+    <link name="arrow">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="arrow_lin.stl" scale="1.25 0.1 0.75"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    
+    <joint name="ground_to_axle" type="continuous">
+        <parent link = "ground" />
+        <child link = "axle" />
+        <origin xyz = "0 0 0.1665" />
+        <axis xyz = "0 0 1" />
+    </joint>
+    
+    <joint name="axle_to_wheel" type="fixed">
+        <parent link = "axle" />
+        <child link = "wheel" />
+        <origin xyz = "0 0 0.333" />
+    </joint>
+    
+    <joint name="wheel_to_arrow" type="fixed">
+        <parent link = "wheel" />
+        <child link = "arrow" />
+        <origin xyz="0 0 0.17" rpy="1.5707963267948966 0 0"/>
+    </joint>
+
+</robot>
