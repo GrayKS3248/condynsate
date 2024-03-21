@@ -69,35 +69,35 @@ class CMG_sim():
                                 fixed=True,
                                 update_vis=True)
 
-        # If there is no animation, do not add subplots
-        if not animation:
-            return
-        
-        # Make plot for states and input
-        self.p1, self.a1 = self.sim.add_subplot(n_artists=2,
-                                                subplot_type='line',
-                                                title="State",
-                                                x_label="Time [s]",
-                                                y_label="Angles [Deg]",
-                                                colors=["m", "c"],
-                                                line_widths=[2.5, 2.5],
-                                                line_styles=["-", "-"],
-                                                labels=['Frame', 'Gimbal'],
-                                                y_lim=[-90.,90],
-                                                h_zero_line=True)
-        self.p2, self.a2 = self.sim.add_subplot(n_artists=1,
-                                                subplot_type='line',
-                                                title="Input",
-                                                x_label="Time [s]",
-                                                y_label="Torque [Nm]",
-                                                colors=["k"],
-                                                line_widths=[2.5],
-                                                line_styles=["-"],
-                                                y_lim=[-1.,1.],
-                                                h_zero_line=True)
-        
-        # Open the animator GUI
-        self.sim.open_animator_gui()
+        # If there is animation, add subplots
+        if self.animation:
+            # Make plot for states and input
+            self.p1, self.a1 = self.sim.add_subplot(
+                                    n_artists=2,
+                                    subplot_type='line',
+                                    title="State",
+                                    x_label="Time [s]",
+                                    y_label="Angles [Deg]",
+                                    colors=["m", "c"],
+                                    line_widths=[2.5, 2.5],
+                                    line_styles=["-", "-"],
+                                    labels=['Frame', 'Gimbal'],
+                                    y_lim=[-90.,90],
+                                    h_zero_line=True)
+            self.p2, self.a2 = self.sim.add_subplot(
+                                    n_artists=1,
+                                    subplot_type='line',
+                                    title="Input",
+                                    x_label="Time [s]",
+                                    y_label="Torque [Nm]",
+                                    colors=["k"],
+                                    line_widths=[2.5],
+                                    line_styles=["-"],
+                                    y_lim=[-1.,1.],
+                                    h_zero_line=True)
+            
+            # Open the animator GUI
+            self.sim.open_animator_gui()
 
 
     def run(self,
@@ -171,7 +171,10 @@ class CMG_sim():
             data["time"] : List of Floats  
                 A list of the time stamps in seconds.
 
-        """          
+        """
+        # Reset the simulator
+        self.sim.reset()
+        
         # Set the initial values
         self.sim.set_joint_position(urdf_obj=self.cmg_obj,
                                 joint_name='wall_to_frame_axle',
@@ -198,7 +201,8 @@ class CMG_sim():
         self.sim.set_joint_velocity(urdf_obj=self.cmg_obj,
                                     joint_name='cage_to_wheel',
                                     velocity = rotor_velocity,
-                                    physics=True)
+                                    physics=False,
+                                    initial_cond=True)
         self.sim.set_joint_damping(urdf_obj=self.cmg_obj,
                                    joint_name='wall_to_frame_axle',
                                    damping=frame_damping)
@@ -318,7 +322,8 @@ class CMG_sim():
                 self.sim.set_joint_velocity(urdf_obj=self.cmg_obj,
                                             joint_name='cage_to_wheel',
                                             velocity = rotor_velocity,
-                                            physics=True)
+                                            physics=False,
+                                            initial_cond=True)
                 
                 # Reset the history
                 time_history = []

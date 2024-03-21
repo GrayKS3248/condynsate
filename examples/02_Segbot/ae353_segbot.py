@@ -196,6 +196,9 @@ class Segbot_sim():
                 A list of the time stamps in seconds.
 
         """
+        # Reset the simulator
+        self.sim.reset()
+        
         # Set the initial values
         self.sim.set_joint_velocity(urdf_obj=self.station_obj,
                                 joint_name='space_to_ring',

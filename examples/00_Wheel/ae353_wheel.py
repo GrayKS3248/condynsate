@@ -7,7 +7,6 @@ This modules provides a backend for the ae353 wheel example
 ###############################################################################
 from condynsate.simulator import Simulator
 from pathlib import Path
-import time
 
 
 ###############################################################################
@@ -166,6 +165,9 @@ class Wheel_sim():
                 A list of all torques applied during the simulation.
 
         """
+        # Reset the simulator
+        self.sim.reset()
+        
         # Set the initial values
         self.sim.set_joint_position(urdf_obj = self.wheel_obj,
                                     joint_name = "ground_to_axle",

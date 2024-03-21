@@ -180,7 +180,10 @@ class Cart_sim():
             data["time"] : List of Floats
                 A list of the time stamps in seconds.
 
-        """    
+        """
+        # Reset the simulator
+        self.sim.reset()
+        
         # Set the initial values
         self.sim.set_joint_position(urdf_obj=self.cart_obj,
                                 joint_name='chassis_to_arm',
