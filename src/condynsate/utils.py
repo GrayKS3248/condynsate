@@ -284,3 +284,107 @@ def format_RGB(unformatted_rgb,
     rgb_255_int = rgb_255.astype(int)
     list_rgb_255_int = rgb_255_int.tolist()
     return list_rgb_255_int
+
+
+def RAB_to_RBA(R_ofA_inB):
+    """
+    Takes a rotation cosine matrix of the A frame in B coords to the rotation
+    cosine of the B frame in A coords.
+
+    Parameters
+    ----------
+    R_ofA_inB : valid rotation matrix, shape(3,3)
+        The rotation cosine matrix of the A frame in B coords.
+
+    Returns
+    -------
+    R_ofB_inA : valid rotation matrix, shape(3,3)
+        The rotation cosine matrix of the B frame in A coords.
+
+    """
+    R_ofB_inA = np.array(R_ofA_inB).T
+    return R_ofB_inA
+    
+
+def OAB_to_OBA(R_ofA_inB, O_ofA_inB):
+    """
+    Takes the origin of frame A in B coords to the origin of frame B in A
+    coords.
+
+    Parameters
+    ----------
+    R_ofA_inB : valid rotation matrix, shape(3,3)
+        The rotation cosine matrix of the A frame in B coords.
+    O_ofA_inB : array, shape(3,)
+        The origin of frame A in B coords.
+
+    Returns
+    -------
+    O_ofB_inA : array, shape(3,)
+        The origin of frame B in A coords.
+
+    """
+    R_ofB_inA = RAB_to_RBA(R_ofA_inB)
+    O_ofB_inA = -R_ofB_inA @ np.array(O_ofA_inB)
+    return O_ofB_inA
+
+
+def vc_inA_toB(R_ofA_inB, vc_inA):
+    """
+    Based on a relative cosine matrix, takes vecotrs in frame A coords to 
+    frame B coords.
+    
+    Parameters
+    ----------
+    R_ofA_inB : valid rotation matrix, shape(3,3)
+        The rotation cosine matrix of the A frame in B coords.
+    vc_inA : array, shape(3,)
+        A 3 vector in frame A.
+
+    Returns
+    -------
+    vc_inB : array, shape(3,)
+        The same 3 vector in frame B coords.
+
+    """
+    vc_inB = np.array(R_ofA_inB) @ np.array(vc_inA)
+    return vc_inB
+    
+
+def pt_inA_toB(R_ofA_inB, O_ofA_inB, pt_inA):
+    """
+    Based on a relative cosine matrix and origin vector, takes a point in frame
+    A coords to frame B coords.
+
+    Parameters
+    ----------
+    R_ofA_inB : valid rotation matrix, shape(3,3)
+        The rotation cosine matrix of the A frame in B coords.
+    O_ofA_inB : array, shape(3,)
+        The origin of frame A in B coords.
+    pt_inA : array, shape(3,)
+        A 3D point in frame A.
+
+    Returns
+    -------
+    pt_inB : array, shape(3,)
+        The same 3D point in B coords.
+
+    """
+    pt_inB = np.array(R_ofA_inB) @ np.array(pt_inA) + np.array(O_ofA_inB)
+    return pt_inB
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

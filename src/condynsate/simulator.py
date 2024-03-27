@@ -14,7 +14,8 @@ from pybullet_utils import bullet_client as bc
 from condynsate.visualizer import Visualizer
 from condynsate.animator import Animator
 from condynsate.utils import format_path,format_RGB,wxyz_to_xyzw,xyzw_to_wxyz
-from condynsate.utils import xyzw_quat_mult, get_rot_from_2_vecs
+from condynsate.utils import xyzw_quat_mult, get_rot_from_2_vecs, vc_inA_toB
+from condynsate.utils import RAB_to_RBA
 from condynsate.keyboard import Keys
 from matplotlib import colormaps as cmaps
 from pathlib import Path
@@ -500,6 +501,65 @@ class Simulator:
             self.engine.changeDynamics(urdf_id,
                                        joint_id,
                                        maxJointVelocity=max_vel)
+            
+            
+    ###########################################################################
+    #CHANGE OF COORDINATE TOOLS
+    ###########################################################################      
+    def _v_inB_to_vinW(self,
+                       urdf_obj,
+                       v_inB):
+        """
+        Converts a vector in body coords to a vector in world coords
+    
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose base orientation describes the body frame.
+        v_inB : array-like, shape(3,)
+            A three vector in body coords.
+    
+        Returns
+        -------
+        v_inW : array-like, shape(3,)
+            The same three vector in world coords.
+    
+        """
+        v_inB = np.array(v_inB)
+        world_state = self.get_base_state(urdf_obj=urdf_obj,
+                                          body_coords=False)
+        R_ofW_inB = world_state['R of world in body']
+        R_ofB_inW = RAB_to_RBA(R_ofW_inB)
+        v_inW = vc_inA_toB(R_ofB_inW, v_inB)
+        return v_inW
+        
+    
+    def _v_inW_to_vinB(self,
+                       urdf_obj,
+                       v_inW):
+        """
+        Converts a vector in world coords to a vector in body coords
+    
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj whose base orientation describes the body frame.
+        v_inW : array-like, shape(3,)
+            A three vector in world coords.
+    
+        Returns
+        -------
+        v_inB : array-like, shape(3,)
+            The same three vector in body coords.
+    
+        """
+        v_inW = np.array(v_inW)
+        world_state = self.get_base_state(urdf_obj=urdf_obj,
+                                          body_coords=False)
+        R_ofW_inB = world_state['R of world in body']
+        v_inB = vc_inA_toB(R_ofW_inB, v_inW)
+        return v_inB
+            
             
     ###########################################################################
     #JOINT SETTERS
@@ -1261,24 +1321,40 @@ class Simulator:
                        urdf_obj,
                        link_name):
         """
-        Gets the rigid body position and orientation of a link in world
-        cooridinates.
+        Gets the rigid body states (position and orientation) of a given
+        link of a given urdf. 
 
         Parameters
         ----------
         urdf_obj : URDF_Obj
-            A URDF_Obj that contrains the link whose state is being measured.
+            A URDF_Obj whose state is being measured.
         link_name : string
-            The name of the link to measure.
+            The name of the link whose state is measured. The link name is
+            specified in the .urdf file.
 
         Returns
         -------
-        state : dictionary with the following keys
+        state : a dictionary with the following keys:
             'position' : array-like, shape (3,)
-                Cartesian position of center of mass.
-            'orientation' : array-like, shape(4,)
-                Cartesian orientation of center of mass, in quaternion
-                [x,y,z,w]
+                The (x,y,z) world coordinates of the link.
+            'roll' : float
+                The Euler angle roll of the link
+                that defines the link's orientation in the world. Rotation
+                of the link about the world's x-axis.
+            'pitch' : float
+                The Euler angle pitch of the link
+                that defines the link's orientation in the world. Rotation
+                of the link about the world's y-axis.
+            'yaw' : float
+                The Euler angle yaw of the link
+                that defines the link's orientation in the world. Rotation
+                of the link about the world's z-axis.
+            'R of world in link' : array-like, shape(3,3):
+                The rotation matrix that takes vectors in world coordinates 
+                to link coordinates. For example, let V_inL be a 3vector
+                written in link coordinates. Let V_inW be a 3vector 
+                written in world coordinates. Then:
+                V_inL = R_ofWorld_inLink @ V_inW
 
         """
         # Get object id and link map
@@ -1287,19 +1363,40 @@ class Simulator:
         
         # Get the link id
         if link_name in link_map:
-            link_id = [link_map[link_name]]
+            link_id = link_map[link_name]
         else:
             return
         
         # Retrieve the link states
-        link_states = self.engine.getLinkStates(urdf_id, link_id)
-        link_states = link_states[0]
-        pos_in_world = link_states[0]
-        ori_in_world = link_states[1]
+        link_state = self.engine.getLinkState(urdf_id, link_id)
+        O_inW = link_state[0]
+        xyzw_ori = link_state[1]
         
-        #  Make the dictionary
-        state = {'position' : pos_in_world,
-                 'orientation' : ori_in_world}
+        # Convert the orientation quaternion the Euler angles
+        rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
+
+        # Get the rotation matrix of the link in world coords
+        # This rotation matrix takes vectors in link coordinates
+        # and places them in world coordinates.
+        R_ofL_inW = self.engine.getMatrixFromQuaternion(xyzw_ori)
+        R_ofL_inW = np.array(R_ofL_inW)
+        R_ofL_inW = np.reshape(R_ofL_inW, (3,3))
+        
+        # Get the rotation matrix of the world in body coords
+        # This rotation matrix takes vectors in world coordinates
+        # and places them in body coordinates.
+        R_ofW_inL = R_ofL_inW.T
+        
+        # Format the link state data
+        O_inW = np.array(O_inW)
+        rpy = np.array(rpy)
+        
+        # Make and return the state dictionary
+        state = {'position' : O_inW,
+                 'roll' : rpy[0],
+                 'pitch' : rpy[1],
+                 'yaw' : rpy[2],
+                 'R of world in link' : R_ofW_inL}
         return state
     
     
@@ -1414,7 +1511,6 @@ class Simulator:
     
     def _set_base_vel(self,
                       urdf_obj,
-                      xyzw_ori,
                       velocity,
                       ang_velocity,
                       body_coords):
@@ -1426,9 +1522,6 @@ class Simulator:
         urdf_path : string
             The path to the .urdf file that describes the urdf to be
             loaded into the simulation.
-        xyzw_ori : array-like, shape (4,)
-            A xyzw quaternion that describes the orientation of the
-            urdf.
         velocity : array-like, shape (3,)
             The velocity to be set in either world or body coords.
         ang_velocity : array-like, shape (3,)
@@ -1451,13 +1544,12 @@ class Simulator:
         # If the velocities are passed in body coordinates, convert them
         # to world coordinates before setting them
         if body_coords:
-            R_ofB_inW = self.engine.getMatrixFromQuaternion(xyzw_ori)
-            R_ofB_inW = np.array(R_ofB_inW)
-            R_ofB_inW = np.reshape(R_ofB_inW, (3,3))
             v_inB = np.array(velocity)
             w_inB = np.array(ang_velocity)
-            v_inW = R_ofB_inW @ v_inB
-            w_inW = R_ofB_inW @ w_inB
+            v_inW = self._v_inB_to_vinW(urdf_obj=urdf_obj,
+                                        v_inB=v_inB)
+            w_inW = self._v_inB_to_vinW(urdf_obj=urdf_obj,
+                                        v_inB=w_inB)
         
         # If the velocities are already in world coords, do nothing
         else:
@@ -1542,7 +1634,7 @@ class Simulator:
         
         # Get the current state
         current_state = self.get_base_state(urdf_obj=urdf_obj,
-                                            body_coords=False)
+                                            body_coords=body_coords)
         
         # If the position is not specified, set the current position
         if not set_pos:
@@ -1587,7 +1679,6 @@ class Simulator:
         
         # Set linear and angular velocities
         v_inW, w_inW = self._set_base_vel(urdf_obj=urdf_obj,
-                                          xyzw_ori=xyzw_ori,
                                           velocity=velocity,
                                           ang_velocity=ang_velocity,
                                           body_coords=body_coords)
@@ -1639,7 +1730,7 @@ class Simulator:
             'R of world in body' : array-like, shape(3,3):
                 The rotation matrix that takes vectors in world coordinates 
                 to body coordinates. For example, let V_inB be a 3vector
-                written in body coordinates. Let V_inW be a 2vector 
+                written in body coordinates. Let V_inW be a 3vector 
                 written in world coordinates. Then:
                 V_inB = R_ofWorld_inBody @ V_inW
             'velocity' : array-like, shape (3,)
@@ -1769,6 +1860,7 @@ class Simulator:
                             urdf_obj,
                             link_name,
                             force,
+                            link_coords=False,
                             show_arrow=False,
                             arrow_scale=0.4,
                             arrow_offset=0.0):
@@ -1783,7 +1875,11 @@ class Simulator:
             The name of the link to which the force is applied.
             The link name is specified in the .urdf file.
         force : array-like, shape (3,)
-            The force vector in body coordinates to apply to the link.
+            The force vector in either world or link coordinates to apply to
+            the link.
+        link_coords : bool, optional
+            A boolean flag that indicates whether force is given in link
+            coords (True) or world coords (False). The default is False.
         show_arrow : bool, optional
             A boolean flag that indicates whether an arrow will be rendered
             on the link to visualize the applied force. The default is False.
@@ -1794,12 +1890,12 @@ class Simulator:
             The amount by which the drawn force arrow will be offset from the
             center of mass along the direction of the applied force. The 
             default is 0.0.
-            
+
         Returns
         -------
         None.
-
         """
+        
         # Do nothing if paused
         if self.paused:
             return
@@ -1808,31 +1904,49 @@ class Simulator:
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
         
-        # Get the joint_id that defines the link
-        if link_name in link_map:
-            joint_id = link_map[link_name]
+        # Get the center of the link in world cooridnates
+        link_state = self.get_link_state(urdf_obj=urdf_obj,
+                                         link_name=link_name)
+        link_inW = link_state['position']
+        
+        # Convert the force to the world frame
+        if link_coords:
+            f_inW = self._v_inB_to_vinW(urdf_obj, force)
         else:
-            return
+            f_inW = np.array(force)
+        
+        # Apply the arrow offset to get the position of the base of the arrow
+        # in world coords
+        if np.linalg.norm(f_inW) != 0:
+            f_inW_dirn = f_inW / np.linalg.norm(f_inW)
+        else:
+            f_inW_dirn = np.array([0., 0., 0.])
+        arr_pos_inW = link_inW + arrow_offset*f_inW_dirn
+        arr_pos_inW = tuple(arr_pos_inW.tolist())
         
         # Draw the force arrow
-        self._apply_force_arrow(urdf_obj=urdf_obj,
-                                link_name=link_name,
-                                force=force,
-                                show_arrow=show_arrow,
-                                arrow_scale=arrow_scale,
-                                arrow_offset=arrow_offset)
+        self._draw_force_arrow(urdf_obj=urdf_obj,
+                                force_name=link_name,
+                                f_inW=f_inW,
+                                arr_pos_inW=arr_pos_inW,
+                                arr_scale=arrow_scale,
+                                show_arrow=show_arrow)
         
-        # Apply the external force
+        # Get the link id to which force is applied
+        link_id = link_map[link_name]
+        
+        # Apply a force to the highest link at the center of mass of the body
         self.engine.applyExternalForce(urdf_id,
-                                       joint_id,
-                                       force,
-                                       [0., 0., 0.],
-                                       flags=self.engine.LINK_FRAME)
+                                       link_id,
+                                       f_inW,
+                                       link_inW,
+                                       flags=self.engine.WORLD_FRAME)
                 
         
     def apply_force_to_com(self,
                            urdf_obj,
                            force,
+                           body_coords=False,
                            show_arrow=False,
                            arrow_scale=0.4,
                            arrow_offset=0.0):
@@ -1844,7 +1958,11 @@ class Simulator:
         urdf_obj : URDF_Obj
             A URDF_Obj to which the force is applied.
         force : array-like, shape (3,)
-            The force vector in world coordinates to apply to the body.
+            The force vector in either world or body coordinates to apply to
+            the body.
+        body_coords : bool, optional
+            A boolean flag that indicates whether force is given in body
+            coords (True) or world coords (False). The default is False.
         show_arrow : bool, optional
             A boolean flag that indicates whether an arrow will be rendered
             on the com to visualize the applied force. The default is False.
@@ -1869,92 +1987,47 @@ class Simulator:
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
         
-        # Get the highest link in the body tree
-        highest_link_id = min(link_map.values())
+        # Convert the force to the world frame
+        if body_coords:
+            f_inW = self._v_inB_to_vinW(urdf_obj, force)
+        else:
+            f_inW = np.array(force)
         
         # Get the center of mass of the body in world cooridnates
-        com = self.get_center_of_mass(urdf_obj)
-        if np.linalg.norm(force) != 0:
-            force_dirn = np.array(force) / np.linalg.norm(force)
+        com_inW = self.get_center_of_mass(urdf_obj)
+        
+        # Apply the arrow offset to get the position of the base of the arrow
+        # in world coords
+        if np.linalg.norm(f_inW) != 0:
+            f_inW_dirn = f_inW / np.linalg.norm(f_inW)
         else:
-            force_dirn = np.array([0., 0., 0.])
-        pos = com + arrow_offset*force_dirn
-        pos = tuple(pos.tolist())
+            f_inW_dirn = np.array([0., 0., 0.])
+        arr_pos_inW = com_inW + arrow_offset*f_inW_dirn
+        arr_pos_inW = tuple(arr_pos_inW.tolist())
         
-        # If the arrow isn't meant to be visualized, hide it
-        vis_exists = isinstance(self.vis, Visualizer)
-        arr_exists = 'COM' in self.lin_arr_map
-        if (not show_arrow) and vis_exists and arr_exists:
-            arrow_name = str(self.lin_arr_map['COM'])
-            path = Path(__file__).parents[0]
-            path = path.absolute().as_posix()
-            path = path + "/__assets__/arrow_lin.stl"
-            self.vis.set_link_color(urdf_name = "Force Arrows",
-                                    link_name = arrow_name,
-                                    stl_path=path, 
-                                    color = [0, 0, 0],
-                                    transparent = True,
-                                    opacity = 0.0)
+        # Draw the force arrow
+        self._draw_force_arrow(urdf_obj=urdf_obj,
+                               force_name='Center_of_Mass',
+                               f_inW=f_inW,
+                               arr_pos_inW=arr_pos_inW,
+                               arr_scale=arrow_scale,
+                               show_arrow=show_arrow)
         
-        # Handle force arrow visualization
-        if show_arrow and isinstance(self.vis, Visualizer):
-            # Get the orientation of the force arrow
-            xyzw_ori = get_rot_from_2_vecs([0,0,1], force)
-            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
-            
-            # Get the scale of the arrow based on the magnitude of the force
-            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
-            scale=scale.tolist()
-            
-            # If the arrow already exists, only update its position and ori
-            if 'COM' in self.lin_arr_map:
-                arrow_name = str(self.lin_arr_map['COM'])
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_lin.stl"
-                self.vis.set_link_color(urdf_name = "Force Arrows",
-                                        link_name = arrow_name,
-                                        stl_path=path, 
-                                        color = [0, 0, 0],
-                                        transparent = False,
-                                        opacity = 1.0)
-                self.vis.apply_transform(urdf_name="Force Arrows",
-                                         link_name=arrow_name,
-                                         scale=scale,
-                                         translate=pos,
-                                         wxyz_quaternion=wxyz_ori)
-            
-            # If the arrow is not already created, add it to the visualizer
-            else:
-                # Add the arrow to the linear arrow map
-                self.lin_arr_map['COM'] = len(self.lin_arr_map)
-                arrow_name = str(self.lin_arr_map['COM'])
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_lin.stl"
-                
-                # Add an arrow to the visualizer
-                self.vis.add_stl(urdf_name="Force Arrows",
-                                 link_name=arrow_name,
-                                 stl_path=path,
-                                 color = [0, 0, 0],
-                                 transparent=False,
-                                 opacity = 1.0,
-                                 scale=scale,
-                                 translate=pos,
-                                 wxyz_quaternion=wxyz_ori)
+        # Get the highest link in the body tree
+        root_link_id = min(link_map.values())
         
         # Apply a force to the highest link at the center of mass of the body
         self.engine.applyExternalForce(urdf_id,
-                                       highest_link_id,
-                                       force,
-                                       com,
+                                       root_link_id,
+                                       f_inW,
+                                       com_inW,
                                        flags=self.engine.WORLD_FRAME)
-        
-        
+
+
     def apply_external_torque(self,
                               urdf_obj,
                               torque,
+                              body_coords=False,
                               show_arrow=False,
                               arrow_scale=0.1,
                               arrow_offset=0.0):
@@ -1991,200 +2064,303 @@ class Simulator:
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
         
-        # Get the highest link in the body tree
-        highest_link_id = min(link_map.values())
+        # Convert the torque to the world frame
+        if body_coords:
+            t_inW = self._v_inB_to_vinW(urdf_obj, torque)
+        else:
+            t_inW = np.array(torque)
         
         # Get the center of mass of the body in world cooridnates
-        com = self.get_center_of_mass(urdf_obj)
-        torque_dirn = np.array(torque) / np.linalg.norm(torque)
-        pos = com + arrow_offset*torque_dirn
-        pos = tuple(pos.tolist())
+        com_inW = self.get_center_of_mass(urdf_obj)
         
-        # If the arrow isn't meant to be visualized, hide it
-        vis_exists = isinstance(self.vis, Visualizer)
-        arr_exists = 'COM' in self.ccw_arr_map
-        if (not show_arrow) and vis_exists and arr_exists:
-            arrow_name = str(self.lin_arr_map['COM'])    
-            path = Path(__file__).parents[0]
-            path = path.absolute().as_posix()
-            path = path + "/__assets__/arrow_ccw.stl"
-            self.vis.set_link_color(urdf_name = "Torque Arrows",
-                                    link_name = arrow_name,
-                                    stl_path=path, 
-                                    color = [0, 0, 0],
-                                    transparent = True,
-                                    opacity = 0.0)
+        # Apply the arrow offset to get the position of the base of the arrow
+        # in world coords
+        if np.linalg.norm(t_inW) != 0:
+            t_inW_dirn = t_inW / np.linalg.norm(t_inW)
+        else:
+            t_inW_dirn = np.array([0., 0., 0.])
+        arr_pos_inW = com_inW + arrow_offset*t_inW_dirn
+        arr_pos_inW = tuple(arr_pos_inW.tolist())
         
-        # Handle force arrow visualization
-        if show_arrow and isinstance(self.vis, Visualizer):
-            # Get the orientation of the force arrow
-            xyzw_ori = get_rot_from_2_vecs([0,0,1], torque)
-            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
-            
-            # Get the scale of the arrow based on the magnitude of the force
-            scale = arrow_scale*np.linalg.norm(torque)*np.array([1., 1., 0.1])
-            scale=scale.tolist()
-            
-            # If the arrow already exists, only update its position and ori
-            if 'COM' in self.ccw_arr_map:
-                arrow_name = str(self.ccw_arr_map['COM'])
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_ccw.stl"
-                self.vis.set_link_color(urdf_name = "Torque Arrows",
-                                        link_name = arrow_name,
-                                        stl_path=path, 
-                                        color = [0, 0, 0],
-                                        transparent = False,
-                                        opacity = 1.0)
-                self.vis.apply_transform(urdf_name="Torque Arrows",
-                                         link_name=arrow_name,
-                                         scale=scale,
-                                         translate=pos,
-                                         wxyz_quaternion=wxyz_ori)
-            
-            # If the arrow is not already created, add it to the visualizer
-            else:
-                # Add the arrow to the linear arrow map
-                self.ccw_arr_map['COM'] = len(self.ccw_arr_map)
-                arrow_name = str(self.ccw_arr_map['COM'])
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_ccw.stl"
-                
-                # Add an arrow to the visualizer
-                self.vis.add_stl(urdf_name="Torque Arrows",
-                                 link_name=arrow_name,
-                                 stl_path=path,
-                                 color = [0, 0, 0],
-                                 transparent=False,
-                                 opacity = 1.0,
-                                 scale=scale,
-                                 translate=pos,
-                                 wxyz_quaternion=wxyz_ori)
+        # Draw the torque arrow
+        self._draw_torque_arrow(urdf_obj=urdf_obj,
+                                torque_name='Center_of_Mass',
+                                t_inW=t_inW,
+                                arr_pos_inW=arr_pos_inW,
+                                arr_scale=arrow_scale,
+                                show_arrow=show_arrow)
+        
+        # Get the highest link in the body tree
+        root_link_id = min(link_map.values())
         
         # Apply a force to the highest link at the center of mass of the body
         self.engine.applyExternalTorque(urdf_id,
-                                        highest_link_id,
-                                        torque,
+                                        root_link_id,
+                                        t_inW,
                                         flags=self.engine.WORLD_FRAME)
-        
-        
-    def _apply_force_arrow(self,
-                           urdf_obj,
-                           link_name,
-                           force,
-                           show_arrow,
-                           arrow_scale,
-                           arrow_offset):
+
+
+    ###########################################################################
+    #DRAWING FOR AND TORQUE ARROWS
+    ########################################################################### 
+    def _draw_force_arrow(self,
+                          urdf_obj,
+                          force_name,
+                          f_inW,
+                          arr_pos_inW,
+                          arr_scale,
+                          show_arrow):
         """
-        Draws a body coordinate force arrow based on force applied to a link.
+        Draws a force arrow based on force applied at a location.
 
         Parameters
         ----------
         urdf_obj : URDF_Obj
             A URDF_Obj that contains that link to which the force is applied.
-        link_name : string
-            The name of the link to which the force is applied.
-            The link name is specified in the .urdf file.
-        force : array-like, shape (3,)
-            The force vector in body coordinates to apply to the link.
+        force_name : string
+            The name of the force applied.
+        f_inW : array-like, shape (3,)
+            The force vector in world coordinates to apply to the link.
+        arr_pos_inW : array-like, shape(3,)
+            The position of the base of the arrow in world coords.
+        arr_scale : float
+            The scaling factor that determines the size of the arrow.
         show_arrow : bool
             A boolean flag that indicates whether an arrow will be rendered
             on the link to visualize the applied force
-        arrow_scale : float
-            The scaling factor that determines the size of the arrow.
-        arrow_offset : float
-            The amount by which the drawn force arrow will be offset from the
-            center of mass along the direction of the applied force.
             
         Returns
         -------
         None.
 
         """
-        # If the arrow isn't meant to be visualized, hide it
+        # Get the URDF ID and combine with link name to get the key to the 
+        # linear arrow map
+        urdf_id = str(urdf_obj.urdf_id)
+        urdf_force = urdf_id + "__" + force_name
+        
+        # Make sure the visualizer exists and check the current status of the 
+        # arrow
         vis_exists = isinstance(self.vis, Visualizer)
-        arr_exists = link_name in self.lin_arr_map
-        if (not show_arrow) and vis_exists and arr_exists:
-            arrow_name = str(self.lin_arr_map[link_name])
-            path = Path(__file__).parents[0]
-            path = path.absolute().as_posix()
-            path = path + "/__assets__/arrow_lin.stl"
+        arr_exists = urdf_force in self.lin_arr_map
+        
+        # If the visualizer doesn't exist, leave
+        if not vis_exists:
+            return
+        
+        # If show_arrow is set to false, and the visualizer and associated
+        # force arrow exist, set the arrows visibility to false
+        if (not show_arrow) and arr_exists:
+            arr_name = str(self.lin_arr_map[urdf_force])
+            arr_path = Path(__file__).parents[0]
+            arr_path = arr_path.absolute().as_posix()
+            arr_path = arr_path + "/__assets__/arrow_lin.stl"
             self.vis.set_link_color(urdf_name = "Force Arrows",
-                                    link_name = arrow_name,
-                                    stl_path=path, 
+                                    link_name = arr_name,
+                                    stl_path = arr_path, 
                                     color = [0, 0, 0],
                                     transparent = True,
                                     opacity = 0.0)
         
-        # Handle force arrow visualization
-        if show_arrow and isinstance(self.vis, Visualizer):
+        # If show arrow is set to True and the visualizer exists, draw the
+        # arrow at the position and orientation listed.
+        if show_arrow:
             
-            # Get the orientation, in body coordinates, of the arrow based
-            # on direction of force
-            arrow_xyzw_in_body = get_rot_from_2_vecs([0,0,1], force)
-            
-            # Get the link state
-            state = self.get_link_state(urdf_obj=urdf_obj,
-                                        link_name=link_name)
-            pos = state['position']
-            if np.linalg.norm(force) != 0:
-                force_dirn = np.array(force) / np.linalg.norm(force)
+            # Get the direction in which the force is applied
+            if np.linalg.norm(f_inW) != 0:
+                arr_dirn_inW = f_inW / np.linalg.norm(f_inW)
             else:
-                force_dirn = np.array([0., 0., 0.])
-            pos = np.array(pos) + arrow_offset*force_dirn
-            pos = tuple(pos.tolist())
-            body_xyzw_in_world = state['orientation']
-            body_xyzw_in_world = np.array(body_xyzw_in_world)
-            
-            # Combine the two rotations
-            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
-            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
+                arr_dirn_inW = np.array([0., 0., 0.])
+                
+            # Get the orientation of the force arrow based on the direction
+            # that it's pointing
+            arr_xyzw_inW = get_rot_from_2_vecs([0,0,1], arr_dirn_inW)
+            arr_wxyz_inW = xyzw_to_wxyz(arr_xyzw_inW)
             
             # Get the scale of the arrow based on the magnitude of the force
-            scale = arrow_scale*np.linalg.norm(force)*np.array([1., 1., 1.])
-            scale=scale.tolist()
+            scale = arr_scale*np.linalg.norm(f_inW)*np.array([1., 1., 1.])
+            scale = scale.tolist()
             
             # If the arrow already exists, only update its position and ori
-            if link_name in self.lin_arr_map:
-                arrow_name = str(self.lin_arr_map[link_name])
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_lin.stl"
+            if arr_exists:
+                # Get the arrow's name
+                arr_name = str(self.lin_arr_map[urdf_force])
+                
+                # Get the path to the arrow asset
+                arr_path = Path(__file__).parents[0]
+                arr_path = arr_path.absolute().as_posix()
+                arr_path = arr_path + "/__assets__/arrow_lin.stl"
+                
+                # Set the visibility of the arrow to True
                 self.vis.set_link_color(urdf_name = "Force Arrows",
-                                        link_name = arrow_name,
-                                        stl_path=path, 
+                                        link_name = arr_name,
+                                        stl_path = arr_path, 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
+                
+                # Set the position and orientation of the arrow
                 self.vis.apply_transform(urdf_name="Force Arrows",
-                                         link_name=arrow_name,
+                                         link_name=arr_name,
                                          scale=scale,
-                                         translate=pos,
-                                         wxyz_quaternion=wxyz_ori)
+                                         translate=arr_pos_inW,
+                                         wxyz_quaternion=arr_wxyz_inW)
+            
             
             # If the arrow is not already created, add it to the visualizer
             else:
                 # Add the arrow to the linear arrow map
-                self.lin_arr_map[link_name] = len(self.lin_arr_map)
-                arrow_name = str(self.lin_arr_map[link_name])
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_lin.stl"
+                self.lin_arr_map[urdf_force] = force_name
+                
+                # Get the arrow's name
+                arr_name = self.lin_arr_map[urdf_force]
+                
+                # Get the path to the arrow asset
+                arr_path = Path(__file__).parents[0]
+                arr_path = arr_path.absolute().as_posix()
+                arr_path = arr_path + "/__assets__/arrow_lin.stl"
                 
                 # Add an arrow to the visualizer
                 self.vis.add_stl(urdf_name="Force Arrows",
-                                 link_name=arrow_name,
-                                 stl_path=path,
+                                 link_name=arr_name,
+                                 stl_path=arr_path,
                                  color = [0, 0, 0],
                                  transparent=False,
                                  opacity = 1.0,
                                  scale=scale,
-                                 translate=pos,
-                                 wxyz_quaternion=wxyz_ori)
+                                 translate=arr_pos_inW,
+                                 wxyz_quaternion=arr_wxyz_inW)
                 
                 
+    def _draw_torque_arrow(self,
+                           urdf_obj,
+                           torque_name,
+                           t_inW,
+                           arr_pos_inW,
+                           arr_scale,
+                           show_arrow):
+        """
+        Draws a torque arrow based on torque applied at a location.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that link to which the torque is applied.
+        torque_name : string
+            The name of the torque applied.
+        t_inW : array-like, shape (3,)
+            The torque vector in world coordinates to apply to the link.
+        arr_pos_inW : array-like, shape(3,)
+            The position of the base of the arrow in world coords.
+        arr_scale : float
+            The scaling factor that determines the size of the arrow.
+        show_arrow : bool
+            A boolean flag that indicates whether an arrow will be rendered
+            on the link to visualize the applied torque
+            
+        Returns
+        -------
+        None.
+
+        """
+        # Get the URDF ID and combine with link name to get the key to the 
+        # ccw arrow map
+        urdf_id = str(urdf_obj.urdf_id)
+        urdf_torque = urdf_id + "__" + torque_name
+        
+        # Make sure the visualizer exists and check the current status of the 
+        # arrow
+        vis_exists = isinstance(self.vis, Visualizer)
+        arr_exists = urdf_torque in self.ccw_arr_map
+        
+        # If the visualizer doesn't exist, leave
+        if not vis_exists:
+            return
+        
+        # If show_arrow is set to false, and the visualizer and associated
+        # torque arrow exist, set the arrows visibility to false
+        if (not show_arrow) and arr_exists:
+            arr_name = str(self.ccw_arr_map[urdf_torque])
+            arr_path = Path(__file__).parents[0]
+            arr_path = arr_path.absolute().as_posix()
+            arr_path = arr_path + "/__assets__/arrow_ccw.stl"
+            self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                    link_name = arr_name,
+                                    stl_path = arr_path, 
+                                    color = [0, 0, 0],
+                                    transparent = True,
+                                    opacity = 0.0)
+        
+        # If show arrow is set to True and the visualizer exists, draw the
+        # arrow at the position and orientation listed.
+        if show_arrow:
+            
+            # Get the direction in which the torque is applied
+            if np.linalg.norm(t_inW) != 0:
+                arr_dirn_inW = t_inW / np.linalg.norm(t_inW)
+            else:
+                arr_dirn_inW = np.array([0., 0., 0.])
+                
+            # Get the orientation of the torque arrow based on the direction
+            # that it's pointing
+            arr_xyzw_inW = get_rot_from_2_vecs([0,0,1], arr_dirn_inW)
+            arr_wxyz_inW = xyzw_to_wxyz(arr_xyzw_inW)
+            
+            # Get the scale of the arrow based on the magnitude of the torque
+            scale = arr_scale*np.linalg.norm(t_inW)*np.array([1., 1., 0.05])
+            scale = scale.tolist()
+            
+            # If the arrow already exists, only update its position and ori
+            if arr_exists:
+                # Get the arrow's name
+                arr_name = str(self.ccw_arr_map[urdf_torque])
+                
+                # Get the path to the arrow asset
+                arr_path = Path(__file__).parents[0]
+                arr_path = arr_path.absolute().as_posix()
+                arr_path = arr_path + "/__assets__/arrow_ccw.stl"
+                
+                # Set the visibility of the arrow to True
+                self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                        link_name = arr_name,
+                                        stl_path = arr_path, 
+                                        color = [0, 0, 0],
+                                        transparent = False,
+                                        opacity = 1.0)
+                
+                # Set the position and orientation of the arrow
+                self.vis.apply_transform(urdf_name="Torque Arrows",
+                                         link_name=arr_name,
+                                         scale=scale,
+                                         translate=arr_pos_inW,
+                                         wxyz_quaternion=arr_wxyz_inW)
+            
+            
+            # If the arrow is not already created, add it to the visualizer
+            else:
+                # Add the arrow to the linear arrow map
+                self.ccw_arr_map[urdf_torque] = torque_name
+                
+                # Get the arrow's name
+                arr_name = self.ccw_arr_map[urdf_torque]
+                
+                # Get the path to the arrow asset
+                arr_path = Path(__file__).parents[0]
+                arr_path = arr_path.absolute().as_posix()
+                arr_path = arr_path + "/__assets__/arrow_ccw.stl"
+                
+                # Add an arrow to the visualizer
+                self.vis.add_stl(urdf_name="Torque Arrows",
+                                 link_name=arr_name,
+                                 stl_path=arr_path,
+                                 color = [0, 0, 0],
+                                 transparent=False,
+                                 opacity = 1.0,
+                                 scale=scale,
+                                 translate=arr_pos_inW,
+                                 wxyz_quaternion=arr_wxyz_inW)
+    
+    
     ###########################################################################
     #URDF VISUALIZATION MANIPULATION
     ###########################################################################
