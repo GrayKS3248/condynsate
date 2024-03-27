@@ -1033,122 +1033,29 @@ class Simulator:
         if joint_id < 0:
             return
         
-        # If the arrow isn't meant to be visualized, hide it
-        vis_exists = isinstance(self.vis, Visualizer)
-        arr_exists = joint_name in self.ccw_arr_map
-        if (not show_arrow) and vis_exists and arr_exists:
-            arrow_name = str(self.ccw_arr_map[joint_name])
-            path = Path(__file__).parents[0]
-            path = path.absolute().as_posix()
-            path = path + "/__assets__/arrow_ccw.stl"
-            self.vis.set_link_color(urdf_name = "Torque Arrows",
-                                    link_name = arrow_name,
-                                    stl_path=path, 
-                                    color = [0, 0, 0],
-                                    transparent = True,
-                                    e = 0.0)
+        # Get the axis information about this joint so we can draw the 
+        # torque arrows in the correct directions
+        ax_inW, pos_inW, link_name = self.get_joint_axis(urdf_obj=urdf_obj,
+                                                         joint_name=joint_name)
         
-        # Handle torque arrow visualization
-        if show_arrow and isinstance(self.vis, Visualizer):
-            # Get the orientation, in body coordinates, of the arrow based
-            # on direction of torque
-            axis = self.get_joint_axis(urdf_obj=urdf_obj,
-                                       joint_name=joint_name)
-            if torque>=0.:
-                arrow_xyzw_in_body = get_rot_from_2_vecs([0,0,1], axis)
-            else:
-                arrow_xyzw_in_body = get_rot_from_2_vecs([0,0,-1], axis)
-                
-            # Get the child link of the joint to which torque is applied
-            joint_index = list(urdf_obj.link_map.values()).index(joint_id)
-            link_name = list(urdf_obj.link_map.keys())[joint_index]
-                
-            # Get the link state
-            state = self.get_link_state(urdf_obj=urdf_obj,
-                                        link_name=link_name)
-            body_xyzw_in_world = state['orientation']
-            body_xyzw_in_world = np.array(body_xyzw_in_world)
-            
-            # Get the arrow offset
-            body_wxyz_axis = np.insert(np.array(axis), 0, 0.)
-            wxyz_R = xyzw_to_wxyz(body_xyzw_in_world)
-            wxyz_R_prime = np.array([wxyz_R[0],
-                                     -wxyz_R[1],
-                                     -wxyz_R[2],
-                                     -wxyz_R[3]])
-            r1 = xyzw_quat_mult(wxyz_R,body_wxyz_axis)
-            world_wxyz_axis = -xyzw_quat_mult(r1, wxyz_R_prime)
-            world_axis = np.array([world_wxyz_axis[1],
-                                   world_wxyz_axis[2],
-                                   world_wxyz_axis[3]])
-            pos = state['position']
-            pos = np.array(pos) + arrow_offset*np.array(world_axis)
-            pos = tuple(pos.tolist())
-            
-            # Combine the two rotations
-            xyzw_ori = xyzw_quat_mult(arrow_xyzw_in_body, body_xyzw_in_world)
-            wxyz_ori = xyzw_to_wxyz(xyzw_ori)
-                
-            # Get the scale of the arrow based on the magnitude of the torque
-            scale = arrow_scale*abs(torque)*np.array([1., 1., 0.1])
-            scale = scale.tolist()
-            
-            # If the arrow already exists, only update its position and ori
-            if link_name in self.ccw_arr_map:
-                arrow_name = str(self.ccw_arr_map[link_name])
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_ccw.stl"
-                self.vis.set_link_color(urdf_name = "Torque Arrows",
-                                        link_name = arrow_name,
-                                        stl_path=path, 
-                                        color = [0, 0, 0],
-                                        transparent = False,
-                                        opacity = 1.0)
-                self.vis.apply_transform(urdf_name="Torque Arrows",
-                                         link_name=arrow_name,
-                                         scale=scale,
-                                         translate=pos,
-                                         wxyz_quaternion=wxyz_ori)
-            
-            # If the arrow is not already created, add it to the visualizer
-            else:
-                # Add the arrow to the linear arrow map
-                self.ccw_arr_map[link_name] = len(self.ccw_arr_map)
-                arrow_name = str(self.ccw_arr_map[link_name])
-                
-                # Add an arrow to the visualizer
-                path = Path(__file__).parents[0]
-                path = path.absolute().as_posix()
-                path = path + "/__assets__/arrow_ccw.stl"
-                self.vis.add_stl(urdf_name="Torque Arrows",
-                                 link_name=arrow_name,
-                                 stl_path=path,
-                                 color = [0, 0, 0],
-                                 transparent=False,
-                                 opacity = 1.0,
-                                 scale=scale,
-                                 translate=pos,
-                                 wxyz_quaternion=wxyz_ori)
+        # Adjust the position of the arrow to get the desired offset
+        arr_pos_inW = pos_inW + arrow_offset*ax_inW
+        arr_pos_inW = arr_pos_inW.tolist()
         
-        # Set the link color based on applied torque if option is selected.
-        if color and isinstance(self.vis, Visualizer):
-            self.set_color_from_torque(urdf_obj=urdf_obj,
-                                       joint_name=joint_name,
-                                       torque=torque,
-                                       min_torque=min_torque,
-                                       max_torque=max_torque)
-        
+        # Draw the torque arrow
+        self._draw_torque_arrow(urdf_obj=urdf_obj,
+                                torque_name=link_name,
+                                t_inW=torque*ax_inW,
+                                arr_pos_inW=arr_pos_inW,
+                                arr_scale=arrow_scale,
+                                show_arrow=show_arrow)
         
         # Set the joint torque
-        if joint_name in joint_map:
-            joint_id = [joint_map[joint_name]]
-            mode = self.engine.TORQUE_CONTROL
-            torque = [torque]
-            self.engine.setJointMotorControlArray(urdf_id,
-                                                  joint_id,
-                                                  mode,
-                                                  forces=torque)
+        self.engine.setJointMotorControlArray(urdf_id,
+                                              [joint_id],
+                                              self.engine.TORQUE_CONTROL,
+                                              forces=[torque])
+        
             
     ###########################################################################
     #JOINT GETTERS
@@ -1225,7 +1132,7 @@ class Simulator:
                         urdf_obj,
                         joint_name):
         """
-        Get the joint axis in local frame.
+        Get the joint axis in the world frame.
 
         Parameters
         ----------
@@ -1236,22 +1143,54 @@ class Simulator:
 
         Returns
         -------
-        axis : array-like, shape(3,)
-            The joint axis in local frame.
+        axis_inW : array-like, shape(3,)
+            The joint axis in world frame.
+        pos_inW : array-like, shape(3,)
+            The (x,y,z) coords of the center of the child link in world coords.
+        link_name : string
+            The name of the child link of the joint.
 
         """
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
         
-        # Set the joint velocity
+        # If the joint exists
         if joint_name in joint_map:
+            
+            # Retrieve the joint axis in parent child coordinates
             joint_id = joint_map[joint_name]
             info = self.engine.getJointInfo(urdf_id,
                                             joint_id)
-            axis = info[13]
-            axis=np.array(axis).tolist()
-            return axis
+            axis_inC = np.array(info[13])
+            
+            # Get the child link
+            link_name = info[12].decode("utf-8")
+            link_id = urdf_obj.link_map[link_name]
+            
+            # Get the orientation of the child link if the child is the base
+            if link_id == -1:
+                child_state = self.get_base_state(urdf_obj=urdf_obj,
+                                                  body_coords=False)
+                R_ofW_inC = child_state['R of world in body']
+                pos_inW = child_state['position']
+                
+            # Get the orientation of the child link if the child is
+            # not the base
+            else:
+                child_state = self.get_link_state(urdf_obj=urdf_obj,
+                                                  link_name=link_name)
+                R_ofW_inC = child_state['R of world in link']
+                pos_inW = child_state['position']
+            
+            # Convert the child coord joint axis to world coords
+            R_ofC_inW = RAB_to_RBA(R_ofW_inC)
+            axis_inW = vc_inA_toB(R_ofC_inW, axis_inC)
+            return axis_inW, pos_inW, link_name
+        
+        # If the joint doesn't exist, return a default axis
+        else:
+            return np.array([0., 0., 1.]), "", np.array([0., 0., 0.])
             
             
     ###########################################################################
