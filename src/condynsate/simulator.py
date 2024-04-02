@@ -140,7 +140,8 @@ class Simulator:
             self.vis = Visualizer(grid_vis=False,axes_vis=False)
         else:
             self.vis=None
-            
+        self.vis_time_okay = True
+        
         # Create an animator
         if animation:
             self.ani = Animator(fr=animation_fr)
@@ -1049,7 +1050,8 @@ class Simulator:
                                 t_inW=torque*ax_inW,
                                 arr_pos_inW=arr_pos_inW,
                                 arr_scale=arrow_scale,
-                                show_arrow=show_arrow)
+                                show_arrow=show_arrow,
+                                force_update=False)
         
         # Set the joint torque
         self.engine.setJointMotorControlArray(urdf_id,
@@ -1870,7 +1872,8 @@ class Simulator:
                                 f_inW=f_inW,
                                 arr_pos_inW=arr_pos_inW,
                                 arr_scale=arrow_scale,
-                                show_arrow=show_arrow)
+                                show_arrow=show_arrow,
+                                force_update=False)
         
         # Get the link id to which force is applied
         link_id = link_map[link_name]
@@ -1951,7 +1954,8 @@ class Simulator:
                                f_inW=f_inW,
                                arr_pos_inW=arr_pos_inW,
                                arr_scale=arrow_scale,
-                               show_arrow=show_arrow)
+                               show_arrow=show_arrow,
+                               force_update=False)
         
         # Get the highest link in the body tree
         root_link_id = min(link_map.values())
@@ -2028,7 +2032,8 @@ class Simulator:
                                 t_inW=t_inW,
                                 arr_pos_inW=arr_pos_inW,
                                 arr_scale=arrow_scale,
-                                show_arrow=show_arrow)
+                                show_arrow=show_arrow,
+                                force_update=False)
         
         # Get the highest link in the body tree
         root_link_id = min(link_map.values())
@@ -2049,7 +2054,8 @@ class Simulator:
                           f_inW,
                           arr_pos_inW,
                           arr_scale,
-                          show_arrow):
+                          show_arrow,
+                          force_update=False):
         """
         Draws a force arrow based on force applied at a location.
 
@@ -2068,12 +2074,20 @@ class Simulator:
         show_arrow : bool
             A boolean flag that indicates whether an arrow will be rendered
             on the link to visualize the applied force
+        force_update : bool, optional
+            A boolean flag that indicates whether or not visualizer frame rate
+            will be ignored and the arrow will update immediately. The default
+            is False
             
         Returns
         -------
         None.
 
         """
+        # If we cannot update the arrow, do nothing
+        if not self.vis_time_okay and not force_update:
+            return
+        
         # Get the URDF ID and combine with link name to get the key to the 
         # linear arrow map
         urdf_id = str(urdf_obj.urdf_id)
@@ -2170,7 +2184,8 @@ class Simulator:
                            t_inW,
                            arr_pos_inW,
                            arr_scale,
-                           show_arrow):
+                           show_arrow,
+                           force_update=False):
         """
         Draws a torque arrow based on torque applied at a location.
 
@@ -2189,12 +2204,20 @@ class Simulator:
         show_arrow : bool
             A boolean flag that indicates whether an arrow will be rendered
             on the link to visualize the applied torque
+        force_update : bool, optional
+            A boolean flag that indicates whether or not visualizer frame rate
+            will be ignored and the arrow will update immediately. The default
+            is False
             
         Returns
         -------
         None.
 
         """
+        # If we cannot update the arrow, do nothing
+        if not self.vis_time_okay and not force_update:
+            return
+        
         # Get the URDF ID and combine with link name to get the key to the 
         # ccw arrow map
         urdf_id = str(urdf_obj.urdf_id)
@@ -3484,6 +3507,7 @@ class Simulator:
         self.is_done = False
         self.time = 0.
         self.last_step_time = time.time()
+        self.vis_time_okay = True
         
         # Reset each urdf
         for urdf_obj in self.urdf_objs:
@@ -3608,8 +3632,10 @@ class Simulator:
 
         # Update the visualizer if it exists
         time_since_last_vis = curr_step_time - self.last_vis_time
-        vis_time_okay =  time_since_last_vis >= (1. / self.visualization_fr)
-        if vis_time_okay and update_vis and isinstance(self.vis, Visualizer):
+        self.vis_time_okay=time_since_last_vis >= (1. / self.visualization_fr)
+        vis_exists = isinstance(self.vis, Visualizer)
+        if self.vis_time_okay and update_vis and vis_exists:
+            self.last_vis_time = curr_step_time
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
