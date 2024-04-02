@@ -14,8 +14,7 @@ from pybullet_utils import bullet_client as bc
 from condynsate.visualizer import Visualizer
 from condynsate.animator import Animator
 from condynsate.utils import format_path,format_RGB,wxyz_to_xyzw,xyzw_to_wxyz
-from condynsate.utils import xyzw_quat_mult, get_rot_from_2_vecs, vc_inA_toB
-from condynsate.utils import RAB_to_RBA
+from condynsate.utils import get_rot_from_2_vecs, vc_inA_toB, RAB_to_RBA
 from condynsate.keyboard import Keys
 from matplotlib import colormaps as cmaps
 from pathlib import Path
@@ -61,6 +60,8 @@ class URDF_Obj:
         self.link_map = link_map     
         self.update_vis = update_vis
         self.initial_conds = {}
+        self.geometries = []
+        self.textures = []
 
 
 ###############################################################################
@@ -2091,12 +2092,9 @@ class Simulator:
         # force arrow exist, set the arrows visibility to false
         if (not show_arrow) and arr_exists:
             arr_name = str(self.lin_arr_map[urdf_force])
-            arr_path = Path(__file__).parents[0]
-            arr_path = arr_path.absolute().as_posix()
-            arr_path = arr_path + "/__assets__/arrow_lin.stl"
             self.vis.set_link_color(urdf_name = "Force Arrows",
                                     link_name = arr_name,
-                                    stl_path = arr_path, 
+                                    link_geometry = self.lin_geom, 
                                     color = [0, 0, 0],
                                     transparent = True,
                                     opacity = 0.0)
@@ -2125,15 +2123,10 @@ class Simulator:
                 # Get the arrow's name
                 arr_name = str(self.lin_arr_map[urdf_force])
                 
-                # Get the path to the arrow asset
-                arr_path = Path(__file__).parents[0]
-                arr_path = arr_path.absolute().as_posix()
-                arr_path = arr_path + "/__assets__/arrow_lin.stl"
-                
                 # Set the visibility of the arrow to True
                 self.vis.set_link_color(urdf_name = "Force Arrows",
                                         link_name = arr_name,
-                                        stl_path = arr_path, 
+                                        link_geometry = self.lin_geom, 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
@@ -2160,15 +2153,15 @@ class Simulator:
                 arr_path = arr_path + "/__assets__/arrow_lin.stl"
                 
                 # Add an arrow to the visualizer
-                self.vis.add_stl(urdf_name="Force Arrows",
-                                 link_name=arr_name,
-                                 stl_path=arr_path,
-                                 color = [0, 0, 0],
-                                 transparent=False,
-                                 opacity = 1.0,
-                                 scale=scale,
-                                 translate=arr_pos_inW,
-                                 wxyz_quaternion=arr_wxyz_inW)
+                self.lin_geom,_=self.vis.add_stl(urdf_name="Force Arrows",
+                                                 link_name=arr_name,
+                                                 stl_path=arr_path,
+                                                 color = [0, 0, 0],
+                                                 transparent=False,
+                                                 opacity = 1.0,
+                                                 scale=scale,
+                                                 translate=arr_pos_inW,
+                                                 wxyz_quaternion=arr_wxyz_inW)
                 
                 
     def _draw_torque_arrow(self,
@@ -2220,12 +2213,9 @@ class Simulator:
         # torque arrow exist, set the arrows visibility to false
         if (not show_arrow) and arr_exists:
             arr_name = str(self.ccw_arr_map[urdf_torque])
-            arr_path = Path(__file__).parents[0]
-            arr_path = arr_path.absolute().as_posix()
-            arr_path = arr_path + "/__assets__/arrow_ccw.stl"
             self.vis.set_link_color(urdf_name = "Torque Arrows",
                                     link_name = arr_name,
-                                    stl_path = arr_path, 
+                                    link_geometry = self.ccw_geom, 
                                     color = [0, 0, 0],
                                     transparent = True,
                                     opacity = 0.0)
@@ -2254,15 +2244,10 @@ class Simulator:
                 # Get the arrow's name
                 arr_name = str(self.ccw_arr_map[urdf_torque])
                 
-                # Get the path to the arrow asset
-                arr_path = Path(__file__).parents[0]
-                arr_path = arr_path.absolute().as_posix()
-                arr_path = arr_path + "/__assets__/arrow_ccw.stl"
-                
                 # Set the visibility of the arrow to True
                 self.vis.set_link_color(urdf_name = "Torque Arrows",
                                         link_name = arr_name,
-                                        stl_path = arr_path, 
+                                        link_geometry = self.ccw_geom, 
                                         color = [0, 0, 0],
                                         transparent = False,
                                         opacity = 1.0)
@@ -2289,15 +2274,15 @@ class Simulator:
                 arr_path = arr_path + "/__assets__/arrow_ccw.stl"
                 
                 # Add an arrow to the visualizer
-                self.vis.add_stl(urdf_name="Torque Arrows",
-                                 link_name=arr_name,
-                                 stl_path=arr_path,
-                                 color = [0, 0, 0],
-                                 transparent=False,
-                                 opacity = 1.0,
-                                 scale=scale,
-                                 translate=arr_pos_inW,
-                                 wxyz_quaternion=arr_wxyz_inW)
+                self.ccw_geom,_=self.vis.add_stl(urdf_name="Torque Arrows",
+                                                 link_name=arr_name,
+                                                 stl_path=arr_path,
+                                                 color = [0, 0, 0],
+                                                 transparent=False,
+                                                 opacity = 1.0,
+                                                 scale=scale,
+                                                 translate=arr_pos_inW,
+                                                 wxyz_quaternion=arr_wxyz_inW)
     
     
     ###########################################################################
@@ -2349,13 +2334,17 @@ class Simulator:
             
             # If the current link is defined by an .obj file
             if paths[i][-4:] == ".obj":
-                self.vis.add_obj(urdf_name=urdf_name,
-                                 link_name=names[i],
-                                 obj_path=paths[i],
-                                 tex_path=tex_path,
-                                 scale=scales[i],
-                                 translate=poss[i],
-                                 wxyz_quaternion=oris[i])
+                geom, tex = self.vis.add_obj(urdf_name=urdf_name,
+                                             link_name=names[i],
+                                             obj_path=paths[i],
+                                             tex_path=tex_path,
+                                             scale=scales[i],
+                                             translate=poss[i],
+                                             wxyz_quaternion=oris[i])
+                
+                # Save the texture and geometry
+                urdf_obj.geometries.append(geom)
+                urdf_obj.textures.append(tex)
                 
             # If the current link is defined by an .stl file
             elif paths[i][-4:] == ".stl":
@@ -2364,15 +2353,19 @@ class Simulator:
                                   range_to_255=True)
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
-                self.vis.add_stl(urdf_name=urdf_name,
-                                 link_name=link_name,
-                                 stl_path=paths[i],
-                                 color=rgb,
-                                 transparent=transparent,
-                                 opacity=opacity,
-                                 scale=scales[i],
-                                 translate=poss[i],
-                                 wxyz_quaternion=oris[i])
+                geom, tex = self.vis.add_stl(urdf_name=urdf_name,
+                                             link_name=link_name,
+                                             stl_path=paths[i],
+                                             color=rgb,
+                                             transparent=transparent,
+                                             opacity=opacity,
+                                             scale=scales[i],
+                                             translate=poss[i],
+                                             wxyz_quaternion=oris[i])
+
+                # Save the texture and geometry
+                urdf_obj.geometries.append(geom)
+                urdf_obj.textures.append(tex)
 
     
     def _update_urdf_visual(self,
@@ -2464,7 +2457,7 @@ class Simulator:
             
             # Extract link id
             link_id = vis_datum[1]
-            
+
             # Link id of -1 implies that the current link is the base
             # of a robot
             if link_id == -1:
@@ -2549,27 +2542,19 @@ class Simulator:
         urdf_name = str(urdf_id)
         link_id = urdf_obj.link_map[link_name]
         
-        # Get current visual data for the requested link
-        vis_data = self.engine.getVisualShapeData(urdf_id)
-        stl_path = ""
-        for vis_datum in vis_data:
-            if vis_datum[1] == link_id:
-                stl_path = vis_datum[4]
-            
-        # Format stl path
-        stl_path = format_path(stl_path.decode('UTF-8'))
+        # Get the link's geometry
+        link_geometry = urdf_obj.geometries[link_id]
         
         # Ensure color is in proper format
-        color = format_RGB(color,
-                            range_to_255=False)
+        color = format_RGB(color, range_to_255=False)
         
         # Set the requested color
         self.vis.set_link_color(urdf_name = urdf_name,
-                                   link_name = link_name,
-                                   stl_path = stl_path, 
-                                   color = color,
-                                   transparent = transparent,
-                                   opacity = opacity)
+                                link_name = link_name,
+                                link_geometry = link_geometry, 
+                                color = color,
+                                transparent = transparent,
+                                opacity = opacity)
 
 
     def set_color_from_pos(self,

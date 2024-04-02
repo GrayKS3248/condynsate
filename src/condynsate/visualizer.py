@@ -84,8 +84,11 @@ class Visualizer():
 
         Returns
         -------
-        None.
-
+        obj_geometry : meshcat.geometry.ObjMeshGeometry
+            The object mesh.
+        obj_texture : meshcat.geometry.MeshPhongMaterial
+            The object texture.
+            
         """
         # Get geometry of object from the .obj file at obj_path
         obj_path = format_path(obj_path)
@@ -105,6 +108,9 @@ class Visualizer():
         # Add and transform the object to its orientation and position
         self.scene[urdf_name][link_name].set_object(obj_geometry, obj_texture)
         self.scene[urdf_name][link_name].set_transform(transform)
+        
+        # Return the geometry and texture
+        return obj_geometry, obj_texture
         
         
     def add_stl(self,
@@ -150,7 +156,10 @@ class Visualizer():
 
         Returns
         -------
-        transform : None.
+        link_geometry : meshcat.geometry.StlMeshGeometry
+            The link mesh.
+        link_mat : meshcat.geometry.MeshPhongMaterial
+            The link material.
 
         """
         # Set the parts's geometry
@@ -173,11 +182,14 @@ class Visualizer():
         self.scene[urdf_name][link_name].set_object(link_geometry, link_mat)
         self.scene[urdf_name][link_name].set_transform(transform)
         
+        # Return the geometry and material
+        return link_geometry, link_mat
+    
     
     def set_link_color(self,
                        urdf_name,
                        link_name,
-                       stl_path, 
+                       link_geometry,
                        color = [91, 155, 213],
                        transparent = False,
                        opacity = 1.0):
@@ -191,9 +203,8 @@ class Visualizer():
             URDF objects define robots or assemblies.
         link_name : string
             The name of the link.
-        stl_path : string
-            The relative path pointing to the .stl description of the link that
-            is being refreshed.
+        link_geometry : meshcat.geometry.StlMeshGeometry
+            The link mesh.
         color : array-like, size (3,), optional
             The 0-255 RGB color of the link. The default is [91, 155, 213].
         transparent : boolean, optional
@@ -207,12 +218,7 @@ class Visualizer():
         -------
         None.
 
-        """
-        
-        # Set the parts's geometry
-        stl_path = format_path(stl_path)
-        link_geometry = geo.StlMeshGeometry.from_file(stl_path)
-        
+        """        
         # Set the parts's color
         color_int = color[0]*256**2 + color[1]*256 + color[2]
         link_mat = geo.MeshPhongMaterial(color=color_int,
