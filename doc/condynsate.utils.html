@@ -24,7 +24,50 @@ visualizer&nbsp;and&nbsp;simulator&nbsp;modules.</span></p>
 <td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
     
 <tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
-<td class="singlecolumn"><dl><dt><a name="-format_RGB"><strong>format_RGB</strong></a>(unformatted_rgb, range_to_255=True)</dt><dd><span class="code">Converts&nbsp;unformatted&nbsp;rgb&nbsp;array-like&nbsp;objects&nbsp;to&nbsp;formatted&nbsp;rgb&nbsp;lists<br>
+<td class="singlecolumn"><dl><dt><a name="-OAB_to_OBA"><strong>OAB_to_OBA</strong></a>(R_ofA_inB, O_ofA_inB)</dt><dd><span class="code">Takes&nbsp;the&nbsp;origin&nbsp;of&nbsp;frame&nbsp;A&nbsp;in&nbsp;B&nbsp;coords&nbsp;to&nbsp;the&nbsp;origin&nbsp;of&nbsp;frame&nbsp;B&nbsp;in&nbsp;A<br>
+coords.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+R_ofA_inB&nbsp;:&nbsp;valid&nbsp;rotation&nbsp;matrix,&nbsp;shape(3,3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;rotation&nbsp;cosine&nbsp;matrix&nbsp;of&nbsp;the&nbsp;A&nbsp;frame&nbsp;in&nbsp;B&nbsp;coords.<br>
+O_ofA_inB&nbsp;:&nbsp;array,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;origin&nbsp;of&nbsp;frame&nbsp;A&nbsp;in&nbsp;B&nbsp;coords.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+O_ofB_inA&nbsp;:&nbsp;array,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;origin&nbsp;of&nbsp;frame&nbsp;B&nbsp;in&nbsp;A&nbsp;coords.</span></dd></dl>
+ <dl><dt><a name="-RAB_to_RBA"><strong>RAB_to_RBA</strong></a>(R_ofA_inB)</dt><dd><span class="code">Takes&nbsp;a&nbsp;rotation&nbsp;cosine&nbsp;matrix&nbsp;of&nbsp;the&nbsp;A&nbsp;frame&nbsp;in&nbsp;B&nbsp;coords&nbsp;to&nbsp;the&nbsp;rotation<br>
+cosine&nbsp;of&nbsp;the&nbsp;B&nbsp;frame&nbsp;in&nbsp;A&nbsp;coords.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+R_ofA_inB&nbsp;:&nbsp;valid&nbsp;rotation&nbsp;matrix,&nbsp;shape(3,3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;rotation&nbsp;cosine&nbsp;matrix&nbsp;of&nbsp;the&nbsp;A&nbsp;frame&nbsp;in&nbsp;B&nbsp;coords.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+R_ofB_inA&nbsp;:&nbsp;valid&nbsp;rotation&nbsp;matrix,&nbsp;shape(3,3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;rotation&nbsp;cosine&nbsp;matrix&nbsp;of&nbsp;the&nbsp;B&nbsp;frame&nbsp;in&nbsp;A&nbsp;coords.</span></dd></dl>
+ <dl><dt><a name="-R_ofB_inW_from_euler"><strong>R_ofB_inW_from_euler</strong></a>(roll, pitch, yaw)</dt><dd><span class="code">Gets&nbsp;the&nbsp;orientation&nbsp;of&nbsp;a&nbsp;body&nbsp;in&nbsp;world&nbsp;coordinates&nbsp;from&nbsp;the&nbsp;euler&nbsp;angles<br>
+of&nbsp;the&nbsp;body.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+roll&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;roll&nbsp;angle&nbsp;in&nbsp;rad.<br>
+pitch&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;pitch&nbsp;angle&nbsp;in&nbsp;rad.<br>
+yaw&nbsp;:&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;yaw&nbsp;angle&nbsp;in&nbsp;rad.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+R_ofC_inW&nbsp;:&nbsp;array-like,&nbsp;shape(3,3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;orientation&nbsp;of&nbsp;the&nbsp;body&nbsp;in&nbsp;world&nbsp;coordinates.&nbsp;This&nbsp;rotation&nbsp;matrix<br>
+&nbsp;&nbsp;&nbsp;&nbsp;takes&nbsp;vectors&nbsp;in&nbsp;body&nbsp;coordinates&nbsp;to&nbsp;world&nbsp;coordinates&nbsp;.</span></dd></dl>
+ <dl><dt><a name="-format_RGB"><strong>format_RGB</strong></a>(unformatted_rgb, range_to_255=True)</dt><dd><span class="code">Converts&nbsp;unformatted&nbsp;rgb&nbsp;array-like&nbsp;objects&nbsp;to&nbsp;formatted&nbsp;rgb&nbsp;lists<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -64,6 +107,36 @@ Returns<br>
 xyzw_rot&nbsp;:&nbsp;array-like,&nbsp;shape(4,)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;JPL&nbsp;quaternion&nbsp;(xyzw)&nbsp;the&nbsp;takes&nbsp;the&nbsp;vec1&nbsp;vector&nbsp;to&nbsp;the<br>
 &nbsp;&nbsp;&nbsp;&nbsp;vec2&nbsp;vector&nbsp;(without&nbsp;scaling).&nbsp;vec2&nbsp;=&nbsp;xyzw_rot*vec1</span></dd></dl>
+ <dl><dt><a name="-pt_inA_toB"><strong>pt_inA_toB</strong></a>(R_ofA_inB, O_ofA_inB, pt_inA)</dt><dd><span class="code">Based&nbsp;on&nbsp;a&nbsp;relative&nbsp;cosine&nbsp;matrix&nbsp;and&nbsp;origin&nbsp;vector,&nbsp;takes&nbsp;a&nbsp;point&nbsp;in&nbsp;frame<br>
+A&nbsp;coords&nbsp;to&nbsp;frame&nbsp;B&nbsp;coords.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+R_ofA_inB&nbsp;:&nbsp;valid&nbsp;rotation&nbsp;matrix,&nbsp;shape(3,3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;rotation&nbsp;cosine&nbsp;matrix&nbsp;of&nbsp;the&nbsp;A&nbsp;frame&nbsp;in&nbsp;B&nbsp;coords.<br>
+O_ofA_inB&nbsp;:&nbsp;array,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;origin&nbsp;of&nbsp;frame&nbsp;A&nbsp;in&nbsp;B&nbsp;coords.<br>
+pt_inA&nbsp;:&nbsp;array,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;3D&nbsp;point&nbsp;in&nbsp;frame&nbsp;A.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+pt_inB&nbsp;:&nbsp;array,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;same&nbsp;3D&nbsp;point&nbsp;in&nbsp;B&nbsp;coords.</span></dd></dl>
+ <dl><dt><a name="-vc_inA_toB"><strong>vc_inA_toB</strong></a>(R_ofA_inB, vc_inA)</dt><dd><span class="code">Based&nbsp;on&nbsp;a&nbsp;relative&nbsp;cosine&nbsp;matrix,&nbsp;takes&nbsp;vecotrs&nbsp;in&nbsp;frame&nbsp;A&nbsp;coords&nbsp;to&nbsp;<br>
+frame&nbsp;B&nbsp;coords.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+R_ofA_inB&nbsp;:&nbsp;valid&nbsp;rotation&nbsp;matrix,&nbsp;shape(3,3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;rotation&nbsp;cosine&nbsp;matrix&nbsp;of&nbsp;the&nbsp;A&nbsp;frame&nbsp;in&nbsp;B&nbsp;coords.<br>
+vc_inA&nbsp;:&nbsp;array,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;3&nbsp;vector&nbsp;in&nbsp;frame&nbsp;A.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+vc_inB&nbsp;:&nbsp;array,&nbsp;shape(3,)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;same&nbsp;3&nbsp;vector&nbsp;in&nbsp;frame&nbsp;B&nbsp;coords.</span></dd></dl>
  <dl><dt><a name="-wxyz_from_euler"><strong>wxyz_from_euler</strong></a>(roll, pitch, yaw)</dt><dd><span class="code">Converts&nbsp;Euler&nbsp;angles&nbsp;to&nbsp;a&nbsp;Hamilton&nbsp;quaternion&nbsp;(wxyz)<br>
 &nbsp;<br>
 Parameters<br>

@@ -84,7 +84,10 @@ wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
 &nbsp;<br>
 Returns<br>
 -------<br>
-None.</span></dd></dl>
+obj_geometry&nbsp;:&nbsp;meshcat.geometry.ObjMeshGeometry<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;<a href="builtins.html#object">object</a>&nbsp;mesh.<br>
+obj_texture&nbsp;:&nbsp;meshcat.geometry.MeshPhongMaterial<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;<a href="builtins.html#object">object</a>&nbsp;texture.</span></dd></dl>
 
 <dl><dt><a name="Visualizer-add_stl"><strong>add_stl</strong></a>(self, urdf_name, link_name, stl_path, color=[91, 155, 213], transparent=False, opacity=1.0, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><span class="code">Adds&nbsp;a&nbsp;colored&nbsp;.stl&nbsp;to&nbsp;the&nbsp;visualization.<br>
 &nbsp;<br>
@@ -118,7 +121,10 @@ wxyz_quaternion&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(4,),&nbsp;optional<br>
 &nbsp;<br>
 Returns<br>
 -------<br>
-transform&nbsp;:&nbsp;None.</span></dd></dl>
+link_geometry&nbsp;:&nbsp;meshcat.geometry.StlMeshGeometry<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;link&nbsp;mesh.<br>
+link_mat&nbsp;:&nbsp;meshcat.geometry.MeshPhongMaterial<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;link&nbsp;material.</span></dd></dl>
 
 <dl><dt><a name="Visualizer-apply_transform"><strong>apply_transform</strong></a>(self, urdf_name, link_name, scale=[1.0, 1.0, 1.0], translate=[0.0, 0.0, 0.0], wxyz_quaternion=[1.0, 0.0, 0.0, 0.0])</dt><dd><span class="code">Applies&nbsp;a&nbsp;3D&nbsp;affine&nbsp;transformation&nbsp;inclunding&nbsp;scaling,&nbsp;translating,<br>
 and&nbsp;rotating&nbsp;to&nbsp;a&nbsp;specified&nbsp;link.<br>
@@ -211,7 +217,7 @@ Returns<br>
 -------<br>
 None.</span></dd></dl>
 
-<dl><dt><a name="Visualizer-set_link_color"><strong>set_link_color</strong></a>(self, urdf_name, link_name, stl_path, color=[91, 155, 213], transparent=False, opacity=1.0)</dt><dd><span class="code">Set&nbsp;a&nbsp;link&nbsp;color&nbsp;by&nbsp;deleting&nbsp;it&nbsp;and&nbsp;then&nbsp;adding&nbsp;another&nbsp;copy&nbsp;of&nbsp;it.<br>
+<dl><dt><a name="Visualizer-set_link_color"><strong>set_link_color</strong></a>(self, urdf_name, link_name, link_geometry, color=[91, 155, 213], transparent=False, opacity=1.0)</dt><dd><span class="code">Set&nbsp;a&nbsp;link&nbsp;color&nbsp;by&nbsp;deleting&nbsp;it&nbsp;and&nbsp;then&nbsp;adding&nbsp;another&nbsp;copy&nbsp;of&nbsp;it.<br>
 &nbsp;<br>
 Parameters<br>
 ----------<br>
@@ -220,9 +226,8 @@ urdf_name&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;URDF&nbsp;objects&nbsp;define&nbsp;robots&nbsp;or&nbsp;assemblies.<br>
 link_name&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;link.<br>
-stl_path&nbsp;:&nbsp;string<br>
-&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;relative&nbsp;path&nbsp;pointing&nbsp;to&nbsp;the&nbsp;.stl&nbsp;description&nbsp;of&nbsp;the&nbsp;link&nbsp;that<br>
-&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;being&nbsp;refreshed.<br>
+link_geometry&nbsp;:&nbsp;meshcat.geometry.StlMeshGeometry<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;link&nbsp;mesh.<br>
 color&nbsp;:&nbsp;array-like,&nbsp;size&nbsp;(3,),&nbsp;optional<br>
 &nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;0-255&nbsp;RGB&nbsp;color&nbsp;of&nbsp;the&nbsp;link.&nbsp;The&nbsp;default&nbsp;is&nbsp;[91,&nbsp;155,&nbsp;213].<br>
 transparent&nbsp;:&nbsp;boolean,&nbsp;optional<br>
