@@ -1,0 +1,492 @@
+<?xml version="1.0" ?>
+<robot name="quadcopter">
+    
+    <material name="arches-blue">
+    <color rgba="0.0 0.6235294117647059 0.8313725490196079 1" />
+    </material>
+    
+    <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0" />
+    </material>
+    
+    <material name="black">
+    <color rgba=".0 .0 .0 1.0" />
+    </material>
+    
+    <link name="core">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0.5"/>
+            <inertia ixx="0.0023" ixy="0.0" ixz="0.0" iyy="0.0023" iyz="0.0" izz="0.0040"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cube.stl" scale="0.125 0.125 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cube.stl" scale="0.125 0.125 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="spar1">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="spar2">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="spar3">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="spar4">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.01875 0.01875 0.1875"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="rotor1">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="rotor2">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="rotor3">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="rotor4">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.1875 0.1875 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="mocap1_post">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="mocap1">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+            <material name="black"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="mocap2_post">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="mocap2">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="mocap3_post">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="mocap3">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="mocap4_post">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+            <material name="arches-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.0075 0.0075 0.025"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <link name="mocap4">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0."/>
+            <inertia ixx="0." ixy="0." ixz="0." iyy="0." iyz="0." izz="0."/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+            <material name="white"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.0125 0.0125 0.0125"/>
+            </geometry>
+        </collision>
+    </link>
+      
+    <link name="nametag">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="plane_small.obj" scale="0.25 0.25 0.5"/>
+            </geometry>
+        </visual>
+    </link>
+      
+      
+    <joint name="core_to_spar1" type="fixed">
+        <parent link="core"/>
+        <child link="spar1"/>
+        <origin xyz="0 0.15625 0" rpy="1.5707963267948966 0 0"/>
+    </joint>
+      
+    <joint name="core_to_spar2" type="fixed">
+        <parent link="core"/>
+        <child link="spar2"/>
+        <origin xyz="0.15625 0 0" rpy="0 1.5707963267948966 0"/>
+    </joint>
+      
+    <joint name="core_to_spar3" type="fixed">
+        <parent link="core"/>
+        <child link="spar3"/>
+        <origin xyz="0 -0.15625 0" rpy="1.5707963267948966 0 0"/>
+    </joint>
+      
+    <joint name="core_to_spar4" type="fixed">
+        <parent link="core"/>
+        <child link="spar4"/>
+        <origin xyz="-0.15625 0 0" rpy="0 1.5707963267948966 0"/>
+    </joint>
+      
+    <joint name="core_to_nametag" type="fixed">
+        <parent link="core"/>
+        <child link="nametag"/>
+        <origin xyz="0 0 0.625" rpy="1.5707963267948966 0 1.5707963267948966"/>
+    </joint>
+
+    
+    <joint name="spar1_to_rotor1" type="fixed">
+        <parent link="spar1"/>
+        <child link="rotor1"/>
+        <origin xyz="0 0.021875 -0.09375" rpy="1.5707963267948966 0 3.141592653589793"/>
+    </joint>
+      
+    <joint name="spar2_to_rotor2" type="fixed">
+        <parent link="spar2"/>
+        <child link="rotor2"/>
+        <origin xyz="-0.021875 0 0.09375" rpy="0 1.5707963267948966 3.141592653589793"/>
+    </joint>
+      
+    <joint name="spar3_to_rotor3" type="fixed">
+        <parent link="spar3"/>
+        <child link="rotor3"/>
+        <origin xyz="0 0.021875 0.09375" rpy="1.5707963267948966 0 3.141592653589793"/>
+    </joint>
+      
+    <joint name="spar4_to_rotor4" type="fixed">
+        <parent link="spar4"/>
+        <child link="rotor4"/>
+        <origin xyz="-0.021875 0 -0.09375" rpy="0 1.5707963267948966 3.141592653589793"/>
+    </joint>
+  
+    <joint name="rotor2_to_mocap1_post" type="fixed">
+        <parent link="rotor2"/>
+        <child link="mocap1_post"/>
+        <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    </joint>
+    
+    <joint name="mocap1_post_to_mocap1" type="fixed">
+        <parent link="mocap1_post"/>
+        <child link="mocap1"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    
+    <joint name="rotor3_to_mocap2_post" type="fixed">
+        <parent link="rotor3"/>
+        <child link="mocap2_post"/>
+        <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    </joint>
+    
+    <joint name="mocap2_post_to_mocap2" type="fixed">
+        <parent link="mocap2_post"/>
+        <child link="mocap2"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    
+    <joint name="rotor4_to_mocap3_post" type="fixed">
+        <parent link="rotor4"/>
+        <child link="mocap3_post"/>
+        <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    </joint>
+    
+    <joint name="mocap3_post_to_mocap3" type="fixed">
+        <parent link="mocap3_post"/>
+        <child link="mocap3"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+    
+    <joint name="rotor1_to_mocap4_post" type="fixed">
+        <parent link="rotor1"/>
+        <child link="mocap4_post"/>
+        <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    </joint>
+    
+    <joint name="mocap4_post_to_mocap4" type="fixed">
+        <parent link="mocap4_post"/>
+        <child link="mocap4"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+  
+</robot>
