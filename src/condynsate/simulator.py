@@ -118,6 +118,7 @@ class Simulator:
         
         # Time tracking variables
         self.start_epoch = -1.0
+        self.pause_elapsed_time = 0.0
         self.time = 0.0
         self.dt = 0.01
         self.num_steps = 0
@@ -3512,6 +3513,7 @@ class Simulator:
         # Note the simulation is no longer done and reset the time
         self.is_done = False
         self.start_epoch = -1.0
+        self.pause_elapsed_time = 0.0
         self.time = 0.
         self.num_steps = 0
 
@@ -3625,6 +3627,7 @@ class Simulator:
                 self.paused = False
                 print("RESUME")
                 time.sleep(0.2)
+                self.pause_elapsed_time += time.time()-self.pause_start_time
                 return 1 # Return end pause code
             return 2 # Return paused code
   
@@ -3638,7 +3641,7 @@ class Simulator:
         # Get the real time elapsed since simulation was last reset
         if self.start_epoch == -1.0:
             self.start_epoch = time.time()
-        current_time = time.time() - self.start_epoch
+        current_time = time.time() - self.start_epoch - self.pause_elapsed_time
 
         # Step the physics engine
         self.engine.stepSimulation()
@@ -3681,6 +3684,7 @@ class Simulator:
 
         # Pause upon request
         if self.is_pressed("space"):
+            self.pause_start_time = time.time()
             self.paused = True
             if isinstance(self.ani, Animator):
                 self.ani.flush_events()
