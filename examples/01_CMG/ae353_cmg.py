@@ -17,7 +17,7 @@ class CMG_sim():
     def __init__(self,
                  use_keyboard=True,
                  visualization=True,
-                 visualization_fr=20.,
+                 visualization_fr=40.,
                  animation=True,
                  animation_fr=10.):
         """
@@ -33,7 +33,7 @@ class CMG_sim():
             visualized in meshcat. The default is True.
         visualization_fr : float, optional
             The frame rate (frames per second) at which the visualizer is
-            updated. The default is 20..
+            updated. The default is 40..
         animation : bool, optional
             A boolean flag that indicates whether animated plots are created
             in real time. The default is True.
@@ -308,7 +308,7 @@ class CMG_sim():
             ###################################################################
             # STEP THE SIMULATION
             # Step the sim
-            val = self.sim.step(real_time=True,
+            val = self.sim.step(real_time=self.visualization or self.animation,
                                 update_vis=self.visualization,
                                 update_ani=self.animation,
                                 max_time=max_time)
