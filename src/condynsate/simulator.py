@@ -116,12 +116,13 @@ class Simulator:
         # Configure gravity
         self.set_gravity(gravity)
         
-        # Configure physics engine parameters
+        # Time tracking variables
+        self.start_epoch = -1.0
         self.time = 0.0
         self.dt = 0.01
-        self.last_step_time = time.time()
-        self.last_vis_time = time.time()
-        self.visualization_fr = visualization_fr
+        self.num_steps = 0
+        
+        # Configure physics engine parameters
         self.engine.setPhysicsEngineParameter(
             fixedTimeStep=self.dt,
             numSubSteps=4,
@@ -140,6 +141,11 @@ class Simulator:
             self.vis = Visualizer(grid_vis=False,axes_vis=False)
         else:
             self.vis=None
+        
+        # Create variables to keep track of visualizer frame rate
+        self.visualization_fr = visualization_fr
+        self.frame_time_target = 0.0
+        self.prev_frame_time = -1.0 / self.visualization_fr
         self.vis_time_okay = True
         
         # Create an animator
@@ -3505,8 +3511,13 @@ class Simulator:
         
         # Note the simulation is no longer done and reset the time
         self.is_done = False
+        self.start_epoch = -1.0
         self.time = 0.
-        self.last_step_time = time.time()
+        self.num_steps = 0
+
+        # Reset visualizer frame rate
+        self.frame_time_target = 0.0
+        self.prev_frame_time = -1.0 / self.visualization_fr
         self.vis_time_okay = True
         
         # Reset each urdf
@@ -3624,18 +3635,32 @@ class Simulator:
             print("RESET")
             return 3 # Return reset code
 
-        # IF NOT PAUSED, NOT ENDING, AND NOT RESETTING
+        # Get the real time elapsed since simulation was last reset
+        if self.start_epoch == -1.0:
+            self.start_epoch = time.time()
+        current_time = time.time() - self.start_epoch
+
         # Step the physics engine
-        curr_step_time = time.time()
         self.engine.stepSimulation()
         self.time = self.time + self.dt
-
-        # Update the visualizer if it exists
-        time_since_last_vis = curr_step_time - self.last_vis_time
-        self.vis_time_okay=time_since_last_vis >= (1. / self.visualization_fr)
+        self.num_steps += 1
+    
+        # Based on the visualizer frame rate, determine if it is time to 
+        # frame update
+        frame_cond_1 = current_time >= self.frame_time_target
+        frame_cond_2 = self.prev_frame_time < self.frame_time_target
+        frame_cond_3 = self.prev_frame_time >= self.frame_time_target
+        self.vis_time_okay = (frame_cond_1 and frame_cond_2) or frame_cond_3
+    
+        # Update the visualizer
         vis_exists = isinstance(self.vis, Visualizer)
         if self.vis_time_okay and update_vis and vis_exists:
-            self.last_vis_time = curr_step_time
+            
+            # Keep track of number of frames and target frame time
+            self.frame_time_target += 1.0/self.visualization_fr
+            self.prev_frame_time = current_time
+                        
+            # Update all urdfs
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
@@ -3643,6 +3668,16 @@ class Simulator:
         # Update the animator if it exists
         if update_ani and isinstance(self.ani, Animator):
             self.ani.step()
+
+        # Calculate suspend time if running simulation in real time
+        if real_time:
+            # Get the amount of time to wait to place in real time
+            real_time_target = self.num_steps * self.dt
+            time_to_wait = real_time_target - current_time
+            
+            # Wait for the perscribed amount of time to put in real time
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
 
         # Pause upon request
         if self.is_pressed("space"):
@@ -3652,14 +3687,6 @@ class Simulator:
             print("PAUSED")
             time.sleep(0.2)
             return 4 # Return start pause code
-
-        # Calculate suspend time if running in real time
-        if real_time:
-            time_since_last_step = curr_step_time - self.last_step_time
-            time_to_wait = self.dt - time_since_last_step
-            if time_to_wait > 0:
-                time.sleep(time_to_wait)
-        self.last_step_time = curr_step_time
 
         # Check for max time
         if max_time != None:
