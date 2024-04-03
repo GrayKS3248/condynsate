@@ -119,9 +119,9 @@ class Simulator:
         # Time tracking variables
         self.start_epoch = -1.0
         self.pause_elapsed_time = 0.0
+        self.prev_step_time = 0.0
         self.time = 0.0
         self.dt = 0.01
-        self.num_steps = 0
         
         # Configure physics engine parameters
         self.engine.setPhysicsEngineParameter(
@@ -3514,8 +3514,8 @@ class Simulator:
         self.is_done = False
         self.start_epoch = -1.0
         self.pause_elapsed_time = 0.0
+        self.prev_step_time = 0.0
         self.time = 0.
-        self.num_steps = 0
 
         # Reset visualizer frame rate
         self.frame_time_target = 0.0
@@ -3646,7 +3646,6 @@ class Simulator:
         # Step the physics engine
         self.engine.stepSimulation()
         self.time = self.time + self.dt
-        self.num_steps += 1
     
         # Based on the visualizer frame rate, determine if it is time to 
         # frame update
@@ -3660,7 +3659,7 @@ class Simulator:
         if self.vis_time_okay and update_vis and vis_exists:
             
             # Keep track of number of frames and target frame time
-            self.frame_time_target += 1.0/self.visualization_fr
+            self.frame_time_target += + 1.0/self.visualization_fr
             self.prev_frame_time = current_time
                         
             # Update all urdfs
@@ -3675,8 +3674,8 @@ class Simulator:
         # Calculate suspend time if running simulation in real time
         if real_time:
             # Get the amount of time to wait to place in real time
-            real_time_target = self.num_steps * self.dt
-            time_to_wait = real_time_target - current_time
+            time_to_wait = (self.prev_step_time + self.dt) - current_time
+            self.prev_step_time = current_time
             
             # Wait for the perscribed amount of time to put in real time
             if time_to_wait > 0:
