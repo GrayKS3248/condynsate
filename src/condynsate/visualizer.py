@@ -9,7 +9,6 @@ This module provides the Visualizer class.
 import numpy as np
 import meshcat
 import meshcat.geometry as geo
-import meshcat.transformations as tf
 from condynsate.utils import format_path, wxyz_from_euler
 
 
@@ -255,11 +254,35 @@ class Visualizer():
 
         """
         # Get the scaling matrix based on the scale vector
+        scale_matrix = np.array([[scale[0], 0.0,      0.0,      0.0],
+                                 [0.0,      scale[1], 0.0,      0.0],
+                                 [0.0,      0.0,      scale[2], 0.0],
+                                 [0.0,      0.0,      0.0,      1.0]])
+        
         # Get the translation matrix based on the translation vector
+        translate_matrix = np.array([[1.0, 0.0, 0.0, translate[0]],
+                                     [0.0, 1.0, 0.0, translate[1]],
+                                     [0.0, 0.0, 1.0, translate[2]],
+                                     [0.0, 0.0, 0.0, 1.0]])
+        
         # Get the rotation matrix based on the wxyz quaternion
-        scale_matrix = np.diag(np.concatenate((scale, [1.0])))
-        translate_matrix = tf.translation_matrix(translate)
-        rotation_matrix = tf.quaternion_matrix(wxyz_quaternion)
+        w = wxyz_quaternion[0]
+        x = wxyz_quaternion[1]
+        y = wxyz_quaternion[2]
+        z = wxyz_quaternion[3]
+        xx = 2.*x*x
+        xy = 2.*x*y
+        xz = 2.*x*z
+        yy = 2.*y*y
+        yz = 2.*y*z
+        zz = 2.*z*z
+        wx = 2.*w*x
+        wy = 2.*w*y
+        wz = 2.*w*z
+        rotation_matrix = np.array([[1.-yy-zz, xy-wz, xz+wy, 0.],
+                                    [xy+wz, 1.-xx-zz, yz-wx, 0.],
+                                    [xz-wy, yz+wx, 1.-xx-yy, 0.],
+                                    [0., 0., 0., 1.]])
         
         # Calculate and return the total transformation matrix
         transform =  translate_matrix @ rotation_matrix @ scale_matrix

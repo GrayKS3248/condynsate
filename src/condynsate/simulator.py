@@ -138,7 +138,8 @@ class Simulator:
         self.ccw_arr_map = {}
         
         # Create a visualizer
-        if visualization:
+        self.visualization = visualization
+        if self.visualization:
             self.vis = Visualizer(grid_vis=False,axes_vis=False)
         else:
             self.vis=None
@@ -150,17 +151,16 @@ class Simulator:
         self.vis_time_okay = True
         
         # Create an animator
-        if animation:
+        self.animation = animation
+        if self.animation:
             self.ani = Animator(fr=animation_fr)
         else:
             self.ani=None
             
         # Start the keyboard listener
         self.keyboard = keyboard
-        self.keyboard_running = False
         if self.keyboard:
             self.keys = Keys()
-            self.keyboard_running = True
         else:
             self.keys = None
         
@@ -397,7 +397,7 @@ class Simulator:
                                             enable_sensor=True)
 
         # Add urdf objects to the visualizer if visualization is occuring
-        if isinstance(self.vis, Visualizer):
+        if self.visualization:
             if tex_path == None:
                 condynsate_path = Path(__file__).parents[0]
                 condynsate_path = condynsate_path.absolute().as_posix()
@@ -1774,31 +1774,37 @@ class Simulator:
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
         
-        # Go through each link and update body com
-        weighted_pos = np.array([0., 0., 0.])
-        total_mass = 0.
-        for link_name in link_map:
-            link_id = link_map[link_name]
-            
-            # Get the mass of each link
-            mass = self.engine.getDynamicsInfo(urdf_id,link_id)[0]
-            
-            # Get the center of mass of each link
-            if link_id==-1:
-                pos = self.engine.getBasePositionAndOrientation(urdf_id)[0]
-            else:
-                pos = self.engine.getLinkState(urdf_id, link_id)[0]
-            pos = np.array(pos)
-            
-            # Update the center of mass parametersd
-            weighted_pos = weighted_pos + mass*pos
-            total_mass = total_mass + mass
-            
-        # Calculate the com
-        if total_mass > 0.:
-            com = weighted_pos / total_mass
+        # Get all link ids
+        link_ids = list(link_map.values())
+        base=False
+        if -1 in link_ids:
+            base=True
+            link_ids.remove(-1)
+        
+        # Get all the link positions
+        link_states = self.engine.getLinkStates(urdf_id, link_ids)
+        
+        # Retrieve the positions and masses for all links from the states
+        total_mass = 0.0
+        if base:
+            base_mass = self.engine.getDynamicsInfo(urdf_id,-1)[0]
+            total_mass += base_mass
+            masses = [base_mass]
+            link_poss = [self.engine.getBasePositionAndOrientation(urdf_id)[0]]
         else:
-            com = np.array([0., 0., 0.])
+            masses = []
+            link_poss = []
+        for link_id, link_state in zip(link_ids, link_states):
+            link_mass = self.engine.getDynamicsInfo(urdf_id, link_id)[0]
+            total_mass += link_mass
+            masses.append(link_mass)
+            link_poss.append(link_state[0])
+        
+        # Get the CoM
+        if total_mass == 0:
+            com=np.array([0., 0., 0.])
+        else:
+            com = np.dot(masses, link_poss) / total_mass
         return com
     
     
@@ -1866,8 +1872,9 @@ class Simulator:
         
         # Apply the arrow offset to get the position of the base of the arrow
         # in world coords
-        if np.linalg.norm(f_inW) != 0:
-            f_inW_dirn = f_inW / np.linalg.norm(f_inW)
+        f_inW_norm = np.linalg.norm(f_inW)
+        if f_inW_norm != 0:
+            f_inW_dirn = f_inW / f_inW_norm
         else:
             f_inW_dirn = np.array([0., 0., 0.])
         arr_pos_inW = link_inW + arrow_offset*f_inW_dirn
@@ -1948,8 +1955,9 @@ class Simulator:
         
         # Apply the arrow offset to get the position of the base of the arrow
         # in world coords
-        if np.linalg.norm(f_inW) != 0:
-            f_inW_dirn = f_inW / np.linalg.norm(f_inW)
+        f_inW_norm = np.linalg.norm(f_inW)
+        if f_inW_norm != 0:
+            f_inW_dirn = f_inW / f_inW_norm
         else:
             f_inW_dirn = np.array([0., 0., 0.])
         arr_pos_inW = com_inW + arrow_offset*f_inW_dirn
@@ -2026,8 +2034,9 @@ class Simulator:
         
         # Apply the arrow offset to get the position of the base of the arrow
         # in world coords
-        if np.linalg.norm(t_inW) != 0:
-            t_inW_dirn = t_inW / np.linalg.norm(t_inW)
+        t_inW_norm = np.linalg.norm(t_inW)
+        if t_inW_norm != 0:
+            t_inW_dirn = t_inW / t_inW_norm
         else:
             t_inW_dirn = np.array([0., 0., 0.])
         arr_pos_inW = com_inW + arrow_offset*t_inW_dirn
@@ -2095,20 +2104,18 @@ class Simulator:
         if not self.vis_time_okay and not force_update:
             return
         
+        # If the visualizer doesn't exist, leave
+        if not self.visualization:
+            return
+        
         # Get the URDF ID and combine with link name to get the key to the 
         # linear arrow map
         urdf_id = str(urdf_obj.urdf_id)
         urdf_force = urdf_id + "__" + force_name
         
-        # Make sure the visualizer exists and check the current status of the 
-        # arrow
-        vis_exists = isinstance(self.vis, Visualizer)
+        # Check the current status of the arrow
         arr_exists = urdf_force in self.lin_arr_map
-        
-        # If the visualizer doesn't exist, leave
-        if not vis_exists:
-            return
-        
+  
         # If show_arrow is set to false, and the visualizer and associated
         # force arrow exist, set the arrows visibility to false
         if (not show_arrow) and arr_exists:
@@ -2125,8 +2132,9 @@ class Simulator:
         if show_arrow:
             
             # Get the direction in which the force is applied
-            if np.linalg.norm(f_inW) != 0:
-                arr_dirn_inW = f_inW / np.linalg.norm(f_inW)
+            f_inW_norm = np.linalg.norm(f_inW)
+            if f_inW_norm != 0:
+                arr_dirn_inW = f_inW / f_inW_norm
             else:
                 arr_dirn_inW = np.array([0., 0., 0.])
                 
@@ -2225,19 +2233,17 @@ class Simulator:
         if not self.vis_time_okay and not force_update:
             return
         
+        # If the visualizer doesn't exist, leave
+        if not self.visualization:
+            return
+        
         # Get the URDF ID and combine with link name to get the key to the 
         # ccw arrow map
         urdf_id = str(urdf_obj.urdf_id)
         urdf_torque = urdf_id + "__" + torque_name
         
-        # Make sure the visualizer exists and check the current status of the 
-        # arrow
-        vis_exists = isinstance(self.vis, Visualizer)
+        # Check the current status of the arrow
         arr_exists = urdf_torque in self.ccw_arr_map
-        
-        # If the visualizer doesn't exist, leave
-        if not vis_exists:
-            return
         
         # If show_arrow is set to false, and the visualizer and associated
         # torque arrow exist, set the arrows visibility to false
@@ -2255,8 +2261,9 @@ class Simulator:
         if show_arrow:
             
             # Get the direction in which the torque is applied
-            if np.linalg.norm(t_inW) != 0:
-                arr_dirn_inW = t_inW / np.linalg.norm(t_inW)
+            t_inW_norm = np.linalg.norm(t_inW)
+            if t_inW_norm != 0:
+                arr_dirn_inW = t_inW / t_inW_norm
             else:
                 arr_dirn_inW = np.array([0., 0., 0.])
                 
@@ -2345,7 +2352,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Extract the visual data from the urdf object in the simulator
@@ -2414,7 +2421,7 @@ class Simulator:
 
         """
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Collect the visual data and urdf name
@@ -2560,7 +2567,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return    
         
         # If the link name doesn't exist, don't attempt to update it
@@ -2627,7 +2634,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not color
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return    
         
         # Get the joint position
@@ -2695,7 +2702,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not color
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return    
         
         # Get the joint velocity
@@ -2765,7 +2772,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not color
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return    
         
         # Calculate the torque saturation and get the associated color
@@ -2822,7 +2829,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not color
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return    
         
         # Get the mass
@@ -2890,7 +2897,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Apply the camera transform
@@ -2930,7 +2937,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Apply the background colors
@@ -2966,7 +2973,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Apply the background colors
@@ -3004,7 +3011,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Apply the background colors
@@ -3042,7 +3049,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Apply the background colors
@@ -3076,7 +3083,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Apply the background colors
@@ -3109,7 +3116,7 @@ class Simulator:
             return
         
         # If there is no visualizer, do not attempt to update it
-        if not isinstance(self.vis, Visualizer):
+        if not self.visualization:
             return
         
         # Apply the background colors
@@ -3228,7 +3235,7 @@ class Simulator:
             data points, etc.).
         """
         # If there is no animator, do not attempt to add a plot to it
-        if not isinstance(self.ani, Animator):
+        if not self.animation:
             return
         
         # Add the plot data to the plot
@@ -3285,7 +3292,7 @@ class Simulator:
             return
         
         # If there is no animator, do not attempt to update it
-        if not isinstance(self.ani, Animator):
+        if not self.animation:
             return
         
         # Update the plot
@@ -3309,7 +3316,7 @@ class Simulator:
             return
         
         # If there is no animator, do not attempt to update it
-        if not isinstance(self.ani, Animator):
+        if not self.animation:
             return
         
         self.ani.reset_plots()
@@ -3327,7 +3334,7 @@ class Simulator:
 
         """
         # Open the animator figure window if it exists
-        if isinstance(self.ani, Animator):
+        if self.animation:
             self.ani.create_figure()
         
         
@@ -3361,7 +3368,7 @@ class Simulator:
 
         """
         # Make sure that the keyboard exists
-        if (self.keyboard and isinstance(self.keys, Keys)):
+        if self.keyboard:
             return self.keys.is_pressed(key)
         else:
             return False
@@ -3386,13 +3393,13 @@ class Simulator:
 
         """
         # Update the visualizer if it exists
-        if isinstance(self.vis, Visualizer):
+        if self.visualization:
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
         
         # If there is a keyboard
-        if (self.keyboard and isinstance(self.keys, Keys)):
+        if self.keyboard:
             # Tell user what to do
             print("PRESS "+key.upper()+" TO START SIMULATION.")
             print("PRESS ESC TO QUIT.")
@@ -3402,7 +3409,7 @@ class Simulator:
             # Await keypress
             while True:
                 # Ensure so the GUI remains interactive
-                if isinstance(self.ani, Animator):
+                if self.animation:
                     self.ani.flush_events()
                     
                 # Termination condition
@@ -3421,7 +3428,7 @@ class Simulator:
             start_time = time.time()
             while (time.time() - start_time) < 1.0:
                 # Ensure so the GUI remains interactive
-                if isinstance(self.ani, Animator):
+                if self.animation:
                     self.ani.flush_events()
                 time.sleep(0.05)
             return
@@ -3606,7 +3613,7 @@ class Simulator:
 
         # If the keyboard is supposed to be running, but it is not,
         # terminate the simulation
-        if self.keyboard and isinstance(self.keys, Keys):
+        if self.keyboard:
             if not self.keys.running:
                 self.is_done = True
                 print("KEYBOARD LOST. QUITTING...")
@@ -3621,7 +3628,7 @@ class Simulator:
         # Suspend if paused or resume if space is pressed
         if self.paused:
             time.sleep(0.05)
-            if isinstance(self.ani, Animator):
+            if self.animation:
                 self.ani.flush_events()
             if self.is_pressed("space"):
                 self.paused = False
@@ -3655,8 +3662,7 @@ class Simulator:
         self.vis_time_okay = (frame_cond_1 and frame_cond_2) or frame_cond_3
     
         # Update the visualizer
-        vis_exists = isinstance(self.vis, Visualizer)
-        if self.vis_time_okay and update_vis and vis_exists:
+        if self.vis_time_okay and update_vis and self.visualization:
             
             # Keep track of number of frames and target frame time
             self.frame_time_target += + 1.0/self.visualization_fr
@@ -3668,7 +3674,7 @@ class Simulator:
                     self._update_urdf_visual(urdf_obj)
        
         # Update the animator if it exists
-        if update_ani and isinstance(self.ani, Animator):
+        if update_ani and self.animation:
             self.ani.step()
 
         # Calculate suspend time if running simulation in real time
@@ -3685,7 +3691,7 @@ class Simulator:
         if self.is_pressed("space"):
             self.pause_start_time = time.time()
             self.paused = True
-            if isinstance(self.ani, Animator):
+            if self.animation:
                 self.ani.flush_events()
             print("PAUSED")
             time.sleep(0.2)

@@ -8,7 +8,7 @@ visualizer and simulator modules.
 #DEPENDENCIES
 ###############################################################################
 import numpy as np
-from pathlib import Path
+import os
 
 
 ###############################################################################
@@ -79,7 +79,11 @@ def xyzw_to_wxyz(xyzw_quaternion):
         The Hamilton representation of the input JPL quaterion
 
     """
-    wxyz_quaternion = np.roll(xyzw_quaternion, 1)
+    wxyz_quaternion = np.array([xyzw_quaternion[3],
+                                xyzw_quaternion[0],
+                                xyzw_quaternion[1],
+                                xyzw_quaternion[2]])
+    #wxyz_quaternion = np.roll(xyzw_quaternion, 1)
     return wxyz_quaternion
 
 
@@ -98,7 +102,11 @@ def wxyz_to_xyzw(wxyz_quaternion):
         The JPL representation of the input Hamilton quaterion.
 
     """
-    xyzw_quaternion = np.roll(wxyz_quaternion, -1)
+    xyzw_quaternion = np.array([wxyz_quaternion[1],
+                                wxyz_quaternion[2],
+                                wxyz_quaternion[3],
+                                wxyz_quaternion[0]])
+    #xyzw_quaternion = np.roll(wxyz_quaternion, -1)
     return xyzw_quaternion
 
 
@@ -253,7 +261,8 @@ def format_path(unformatted_path):
         The formatted Windows path string.
 
     """
-    formatted_path = str(Path(unformatted_path))
+    formatted_path = os.path.abspath(unformatted_path)
+    #formatted_path = str(Path(unformatted_path))
     return formatted_path
     
 
