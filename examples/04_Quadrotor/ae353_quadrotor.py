@@ -77,6 +77,8 @@ class Course_Tracker():
         
         # Get the time tracking variables
         self.lap_start_time = None
+        self.lap_finish_time = None
+        self.gate_times = []
         
         
     def reset(self):
@@ -92,7 +94,9 @@ class Course_Tracker():
 
         # Get the time tracking variables
         self.lap_start_time = None
-
+        self.lap_finish_time = None
+        self.gate_times = []
+        
 
     def near_gate(self, position):
         # Extract gate data
@@ -151,6 +155,7 @@ class Course_Tracker():
             # Get elapsed time
             elapsed = self.sim.time - self.lap_start_time
             elapsed = np.round(elapsed, 3)
+            self.gate_times.append(elapsed)
             
             # Print to screen...
             quad_num = self.quadrotor.urdf_id
@@ -165,6 +170,7 @@ class Course_Tracker():
             if self.curr_gate >= len(self.gate_data['cens']):
                 self.curr_gate = 0
                 self.num_laps = self.num_laps + 1
+                self.lap_finish_time = elapsed
                 if verbose:
                     print("{}:{} COMPLETED LAP IN {}s".format(self.team_name,
                                                                 quad_num,
@@ -180,7 +186,32 @@ class Course_Tracker():
         is_last = (self.curr_gate == len(self.gate_data['cens']) - 1)
         return cen, dirn, is_last, self.num_laps
             
-    
+
+###############################################################################
+#OTHER PUBLIC FUNCTIONS
+###############################################################################
+def get_gravity(gravity_str, verbose):
+        gravities = {"mercury" : 3.708,
+                     "venus" : 8.897,
+                     "earth" : 9.81,
+                     "moon" : 1.628,
+                     "mars" : 3.698,
+                     "jupiter" : 23.151,
+                     "saturn" : 8.985,
+                     "uranus" : 8.721,
+                     "neptune" : 10.987,
+                     "pluto" : 0.696}
+        lower_gravity_str = gravity_str.lower()
+        if lower_gravity_str in gravities:
+            gravity = gravities[lower_gravity_str]
+        else:
+            if verbose:
+                string = "{} not recognized setting. New gravity is {}."
+                print(string.format(gravity_str, 9.81))
+            gravity = 9.81
+        return gravity
+
+
 ###############################################################################
 #SIMULATION CLASS
 ###############################################################################
@@ -188,6 +219,7 @@ class Quadrotor_Sim():
     def __init__(self,
                  team_list,
                  n_quadrotors,
+                 planet="Earth",
                  use_keyboard=True,
                  visualization=True,
                  visualization_fr=45.,
@@ -291,12 +323,16 @@ class Quadrotor_Sim():
         self.visualization = visualization
         self.animation = animation
 
+        # Get the gravity value
+        grav = get_gravity(planet, verbose)
+
         # Initialize and instance of the simulator
         self.sim = Simulator(keyboard=use_keyboard,
                              visualization=visualization,
                              visualization_fr=visualization_fr,
                              animation=animation,
-                             animation_fr=animation_fr)
+                             animation_fr=animation_fr,
+                             gravity=[0., 0., -grav])
         
         # Get the path to the current directory
         path = (Path(__file__).parents[0]).absolute().as_posix()
@@ -473,7 +509,7 @@ class Quadrotor_Sim():
 
     def run(self,
             controllers,
-            sensor_noise=0.0025,
+            sensor_noise=0.01,
             collect_data = True,
             max_time = None,
             verbose=False):
@@ -489,7 +525,7 @@ class Quadrotor_Sim():
         sensor_noise : float, optional
             The noise applied to the mocap sensor, i.e., the standard deviation
             of the components of each mocap marker tracker measurement.
-            The default value is 0.0025.
+            The default value is 0.01.
         collect_data : bool, optional
             A boolean flag that indicates whether or not simulation data is
             collected
@@ -532,6 +568,8 @@ class Quadrotor_Sim():
                 The inputs applied to the quadrotor. [tau_x, tau_y, tau_z, f_z]
             data["time"] : List of Floats, shape(n,)
                 A list of the time stamps in seconds.
+        track_stats : List of Dictionaries
+            ...TODO
 
         """
         # Check all inputs
@@ -776,7 +814,7 @@ class Quadrotor_Sim():
                 
                 # Reset gate tracking
                 for tracker in self.trackers:
-                        tracker.reset()
+                    tracker.reset()
                         
                 # Reset the race
                 self.race_done = False
@@ -799,6 +837,14 @@ class Quadrotor_Sim():
        
         # When the simulation is done running, return the data
         if self.collect_data:
-            return self.data
+            # Get the track status of all the quadrotors
+            track_stats = []
+            for tracker in self.trackers:
+                track_stats.append({"completed_lap" : (tracker.num_laps>0),
+                                    "gate_times" : tracker.gate_times,
+                                    "lap_time" : tracker.lap_finish_time})
+            
+            # Return the tack statuses and the simulation data
+            return (track_stats, self.data)
         else:
-            return None
+            return (None, None)
