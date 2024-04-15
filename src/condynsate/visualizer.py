@@ -252,24 +252,14 @@ class Visualizer():
         transform : array-like, size (4,4)
             The resultant 4x4 3D affine transformation matrix.
 
-        """
-        # Get the scaling matrix based on the scale vector
-        scale_matrix = np.array([[scale[0], 0.0,      0.0,      0.0],
-                                 [0.0,      scale[1], 0.0,      0.0],
-                                 [0.0,      0.0,      scale[2], 0.0],
-                                 [0.0,      0.0,      0.0,      1.0]])
-        
-        # Get the translation matrix based on the translation vector
-        translate_matrix = np.array([[1.0, 0.0, 0.0, translate[0]],
-                                     [0.0, 1.0, 0.0, translate[1]],
-                                     [0.0, 0.0, 1.0, translate[2]],
-                                     [0.0, 0.0, 0.0, 1.0]])
-        
-        # Get the rotation matrix based on the wxyz quaternion
+        """      
+        # Extract rotation data
         w = wxyz_quaternion[0]
         x = wxyz_quaternion[1]
         y = wxyz_quaternion[2]
         z = wxyz_quaternion[3]
+        
+        # Perform calculations used to transform quaternion to rotation matrix
         xx = 2.*x*x
         xy = 2.*x*y
         xz = 2.*x*z
@@ -279,14 +269,25 @@ class Visualizer():
         wx = 2.*w*x
         wy = 2.*w*y
         wz = 2.*w*z
-        rotation_matrix = np.array([[1.-yy-zz, xy-wz, xz+wy, 0.],
-                                    [xy+wz, 1.-xx-zz, yz-wx, 0.],
-                                    [xz-wy, yz+wx, 1.-xx-yy, 0.],
-                                    [0., 0., 0., 1.]])
         
-        # Calculate and return the total transformation matrix
-        transform =  translate_matrix @ rotation_matrix @ scale_matrix
-        return transform
+        # Extract scale data
+        s1 = scale[0]
+        s2 = scale[1]
+        s3 = scale[2]
+        
+        # Extract translate data
+        t1 = translate[0]
+        t2 = translate[1]
+        t3 = translate[2]
+        
+        # Directly build the transform matrix
+        H = np.array([[s1*(1.-yy-zz), s2*(xy-wz),    s3*(xz+wy),    t1],
+                      [s1*(xy+wz),    s2*(1.-xx-zz), s3*(yz-wx),    t2],
+                      [s1*(xz-wy),    s2*(yz+wx),    s3*(1.-xx-yy), t3],
+                      [0.,            0.,            0.,            1.]])
+        
+        # Return the translation matrix
+        return H
 
 
     def apply_transform(self,
