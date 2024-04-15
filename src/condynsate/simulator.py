@@ -55,14 +55,36 @@ class URDF_Obj:
         None.
 
         """
+        # Identification number
         self.urdf_id = urdf_id
+        
+        # Maps that link a link name to the parent joint id num or link id num
         self.joint_map = joint_map
-        self.link_map = link_map     
+        self.link_map = link_map
+        
+        # Boolean flag that indicates whether or not this urdf is
+        # visually dynamic (True) or visually static (False)
         self.update_vis = update_vis
+        
+        # A list of initial conditions of the URDF. URDF reset to this 
+        # state when the simulator is reset
         self.initial_conds = {}
+        
+        # Lists that contain the visual geometrys and textures of the URDF
+        # in order of link id. One per link
         self.geometries = []
         self.textures = []
+        
+        # Structure that contains a bool to indicate if the stored
+        # CoM is valid (True) or stale (needs to be recalculated) (False)
+        # as well as the stored CoM
         self.center_of_mass = [False, np.array([0., 0., 0.])]
+        
+        # Structure that contains bools to indicate if the stored
+        # world and body base state valid (True) or stale
+        # (needs to be recalculated) (False) as well as the stored base state
+        # in world coords and body coords
+        self.base_state = [False, {}, False, {}]
 
 
 ###############################################################################
@@ -501,6 +523,25 @@ class Simulator:
                             urdf_obj,
                             joint_name,
                             max_vel=1000.):
+        """
+        Sets the maximum joint velocity of a specific joint on a given URDF.
+
+        Parameters
+        ----------
+        urdf_obj : URDF_Obj
+            A URDF_Obj that contains that joint whose max velocity is set
+        joint_name : string
+            The name of the joint whose max velocity is set. The
+            joint name is specified in the .urdf file.
+        max_vel : float, optional
+            The maximum joint velocity. For angular joints in rad/sec.
+            The default is 1000..
+
+        Returns
+        -------
+        None.
+
+        """
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         joint_map = urdf_obj.joint_map
@@ -867,8 +908,10 @@ class Simulator:
                                                       forces=[100.],
                                                       targetPositions=position)
                 
-                # Note that CoM is no longer valid
+                # Note that CoM and base state is no longer valid
                 urdf_obj.center_of_mass[0] = False
+                urdf_obj.base_state[0] = False
+                urdf_obj.base_state[2] = False
                 
             # Reset joint position
             else:
@@ -877,8 +920,10 @@ class Simulator:
                                             targetValue=position,
                                             targetVelocity=0.0)
                 
-                # Note that CoM is no longer valid
+                # Note that CoM and base state is no longer valid
                 urdf_obj.center_of_mass[0] = False
+                urdf_obj.base_state[0] = False
+                urdf_obj.base_state[2] = False
                 
             # Update the initial conditions
             if initial_cond:
@@ -965,6 +1010,10 @@ class Simulator:
                                                       forces=[1000.],
                                                       targetVelocities=target)
                 
+                # Note that base state is no longer valid
+                urdf_obj.base_state[0] = False
+                urdf_obj.base_state[2] = False
+                
             # Set the velocity without physics
             else:
                 state = self.get_joint_state(urdf_obj=urdf_obj,
@@ -974,6 +1023,10 @@ class Simulator:
                                             jointIndex=joint_id[0],
                                             targetValue=curr_pos,
                                             targetVelocity=velocity)
+                
+                # Note that base state is no longer valid
+                urdf_obj.base_state[0] = False
+                urdf_obj.base_state[2] = False
                 
             if initial_cond:
                 urdf_obj.initial_conds[joint_id[0]]['velocity'] = velocity
@@ -1465,8 +1518,10 @@ class Simulator:
                                                     posObj=position,
                                                     ornObj=xyzw_ori)
         
-        # Note that CoM is no longer valid
+        # Note that CoM and base states is no longer valid
         urdf_obj.center_of_mass[0] = False
+        urdf_obj.base_state[0] = False
+        urdf_obj.base_state[2] = False
         
         # Return the set position and orientation
         return position, xyzw_ori
@@ -1523,6 +1578,10 @@ class Simulator:
         self.engine.resetBaseVelocity(objectUniqueId=i,
                                       linearVelocity=v_inW,
                                       angularVelocity=w_inW)
+        
+        # Note that base state is no longer valid
+        urdf_obj.base_state[0] = False
+        urdf_obj.base_state[2] = False
         
         # Return the set velocities
         return v_inW, w_inW
@@ -1711,6 +1770,12 @@ class Simulator:
         # Get object id
         urdf_id = urdf_obj.urdf_id
         
+        # Check if the base state is cached
+        if (not body_coords) and urdf_obj.base_state[0]:
+            return urdf_obj.base_state[1]
+        elif body_coords and urdf_obj.base_state[2]:
+            return urdf_obj.base_state[3]
+        
         # Retrieve position and orientation in world coordinates
         O, Q = self.engine.getBasePositionAndOrientation(urdf_id)
         O_inW = O
@@ -1753,6 +1818,12 @@ class Simulator:
                      'R of world in body' : R_ofW_inB,
                      'velocity' : vel_inB,
                      'angular velocity' : ang_vel_inB}
+            
+            # Update cached state
+            urdf_obj.base_state[2] = True
+            urdf_obj.base_state[3] = state
+            
+            # Return body fixed state
             return state
         
         else:
@@ -1764,6 +1835,12 @@ class Simulator:
                      'R of world in body' : R_ofW_inB,
                      'velocity' : vel_inW,
                      'angular velocity' : ang_vel_inW}
+            
+            # Update cached state
+            urdf_obj.base_state[0] = True
+            urdf_obj.base_state[1] = state
+            
+            # Return world fixed state
             return state
     
     
@@ -3566,8 +3643,10 @@ class Simulator:
                                                         posObj=p,
                                                         ornObj=o)
             
-            # Note that CoM is no longer valid
+            # Note that CoM and base state is no longer valid
             urdf_obj.center_of_mass[0] = False
+            urdf_obj.base_state[0] = False
+            urdf_obj.base_state[2] = False
             
             # Reset the base velocities for all urdfs
             self.engine.resetBaseVelocity(objectUniqueId=i,
@@ -3686,10 +3765,12 @@ class Simulator:
         self.engine.stepSimulation()
         self.time = self.time + self.dt
         
-        # Invalidate all center of masses
+        # Invalidate all center of masses and base states
         for urdf_obj in self.urdf_objs:
             urdf_obj.center_of_mass[0] = False
-    
+            urdf_obj.base_state[0] = False
+            urdf_obj.base_state[2] = False
+            
         # Based on the visualizer frame rate, determine if it is time to 
         # frame update
         frame_cond_1 = current_time >= self.frame_time_target
