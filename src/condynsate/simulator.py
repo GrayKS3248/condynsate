@@ -62,6 +62,7 @@ class URDF_Obj:
         self.initial_conds = {}
         self.geometries = []
         self.textures = []
+        self.center_of_mass = [False, np.array([0., 0., 0.])]
 
 
 ###############################################################################
@@ -865,12 +866,19 @@ class Simulator:
                                                       mode,
                                                       forces=[100.],
                                                       targetPositions=position)
+                
+                # Note that CoM is no longer valid
+                urdf_obj.center_of_mass[0] = False
+                
             # Reset joint position
             else:
                 self.engine.resetJointState(bodyUniqueId=urdf_id,
                                             jointIndex=joint_id[0],
                                             targetValue=position,
                                             targetVelocity=0.0)
+                
+                # Note that CoM is no longer valid
+                urdf_obj.center_of_mass[0] = False
                 
             # Update the initial conditions
             if initial_cond:
@@ -1255,6 +1263,9 @@ class Simulator:
             joint_id = link_map[link_name]
             self.engine.changeDynamics(urdf_id, joint_id, mass=mass)
             
+            # Note that CoM is no longer valid
+            urdf_obj.center_of_mass[0] = False
+            
             # Color the link based on the position
             if color and min_mass!=None and max_mass!=None:
                 self.set_color_from_mass(urdf_obj=urdf_obj,
@@ -1453,6 +1464,9 @@ class Simulator:
         self.engine.resetBasePositionAndOrientation(bodyUniqueId=i,
                                                     posObj=position,
                                                     ornObj=xyzw_ori)
+        
+        # Note that CoM is no longer valid
+        urdf_obj.center_of_mass[0] = False
         
         # Return the set position and orientation
         return position, xyzw_ori
@@ -1770,6 +1784,10 @@ class Simulator:
             world coordinates.
 
         """
+        # If the current CoM is not stale, just return that
+        if urdf_obj.center_of_mass[0]:
+            return urdf_obj.center_of_mass[1]
+        
         # Gather information from urdf_obj
         urdf_id = urdf_obj.urdf_id
         link_map = urdf_obj.link_map
@@ -1805,6 +1823,12 @@ class Simulator:
             com=np.array([0., 0., 0.])
         else:
             com = np.dot(masses, link_poss) / total_mass
+            
+        # Update the caches CoM value
+        urdf_obj.center_of_mass[0] = True
+        urdf_obj.center_of_mass[1] = com
+        
+        # Return the calculated CoM
         return com
     
     
@@ -3541,6 +3565,11 @@ class Simulator:
             self.engine.resetBasePositionAndOrientation(bodyUniqueId=i,
                                                         posObj=p,
                                                         ornObj=o)
+            
+            # Note that CoM is no longer valid
+            urdf_obj.center_of_mass[0] = False
+            
+            # Reset the base velocities for all urdfs
             self.engine.resetBaseVelocity(objectUniqueId=i,
                                           linearVelocity=v,
                                           angularVelocity=w)
@@ -3559,6 +3588,9 @@ class Simulator:
                                                 jointIndex=joint_id,
                                                 targetValue=pos,
                                                 targetVelocity=vel)
+                    
+                    # Note that CoM is no longer valid
+                    urdf_obj.center_of_mass[0] = False
                     
                     # Set the joint torque to 0
                     self.set_joint_torque(urdf_obj,
@@ -3653,6 +3685,10 @@ class Simulator:
         # Step the physics engine
         self.engine.stepSimulation()
         self.time = self.time + self.dt
+        
+        # Invalidate all center of masses
+        for urdf_obj in self.urdf_objs:
+            urdf_obj.center_of_mass[0] = False
     
         # Based on the visualizer frame rate, determine if it is time to 
         # frame update
