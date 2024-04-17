@@ -3547,11 +3547,14 @@ class Simulator:
                 if self.is_pressed(key):
                     print("CONTINUING...")
                     return
+                
+                # Add a sleep to reduce CPU usage
+                time.sleep(0.05)
             
-        # If there is not a keyboard, wait 1 second then return
+        # If there is not a keyboard, wait 0.1 seconds then return
         else:
             start_time = time.time()
-            while (time.time() - start_time) < 1.0:
+            while (time.time() - start_time) < 0.1:
                 # Ensure so the GUI remains interactive
                 if self.animation:
                     self.ani.flush_events()
@@ -3604,21 +3607,25 @@ class Simulator:
         if self.paused:
             return curr_val
 
+        # Determine which keys are pressed
+        is_down_key = self.is_pressed(down_key)
+        is_up_key = self.is_pressed(up_key)
+
         # Do nothing if both up and down keys are pressed
-        if self.is_pressed(down_key) and self.is_pressed(up_key):
+        if is_down_key and is_up_key:
             return curr_val
 
         # Set the new val to the current value
         new_val = curr_val
 
         # Listen to see if the down key is pressed
-        if self.is_pressed(up_key):
+        if is_up_key:
             new_val = curr_val + iter_val
             if new_val > max_val:
                 new_val = max_val
     
         # Listen to see if the up key is pressed
-        elif self.is_pressed(down_key):
+        elif is_down_key:
             new_val = curr_val - iter_val
             if new_val < min_val:
                 new_val = min_val

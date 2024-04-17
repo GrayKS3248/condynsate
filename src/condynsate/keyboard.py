@@ -35,6 +35,8 @@ class Keys:
         self.down = False
         self.key_buffer = []
         self.mod_key_buffer = []
+        self.len_key_buffer = 0
+        self.len_mod_key_buffer = 0
         
         # Asynch listen for script exit
         signal.signal(signal.SIGTERM, self._signal_handler)
@@ -125,11 +127,13 @@ class Keys:
         if key_str=="shift+" or key_str=="ctrl+" or key_str=="alt+":
             if key_str not in self.mod_key_buffer:
                 self.mod_key_buffer.append(key_str)
+                self.len_mod_key_buffer = self.len_mod_key_buffer + 1
             
         # Handle other keys
         else:
             if key_str not in self.key_buffer:
                 self.key_buffer.append(key_str)
+                self.len_key_buffer = self.len_key_buffer + 1
     
     
     def _remove_from_buffer(self,
@@ -138,11 +142,13 @@ class Keys:
         if key_str=="shift+" or key_str=="ctrl+" or key_str=="alt+":
             if key_str in self.mod_key_buffer:
                 self.mod_key_buffer.pop(self.mod_key_buffer.index(key_str))
+                self.len_mod_key_buffer = self.len_mod_key_buffer - 1
             
         # Handle other keys
         else:
             if key_str in self.key_buffer:
                 self.key_buffer.pop(self.key_buffer.index(key_str))
+                self.len_key_buffer = self.len_key_buffer - 1
             
 
 
@@ -198,7 +204,7 @@ class Keys:
         self._remove_from_buffer(key_str)
         
         # If the buffer is empty, note that no keys are down
-        if len(self.key_buffer) == 0 and len(self.mod_key_buffer):
+        if self.len_key_buffer == 0 and self.len_mod_key_buffer == 0:
             self.down = False
         
         # Stop the listener gracefully
@@ -244,24 +250,28 @@ class Keys:
         """
         key = key_str
         mods = []
+        len_mods = 0
         
         # Disambiguate mods from keys
         if ("shift+" in key):
             key = key.replace('shift+','')
             mods.append('shift+')
+            len_mods = len_mods + 1
         if ("ctrl+" in key):
             key = key.replace('ctrl+','')
             mods.append('ctrl+')
+            len_mods = len_mods + 1
         if ("alt+" in key):
             key = key.replace('alt+','')
             mods.append('alt+')
+            len_mods = len_mods + 1
             
         # Determine if correct key is down
         key_is_down = key in self.key_buffer
         
         # Determine if correct mods are down
-        if len(mods) == 0:
-            mods_are_down = len(self.mod_key_buffer)==0
+        if len_mods == 0:
+            mods_are_down = self.len_mod_key_buffer==0
         else:
             mods_are_down = all([mod in self.mod_key_buffer for mod in mods])
         
