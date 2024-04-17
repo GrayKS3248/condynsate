@@ -3551,10 +3551,10 @@ class Simulator:
                 # Add a sleep to reduce CPU usage
                 time.sleep(0.05)
             
-        # If there is not a keyboard, wait 0.1 seconds then return
+        # If there is not a keyboard, wait 1.0 seconds then return
         else:
             start_time = time.time()
-            while (time.time() - start_time) < 0.1:
+            while (time.time() - start_time) < 1.0:
                 # Ensure so the GUI remains interactive
                 if self.animation:
                     self.ani.flush_events()
