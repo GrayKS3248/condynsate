@@ -2220,13 +2220,19 @@ class Simulator:
         # If show_arrow is set to false, and the visualizer and associated
         # force arrow exist, set the arrows visibility to false
         if (not show_arrow) and arr_exists:
-            arr_name = str(self.lin_arr_map[urdf_force])
-            self.vis.set_link_color(urdf_name = "Force Arrows",
-                                    link_name = arr_name,
-                                    link_geometry = self.lin_geom, 
-                                    color = [0, 0, 0],
-                                    transparent = True,
-                                    opacity = 0.0)
+            # Check if the arrow is currently set to visible
+            arr_visible = self.lin_arr_map[urdf_force]['visible']
+            
+            # If the arrow is visible make changes, if not visible, do nothing
+            if arr_visible:
+                self.lin_arr_map[urdf_force]['visible'] = False
+                arr_name = self.lin_arr_map[urdf_force]['name']
+                self.vis.set_link_color(urdf_name = "Force Arrows",
+                                        link_name = arr_name,
+                                        link_geometry = self.lin_geom, 
+                                        color = [0, 0, 0],
+                                        transparent = True,
+                                        opacity = 0.0)
         
         # If show arrow is set to True and the visualizer exists, draw the
         # arrow at the position and orientation listed.
@@ -2251,15 +2257,20 @@ class Simulator:
             # If the arrow already exists, only update its position and ori
             if arr_exists:
                 # Get the arrow's name
-                arr_name = str(self.lin_arr_map[urdf_force])
+                arr_name = self.lin_arr_map[urdf_force]['name']
                 
-                # Set the visibility of the arrow to True
-                self.vis.set_link_color(urdf_name = "Force Arrows",
-                                        link_name = arr_name,
-                                        link_geometry = self.lin_geom, 
-                                        color = [0, 0, 0],
-                                        transparent = False,
-                                        opacity = 1.0)
+                # Check if the arrow is currently set to visible
+                arr_visible = self.lin_arr_map[urdf_force]['visible']
+                
+                # Set the visibility of the arrow to True if False
+                if not arr_visible:
+                    self.lin_arr_map[urdf_force]['visible'] = True
+                    self.vis.set_link_color(urdf_name = "Force Arrows",
+                                            link_name = arr_name,
+                                            link_geometry = self.lin_geom, 
+                                            color = [0, 0, 0],
+                                            transparent = False,
+                                            opacity = 1.0)
                 
                 # Set the position and orientation of the arrow
                 self.vis.apply_transform(urdf_name="Force Arrows",
@@ -2272,10 +2283,11 @@ class Simulator:
             # If the arrow is not already created, add it to the visualizer
             else:
                 # Add the arrow to the linear arrow map
-                self.lin_arr_map[urdf_force] = force_name
+                self.lin_arr_map[urdf_force] = {'name' : force_name,
+                                                 'visible' : True}
                 
                 # Get the arrow's name
-                arr_name = self.lin_arr_map[urdf_force]
+                arr_name = self.lin_arr_map[urdf_force]['name']
                 
                 # Get the path to the arrow asset
                 arr_path = Path(__file__).parents[0]
@@ -2349,14 +2361,20 @@ class Simulator:
         # If show_arrow is set to false, and the visualizer and associated
         # torque arrow exist, set the arrows visibility to false
         if (not show_arrow) and arr_exists:
-            arr_name = str(self.ccw_arr_map[urdf_torque])
-            self.vis.set_link_color(urdf_name = "Torque Arrows",
-                                    link_name = arr_name,
-                                    link_geometry = self.ccw_geom, 
-                                    color = [0, 0, 0],
-                                    transparent = True,
-                                    opacity = 0.0)
-        
+            # Check if the arrow is currently set to visible
+            arr_visible = self.ccw_arr_map[urdf_torque]['visible']
+            
+            # If the arrow is visible make changes, if not visible, do nothing
+            if arr_visible:
+                self.ccw_arr_map[urdf_torque]['visible'] = False
+                arr_name = self.ccw_arr_map[urdf_torque]['name']
+                self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                        link_name = arr_name,
+                                        link_geometry = self.ccw_geom, 
+                                        color = [0, 0, 0],
+                                        transparent = True,
+                                        opacity = 0.0)
+                
         # If show arrow is set to True and the visualizer exists, draw the
         # arrow at the position and orientation listed.
         if show_arrow:
@@ -2380,15 +2398,20 @@ class Simulator:
             # If the arrow already exists, only update its position and ori
             if arr_exists:
                 # Get the arrow's name
-                arr_name = str(self.ccw_arr_map[urdf_torque])
+                arr_name = self.ccw_arr_map[urdf_torque]['name']
                 
-                # Set the visibility of the arrow to True
-                self.vis.set_link_color(urdf_name = "Torque Arrows",
-                                        link_name = arr_name,
-                                        link_geometry = self.ccw_geom, 
-                                        color = [0, 0, 0],
-                                        transparent = False,
-                                        opacity = 1.0)
+                # Check if the arrow is currently set to visible
+                arr_visible = self.ccw_arr_map[urdf_torque]['visible']
+                
+                # Set the visibility of the arrow to True if False
+                if not arr_visible:
+                    self.ccw_arr_map[urdf_torque]['visible'] = True
+                    self.vis.set_link_color(urdf_name = "Torque Arrows",
+                                            link_name = arr_name,
+                                            link_geometry = self.ccw_geom, 
+                                            color = [0, 0, 0],
+                                            transparent = False,
+                                            opacity = 1.0)
                 
                 # Set the position and orientation of the arrow
                 self.vis.apply_transform(urdf_name="Torque Arrows",
@@ -2401,10 +2424,11 @@ class Simulator:
             # If the arrow is not already created, add it to the visualizer
             else:
                 # Add the arrow to the linear arrow map
-                self.ccw_arr_map[urdf_torque] = torque_name
+                self.ccw_arr_map[urdf_torque] = {'name' : torque_name,
+                                                 'visible' : True}
                 
                 # Get the arrow's name
-                arr_name = self.ccw_arr_map[urdf_torque]
+                arr_name = self.ccw_arr_map[urdf_torque]['name']
                 
                 # Get the path to the arrow asset
                 arr_path = Path(__file__).parents[0]
