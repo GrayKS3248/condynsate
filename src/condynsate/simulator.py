@@ -72,8 +72,8 @@ class URDF_Obj:
         
         # Lists that contain the visual geometrys and textures of the URDF
         # in order of link id. One per link
-        self.geometries = []
-        self.textures = []
+        self.geometries = {}
+        self.textures = {}
         
         # Structure that contains a bool to indicate if the stored
         # CoM is valid (True) or stale (needs to be recalculated) (False)
@@ -2505,18 +2505,17 @@ class Simulator:
                                              wxyz_quaternion=oris[i])
                 
                 # Save the texture and geometry
-                urdf_obj.geometries.append(geom)
-                urdf_obj.textures.append(tex)
+                urdf_obj.geometries[names[i]] = geom
+                urdf_obj.textures[names[i]] = tex
                 
             # If the current link is defined by an .stl file
             elif paths[i][-4:] == ".stl":
-                link_name = names[i]
                 rgb = format_RGB(colors[i][0:3],
                                   range_to_255=True)
                 opacity = colors[i][3]
                 transparent = opacity != 1.0
                 geom, tex = self.vis.add_stl(urdf_name=urdf_name,
-                                             link_name=link_name,
+                                             link_name=names[i],
                                              stl_path=paths[i],
                                              color=rgb,
                                              transparent=transparent,
@@ -2526,8 +2525,8 @@ class Simulator:
                                              wxyz_quaternion=oris[i])
 
                 # Save the texture and geometry
-                urdf_obj.geometries.append(geom)
-                urdf_obj.textures.append(tex)
+                urdf_obj.geometries[names[i]] = geom
+                urdf_obj.textures[names[i]] = tex
 
     
     def _update_urdf_visual(self,
@@ -2699,13 +2698,17 @@ class Simulator:
         if not (link_name in urdf_obj.link_map):
             return
     
+        # If we don't already have the link geometry, we can't change its color
+        if not (link_name in urdf_obj.geometries):
+            return
+    
         # Get name and id data from urdf_obj
         urdf_id = urdf_obj.urdf_id
         urdf_name = str(urdf_id)
         link_id = urdf_obj.link_map[link_name]
         
         # Get the link's geometry
-        link_geometry = urdf_obj.geometries[link_id]
+        link_geometry = urdf_obj.geometries[link_name]
         
         # Ensure color is in proper format
         color = format_RGB(color, range_to_255=False)
