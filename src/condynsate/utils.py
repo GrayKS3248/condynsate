@@ -382,18 +382,3 @@ def pt_inA_toB(R_ofA_inB, O_ofA_inB, pt_inA):
     """
     pt_inB = np.array(R_ofA_inB) @ np.array(pt_inA) + np.array(O_ofA_inB)
     return pt_inB
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
