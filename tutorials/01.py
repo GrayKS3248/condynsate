@@ -19,7 +19,6 @@ from pathlib import Path
 After importing our dependencies, we will again create a project class. This
 class provides the same functions as before ---the initialization function and
 the run function. 
-    
 '''
 class Project():
     def __init__(self):
