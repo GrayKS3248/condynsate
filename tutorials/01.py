@@ -219,7 +219,7 @@ class Project():
             
             
             '''
-            Now we simply write an if statement that applies a torque to the
+            Now 1we simply write an if statement that applies a torque to the
             center of mass if the height is more than 1.0 and its upward speed
             is less than 2.0 in magnitude. Otherwise it applies 0 torque. To
             apply a torque about the center of mass of a URDF object, we use

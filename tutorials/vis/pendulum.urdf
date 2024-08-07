@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+
+<robot name="pendulum">
+    
+    <material name="industrial-blue">
+        <color rgba="0.113725 0.3450980 0.654901 1" />
+    </material>
+    
+    <material name = "heritage-orange">
+        <color rgba = "0.96078 0.50980 0.11764 1" />
+    </material>
+    
+        
+    <link name="chassis">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                  <mesh filename="cube.stl" scale="0.1 0.1 0.25"/>
+            </geometry>
+            <material name = "industrial-blue"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cube.stl" scale="0.1 0.1 0.25"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="1000.0"/>
+            <inertia ixx="1000.0" ixy="0" ixz="0" iyy="1000.0" iyz="0" izz="1000.0"/>
+        </inertial>
+    </link>
+    
+    <link name="arm">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder_lower_origin.stl" scale="0.05 0.05 1.0"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder_lower_origin.stl" scale="0.05 0.05 1.0"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0.0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <link name="mass">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.2 0.2 0.2"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.2 0.2 0.2"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="1.0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+    
+    <joint name="chassis_to_arm" type="continuous">
+        <parent link = "chassis" />
+        <child link = "arm" />
+        <origin rpy="0 0 0" xyz = "0 0 0.125" />
+        <axis xyz = "0 -1 0" />
+    </joint>
+    
+    <joint name="arm_to_mass" type="fixed">
+        <parent link = "arm" />
+        <child link = "mass" />
+        <origin rpy="0 0 0" xyz = "0 0 1.0" />
+    </joint>
+
+</robot>
