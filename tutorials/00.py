@@ -109,9 +109,11 @@ class Project():
         '''
         Load the cube URDF file into the simulator as a physics object.
         
-        By setting position = [0, 0, 1] and wxyz_quaternion = [1, 0, 0, 0],
-        we place the cube at (0, 0, 1) in the orientation defined by the URDF
-        parent axes.
+        By setting position = [0, 0, 1.5] and wxyz_quaternion = [1, 0, 0, 0],
+        we place the cube at (0, 0, 1.5) in the orientation defined by the URDF
+        parent axes. As it turns out, the cube is 1x1x1, so that a center
+        position of [0, 0, 1.5] places the bottom of the cube exactly 1 meter
+        above the ground.
         
         By setting fixed = False, we are telling the simulator to update 
         the physics of the cube.
@@ -123,7 +125,7 @@ class Project():
         '''
         # Load the cube
         self.cube_1 = self.s.load_urdf(urdf_path=cube_path,
-                                       position=[0., 0., 1.],
+                                       position=[0., 0., 1.5],
                                        wxyz_quaternion=[1., 0., 0., 0],
                                        fixed=False,
                                        update_vis=True)
