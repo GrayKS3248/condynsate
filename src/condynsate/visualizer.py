@@ -48,6 +48,17 @@ class Visualizer():
         # Set the visibility of grid and axes
         self.set_grid(grid_vis)
         self.set_axes(axes_vis)
+        
+        # Set the default lights
+        self.set_spotlight(on=False)
+        self.set_posx_pt_light(on=False)
+        self.set_negx_pt_light(on=True,
+                               intensity=0.5,
+                               distance=10.)
+        self.set_fill_light(on=True,
+                            intensity=0.35)
+        self.set_ambient_light(on=True,
+                               intensity=0.65)          
 
 
     def add_obj(self,
@@ -545,8 +556,8 @@ class Visualizer():
 
 
     def set_fill_light(self,
-                          on = False,
-                          intensity = 1.0):
+                       on = False,
+                       intensity = 1.0):
         """
         Sets the properties fill light of the scene.
 

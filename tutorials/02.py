@@ -245,7 +245,7 @@ if __name__ == "__main__":
     proj = Project()
     
     # Run the simulation.
-    proj.run(max_time = 20.)
+    proj.run(max_time = 5.)
     
     
 '''

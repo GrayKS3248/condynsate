@@ -142,7 +142,7 @@ class Simulator:
         # Time tracking variables
         self.start_epoch = -1.0
         self.pause_elapsed_time = 0.0
-        self.prev_step_time = 0.0
+        self.prev_step_time = time.time()
         self.time = 0.0
         self.dt = 0.01
         
@@ -3656,7 +3656,7 @@ class Simulator:
         self.is_done = False
         self.start_epoch = -1.0
         self.pause_elapsed_time = 0.0
-        self.prev_step_time = 0.0
+        self.prev_step_time = time.time()
         self.time = 0.
 
         # Reset visualizer frame rate
@@ -3779,7 +3779,7 @@ class Simulator:
                 self.paused = False
                 print("RESUME")
                 time.sleep(0.2)
-                self.pause_elapsed_time += time.time()-self.pause_start_time
+                self.pause_elapsed_time += time.time() - self.pause_start_time
                 return 1 # Return end pause code
             return 2 # Return paused code
   
@@ -3831,12 +3831,12 @@ class Simulator:
         # Calculate suspend time if running simulation in real time
         if real_time:
             # Get the amount of time to wait to place in real time
-            time_to_wait = (self.prev_step_time + self.dt) - current_time
-            self.prev_step_time = current_time
+            time_to_wait = (self.prev_step_time + self.dt) - time.time()
             
             # Wait for the perscribed amount of time to put in real time
             if time_to_wait > 0:
                 time.sleep(time_to_wait)
+            self.prev_step_time = time.time()
 
         # Pause upon request
         if self.is_pressed("space"):
