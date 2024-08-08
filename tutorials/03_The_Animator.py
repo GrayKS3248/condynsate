@@ -54,7 +54,7 @@ class Project():
         # Set the initial angle of the pendulum arm
         self.s.set_joint_position(urdf_obj=self.pendulum,
                                   joint_name='chassis_to_arm',
-                                  position=10.0*3.141592654/180.,
+                                  position=40.0*3.141592654/180.,
                                   initial_cond=True,
                                   physics=False)
 
@@ -162,7 +162,7 @@ class Project():
                                             line_widths=[2.5],
                                             line_styles=["-"],
                                             x_lim=[-40.,40],
-                                            y_lim=[-250.,250],
+                                            y_lim=[-275.,275],
                                             h_zero_line=True,
                                             v_zero_line=True)
         
@@ -207,7 +207,7 @@ class Project():
             # Apply a proportional torque
             self.s.set_joint_torque(urdf_obj=self.pendulum,
                                     joint_name='chassis_to_arm',
-                                    torque=-angle,
+                                    torque=-angle-0.01*angle_vel,
                                     show_arrow=True,
                                     arrow_scale=0.02,
                                     arrow_offset=0.05)
