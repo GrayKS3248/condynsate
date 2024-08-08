@@ -159,7 +159,7 @@ class Project():
                     exactly what you provide, so there is no need to report it
                     separately.
             '''
-            # Use a sensor to collect the angles and rates of each wheel
+            # Use a sensor to collect the state of the pendulum
             state = self.s.get_joint_state(urdf_obj=self.pendulum,
                                             joint_name='chassis_to_arm')
             
@@ -170,7 +170,7 @@ class Project():
             measure the angle of the pendulum. We can do this by extracting the
             position (angle for a continuous joint) from its state.
             '''
-            # Extract angle of the chassis_to_arm joint
+            # Extract angle of the "chassis_to_arm" (pendulum) joint
             angle = 180. * state['position'] / 3.141592654
             
             
@@ -238,7 +238,7 @@ class Project():
 
 '''
 This main loop is an example of how to use the Project class we just created to
-run a complete simulation of time 20 seconds.
+run a complete simulation of time 5 seconds.
 '''
 if __name__ == "__main__":
     # Create an instance of the Project class. 

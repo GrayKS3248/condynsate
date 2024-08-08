@@ -100,7 +100,7 @@ class Simulator:
                  visualization=True,
                  visualization_fr = 30.,
                  animation=True,
-                 animation_fr = 10.,
+                 animation_fr = 7.5,
                  gravity=[0., 0., -9.81]):
         """
         Initializes an instance of the Simulator class.
@@ -121,7 +121,7 @@ class Simulator:
             in real time. The default is True.
         animation_fr : float, optional
             The frame rate (frames per second) at which the animated plots are
-            updated. The default is 10..
+            updated. The default is 7.5.
         gravity : array-like, shape (3,) optional
             The gravity vectory in m/s^2. The default is [0., 0., -9.81].
 
@@ -2705,7 +2705,6 @@ class Simulator:
         # Get name and id data from urdf_obj
         urdf_id = urdf_obj.urdf_id
         urdf_name = str(urdf_id)
-        link_id = urdf_obj.link_map[link_name]
         
         # Get the link's geometry
         link_geometry = urdf_obj.geometries[link_name]
@@ -3364,7 +3363,7 @@ class Simulator:
         """
         # If there is no animator, do not attempt to add a plot to it
         if not self.animation:
-            return
+            return None, None
         
         # Add the plot data to the plot
         v1, v2 = self.ani.add_subplot(n_artists=n_artists,
@@ -3790,11 +3789,6 @@ class Simulator:
             print("RESET")
             return 3 # Return reset code
 
-        # Get the real time elapsed since simulation was last reset
-        if self.start_epoch == -1.0:
-            self.start_epoch = time.time()
-        current_time = time.time() - self.start_epoch - self.pause_elapsed_time
-
         # Step the physics engine
         self.engine.stepSimulation()
         self.time = self.time + self.dt
@@ -3804,6 +3798,11 @@ class Simulator:
             urdf_obj.center_of_mass[0] = False
             urdf_obj.base_state[0] = False
             urdf_obj.base_state[2] = False
+            
+        # Get the real time elapsed since simulation was last reset
+        if self.start_epoch == -1.0:
+            self.start_epoch = time.time()
+        current_time = time.time() - self.start_epoch - self.pause_elapsed_time
             
         # Based on the visualizer frame rate, determine if it is time to 
         # frame update
