@@ -261,7 +261,7 @@ class Project():
                                              torque=[0.,0.,0.])
             
             
-            # Take a single physics step of 0.01 seconds. This will
+            # Take a single physics step of dt seconds. This will
             # automatically update the physics and the visualizer, and attempts
             # to run in real time. Additionally, it will apply the forces and
             # torques set using the apply_force_to_com() and 

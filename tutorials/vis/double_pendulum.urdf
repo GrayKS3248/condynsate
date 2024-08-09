@@ -26,7 +26,7 @@
         </inertial>
     </link>
     
-    <link name="arm">
+    <link name="arm1">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
@@ -36,12 +36,42 @@
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="0 0 0"/>
-            <mass value="0.0"/>
+            <mass value="0"/>
             <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
         </inertial>
     </link>
     
-    <link name="mass">
+    <link name="arm2">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder_lower_origin.stl" scale="0.05 0.05 1.0"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
+    <link name="mass1">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="sphere.stl" scale="0.2 0.2 0.2"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="1.0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
+    <link name="mass2">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
@@ -56,17 +86,30 @@
         </inertial>
     </link>
     
-    <joint name="chassis_to_arm" type="continuous">
+    <joint name="chassis_to_arm1" type="continuous">
         <parent link = "chassis" />
-        <child link = "arm" />
+        <child link = "arm1" />
+        <origin rpy="0 0 0" xyz = "0 0 0.025" />
+        <axis xyz = "0 -1 0" />
+    </joint>
+
+    <joint name="arm1_to_mass1" type="fixed">
+        <parent link = "arm1" />
+        <child link = "mass1" />
+        <origin rpy="0 0 0" xyz = "0 0 1" />
+    </joint>
+
+    <joint name="mass1_to_arm2" type="continuous">
+        <parent link = "mass1" />
+        <child link = "arm2" />
         <origin rpy="0 0 0" xyz = "0 0 0" />
         <axis xyz = "0 -1 0" />
     </joint>
     
-    <joint name="arm_to_mass" type="fixed">
-        <parent link = "arm" />
-        <child link = "mass" />
-        <origin rpy="0 0 0" xyz = "0 0 1.0" />
+    <joint name="arm2_to_mass2" type="fixed">
+        <parent link = "arm2" />
+        <child link = "mass2" />
+        <origin rpy="0 0 0" xyz = "0 0 1" />
     </joint>
 
 </robot>

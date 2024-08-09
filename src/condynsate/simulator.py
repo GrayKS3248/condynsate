@@ -101,7 +101,8 @@ class Simulator:
                  visualization_fr = 30.,
                  animation=True,
                  animation_fr = 7.5,
-                 gravity=[0., 0., -9.81]):
+                 gravity=[0., 0., -9.81],
+                 dt=0.01):
         """
         Initializes an instance of the Simulator class.
 
@@ -124,6 +125,9 @@ class Simulator:
             updated. The default is 7.5.
         gravity : array-like, shape (3,) optional
             The gravity vectory in m/s^2. The default is [0., 0., -9.81].
+        dt : float, optional
+            The fixed time step of the simulator in seconds. The default is
+            0.01 seconds.
 
         Returns
         -------
@@ -144,7 +148,7 @@ class Simulator:
         self.pause_elapsed_time = 0.0
         self.prev_step_time = time.time()
         self.time = 0.0
-        self.dt = 0.01
+        self.dt = dt
         
         # Configure physics engine parameters
         self.engine.setPhysicsEngineParameter(
@@ -1332,7 +1336,8 @@ class Simulator:
     ###########################################################################
     def get_link_state(self,
                        urdf_obj,
-                       link_name):
+                       link_name,
+                       body_coords=False):
         """
         Gets the rigid body states (position and orientation) of a given
         link of a given urdf. 
@@ -1344,6 +1349,9 @@ class Simulator:
         link_name : string
             The name of the link whose state is measured. The link name is
             specified in the .urdf file.
+        body_coords : bool
+            A boolean flag that indicates whether the passed velocities are in
+            world coords or body coords.
 
         Returns
         -------
@@ -1368,6 +1376,10 @@ class Simulator:
                 written in link coordinates. Let V_inW be a 3vector 
                 written in world coordinates. Then:
                 V_inL = R_ofWorld_inLink @ V_inW
+            'velocity' : array-like, shape (3,)
+                The (x,y,z) linear velocity in world coordinates of the link.
+            'angular velocity' : array-like, shape (3,)
+                The (x,y,z) angular velocity in world coordinates of the link.
 
         """
         # Get object id and link map
@@ -1381,9 +1393,13 @@ class Simulator:
             return
         
         # Retrieve the link states
-        link_state = self.engine.getLinkState(urdf_id, link_id)
+        link_state = self.engine.getLinkState(urdf_id,
+                                              link_id,
+                                              computeLinkVelocity=1)
         O_inW = link_state[0]
         xyzw_ori = link_state[1]
+        v_inW = link_state[6]
+        w_inW = link_state[7]
         
         # Convert the orientation quaternion the Euler angles
         rpy = self.engine.getEulerFromQuaternion(xyzw_ori)
@@ -1403,13 +1419,26 @@ class Simulator:
         # Format the link state data
         O_inW = np.array(O_inW)
         rpy = np.array(rpy)
+        v_inW = np.array(v_inW)
+        w_inW = np.array(w_inW)
         
-        # Make and return the state dictionary
+        # Make the state dictionary
         state = {'position' : O_inW,
                  'roll' : rpy[0],
                  'pitch' : rpy[1],
                  'yaw' : rpy[2],
+                 'velocity' : v_inW,
+                 'angular velocity' : w_inW,
                  'R of world in link' : R_ofW_inL}
+        
+        # Switch to body coordinates
+        if body_coords:
+            v_inB = R_ofW_inL @ v_inW
+            w_inB =  R_ofW_inL @ w_inW
+            state['velocity'] = v_inB
+            state['angular velocity'] = w_inB
+
+        # Return the state
         return state
     
     
@@ -3730,7 +3759,7 @@ class Simulator:
         real_time : bool, optional
             A boolean flag that indicates whether or not the step is taken in
             real time. If True, step() is suspended until the time since the
-            last step is equal to 0.01 seconds (the fixed time step of the
+            last step is equal to dt seconds (the time step of the
             physics engine). If False, step() is run as quickly as possible.
             The default is True.
         update_vis : bool, optional

@@ -91,11 +91,12 @@ class Project():
         we place the plane at (0, 0, 0) oriented in the XY plane.
         
         By setting fixed = True, we are telling the simulator NOT to update 
-        the physics of this object. It will still have collision, though. 
+        the physics of the base of the object. It will still have collision,
+        though. 
         
         By setting update_vis = False, we are telling the simulator NOT to 
         send updates to the visualizer for this object. This flag is usually
-        set to False when fixed is set to True to reduce the amount of compute
+        set to False for unjointed, fixed URDFs to reduce the amount of compute
         power required by the visualization
         '''
         # Load the ground
@@ -115,8 +116,8 @@ class Project():
         position of [0, 0, 1.5] places the bottom of the cube exactly 1 meter
         above the ground.
         
-        By setting fixed = False, we are telling the simulator to update 
-        the physics of the cube.
+        By setting fixed = True, we are telling the simulator to update 
+        the physics of the base of the object.
         
         By setting update_vis = True, we are telling the simulator to 
         send updates to the visualizer for this object. This is usually set to 
@@ -195,7 +196,7 @@ class Project():
         # True
         while(not self.s.is_done):
             
-            # Take a single physics step of 0.01 seconds. This will
+            # Take a single physics step of dt seconds. This will
             # automatically update the physics and the visualizer, and attempts
             # to run in real time.
             self.s.step(max_time=max_time)

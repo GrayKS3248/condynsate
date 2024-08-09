@@ -38,23 +38,21 @@ class Project():
         # Get the path to the current directory
         path = (Path(__file__).parents[0]).absolute().as_posix()
         
-        # Get the absolute paths that point to the plane and sphere URDF files
-        plane_path = path + "/vis/plane.urdf"
+        # Get the absolute path that points to the URDF file
         pendulum_path = path + "/vis/pendulum.urdf"
-        
-        # Load the ground
-        self.ground = self.s.load_urdf(urdf_path=plane_path,
-                                       position=[0., 0., 0.],
-                                       wxyz_quaternion=[1., 0., 0., 0],
-                                       fixed=True,
-                                       update_vis=False)
 
-        # Load the sphere so that its bottom plane is sitting on the ground
+        '''
+        Note here that we have set fixed to false. This means that the physics
+        of the base of the object will not be update. That is, the object's
+        base will be fixed in space. We can still apply external and internal
+        forces to all of the joints, though, and thier physics will be updated.
+        '''
+        # Load the pendulum so that its bottom plane is sitting on the ground
         self.pendulum = self.s.load_urdf(urdf_path=pendulum_path,
-                                         position=[0., 0., 0.125],
+                                         position=[0., 0., 0.05],
                                          yaw=1.570796327,
                                          wxyz_quaternion=[1., 0., 0., 0],
-                                         fixed=False,
+                                         fixed=True,
                                          update_vis=True)
         
         '''
@@ -229,7 +227,7 @@ class Project():
                                         show_arrow=True)
             
             
-            # Take a single physics step of 0.01 seconds. This will
+            # Take a single physics step of dt seconds. This will
             # automatically update the physics and the visualizer, and attempts
             # to run in real time. Additionally, it will apply the torques set
             # using the set_joint_torque() function

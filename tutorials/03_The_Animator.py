@@ -32,23 +32,15 @@ class Project():
         # Get the path to the current directory
         path = (Path(__file__).parents[0]).absolute().as_posix()
         
-        # Get the absolute paths that point to the plane and sphere URDF files
-        plane_path = path + "/vis/plane.urdf"
+        # Get the absolute path that points to the URDF file
         pendulum_path = path + "/vis/pendulum.urdf"
-        
-        # Load the ground
-        self.ground = self.s.load_urdf(urdf_path=plane_path,
-                                       position=[0., 0., 0.],
-                                       wxyz_quaternion=[1., 0., 0., 0],
-                                       fixed=True,
-                                       update_vis=False)
 
-        # Load the sphere so that its bottom plane is sitting on the ground
+        # Load the pendulum so that its bottom plane is sitting on the ground
         self.pendulum = self.s.load_urdf(urdf_path=pendulum_path,
-                                         position=[0., 0., 0.125],
+                                         position=[0., 0., 0.05],
                                          yaw=1.570796327,
                                          wxyz_quaternion=[1., 0., 0., 0],
-                                         fixed=False,
+                                         fixed=True,
                                          update_vis=True)
 
         # Set the initial angle of the pendulum arm
@@ -152,7 +144,7 @@ class Project():
         rechieve a list of artist_inds. You can again think of this as a list 
         of pointers to each artists in that subplot.
         '''
-        # Make plot for states and input
+        # Make plot for phase space
         self.p, self.a = self.s.add_subplot(n_artists=1,
                                             subplot_type='line',
                                             title="Phase Space",
@@ -227,7 +219,7 @@ class Project():
                                      x=angle,
                                      y=angle_vel)
                 
-            # Take a single physics step of 0.01 seconds. This will
+            # Take a single physics step of dt seconds. This will
             # automatically update the physics and the visualizer, and attempts
             # to run in real time.
             self.s.step(max_time=max_time)
