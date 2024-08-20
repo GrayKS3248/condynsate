@@ -1390,7 +1390,20 @@ class Simulator:
         if link_name in link_map:
             link_id = link_map[link_name]
         else:
-            return
+            return None
+        
+        # If the link is a base link, get the base state instead
+        if link_id == -1:
+            base_state = self.get_base_state(urdf_obj=urdf_obj,
+                                             body_coords=body_coords)
+            state = {'position' : base_state['position'],
+                     'roll' : base_state['roll'],
+                     'pitch' : base_state['pitch'],
+                     'yaw' : base_state['yaw'],
+                     'velocity' : base_state['velocity'],
+                     'angular velocity' : base_state['angular velocity'],
+                     'R of world in link' : base_state['R of world in body']}
+            return state
         
         # Retrieve the link states
         link_state = self.engine.getLinkState(urdf_id,
@@ -1430,7 +1443,7 @@ class Simulator:
                  'velocity' : v_inW,
                  'angular velocity' : w_inW,
                  'R of world in link' : R_ofW_inL}
-        
+            
         # Switch to body coordinates
         if body_coords:
             v_inB = R_ofW_inL @ v_inW

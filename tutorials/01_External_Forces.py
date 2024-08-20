@@ -254,8 +254,8 @@ class Project():
                                              torque=[0.,0.,0.1],
                                              body_coords=False,
                                              show_arrow=True,
-                                             arrow_scale=8.0,
-                                             arrow_offset=0.5) 
+                                             arrow_scale=25.0,
+                                             arrow_offset=0.0) 
             else:
                 self.s.apply_external_torque(urdf_obj=self.sphere,
                                              torque=[0.,0.,0.])
