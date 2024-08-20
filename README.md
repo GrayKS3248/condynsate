@@ -88,6 +88,8 @@
     
     - [3 Start a Jupyter Notebook in MacOS](#3-Start-a-Jupyter-Notebook-in-MacOS)
 
+- [**Examples and Tutorials**](#Examples-and-Tutorials)
+
 ## Introduction
 
 [condynsate](https://github.com/GrayKS3248/condynsate) is a dynamic system simulation and visualization tool built with [PyBullet](https://pybullet.org/wordpress/) and [MeshCat](https://github.com/meshcat-dev/meshcat-python). It automatically simulates multiple objects and their interactions as described by [.urdf](http://wiki.ros.org/urdf), [.stl](https://en.wikipedia.org/wiki/STL_(file_format)), and [.obj](https://en.wikipedia.org/wiki/Wavefront_.obj_file) files and can render real time visualizations in a web browser.
@@ -738,6 +740,6 @@ A browser window should open with the Jupyter Notebook interface. You can now na
 
 **We strongly recommend you duplicate and work with a copy of any given notebook rather than working with the original.** Feel free to ignore this suggestion if you are a `git` expert. 
 
-# Usage
+# Examples and Tutorials
 
-For examples of usage, see [examples](https://github.com/GrayKS3248/condynsate/tree/main/examples).
+For examples of usage, see [examples](https://github.com/GrayKS3248/condynsate/tree/main/examples). For tutorials on using condynsate to design a project, see [tutorials](https://github.com/GrayKS3248/condynsate/tree/main/tutorials).
