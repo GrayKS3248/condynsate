@@ -19,8 +19,6 @@
     - [1 Install Miniconda for Windows](#1-Install-Miniconda-for-Windows)
     
     - [2 Install condynsate in a Miniconda virtual environment in Windows](#2-Install-condynsate-in-a-Miniconda-virtual-environment-in-Windows)
-    
-    - [3 Clone the ae353-sp24 Repository using Git in Windows](#3-Clone-the-ae353-sp24-Repository-using-Git-in-Windows)
   
   - [Running Projects in Windows](#Running-Projects-in-Windows)
     
@@ -42,11 +40,9 @@
   
   - [Linux Installation](#Linux-Installation)
     
-    - [1 Clone the ae353-sp24 Repository using Git in Linux](#1-Clone-the-ae353-sp24-Repository-using-Git-in-Linux)
+    - [1 Install Miniconda for Linux](#1-Install-Miniconda-for-Linux)
     
-    - [2 Install Miniconda for Linux](#2-Install-Miniconda-for-Linux)
-    
-    - [3 Install condynsate in a Miniconda virtual environment in Linux](#3-Install-condynsate-in-a-Miniconda-virtual-environment-in-Linux)
+    - [2 Install condynsate in a Miniconda virtual environment in Linux](#2-Install-condynsate-in-a-Miniconda-virtual-environment-in-Linux)
   
   - [Running Projects in Linux](#Running-Projects-in-Linux)
     
@@ -77,8 +73,6 @@
     - [3 Grant Input Monitoring Access to Terminal in MacOS](#3-Grant-Input-Monitoring-Access-to-Terminal-in-MacOS)
     
     - [4 Install condynsate in a Miniconda virtual environment in MacOS](#4-Install-condynsate-in-a-Miniconda-virtual-environment-in-MacOS)
-    
-    - [5 Clone the ae353-sp24 Repository using Git in MacOS](#5-Clone-the-ae353-sp24-Repository-using-Git-in-MacOS)
   
   - [Running Projects in MacOS](#Running-Projects-in-MacOS)
     
@@ -134,11 +128,11 @@ where "`path\to\directory`" is replaced by the location of the directory in whic
 C:\Users\jakek>cd 
 ```
 
-Then, I would drag a folder into the powershell window and press enter. For instance, suppose I had created a folder called `ae353-sp24` somewhere on my computer and dragged it in, then pressed enter --- I would see something like this:
+Then, I would drag a folder into the powershell window and press enter. For instance, suppose I had created a folder called `ae353` somewhere on my computer and dragged it in, then pressed enter --- I would see something like this:
 
 ```
-C:\Users\jakek>cd C:\Users\jakek\OneDrive\Documents\ae353-sp23
-C:\Users\jakek\OneDrive\Documents\ae353-sp23>
+C:\Users\jakek>cd C:\Users\jakek\OneDrive\Documents\ae353
+C:\Users\jakek\OneDrive\Documents\ae353>
 ```
 
 See documentation on [Find and Open Files using Windows Command Prompt](https://www.faqforge.com/windows/windows-10/find-and-open-files-using-windows-command-prompt/) for a way to search for the directory location of files on your computer.
@@ -226,7 +220,7 @@ conda clean -a -y
 Now install the Conda-Forge dependencies by running the command
 
 ```bash
-conda install -y python=3 git control matplotlib notebook numpy pybullet pynput pyside6 sympy
+conda install -y git matplotlib notebook numpy pybullet pynput pyside6 sympy scipy
 ```
 
 Once the installation is complete, install condynsate by running the commands
@@ -257,20 +251,6 @@ quit()
 
 to quit the Python shell.
 
-#### 3 Clone the ae353-sp24 Repository using Git in Windows
-
-In your already opened **Anaconda Prompt (Miniconda3)** navigate to the directory you want to clone the ae353-sp24 code repository into. This is done using the [change directory command](#How to change the working directory).
-
-Next, clone the repository into the current directory by running the command
-
-```bash
-git clone https://github.com/w-chang/ae353-sp24.git
-```
-
-You may need to select your credential manager. Select "*manager*" from the popup window and then log into github.com using your github account.
-
-The ae353-sp24 code repository is now cloned to your machine. You will find all design projects in this repository.
-
 ### Running Projects in Windows
 
 #### 1 Change your working directory in Windows
@@ -294,7 +274,7 @@ git fetch
 git pull
 ```
 
-Do not worry, this will not overwrite any of your own work. If you see any errors or warnings, post a note to [Piazza](https://piazza.com/) and course staff will help resolve them.
+Do not worry, this will not overwrite any of your own work.
 
 #### 3 Start a Jupyter Notebook in Windows
 
@@ -304,7 +284,7 @@ In your already open **Anaconda Prompt (miniconda3)** run the command
 jupyter notebook
 ```
 
-A browser window should open with the Jupyter Notebook interface. You can now navigate to and open any of the notebooks (with extension `.ipynb`) used for in-class examples or for design projects.
+A browser window should open with the Jupyter Notebook interface. You can now navigate to and open any of the notebooks (with extension `.ipynb`) used for examples, tutorials, or design projects.
 
 **We strongly recommend you duplicate and work with a copy of any given notebook rather than working with the original.** Feel free to ignore this suggestion if you are a `git` expert.
 
@@ -340,17 +320,7 @@ cd ..
 
 ### Linux Installation
 
-#### 1 Clone the ae353-sp24 Repository using Git in Linux
-
-Open the terminal. Navigate to the directory you want to clone the ae353-sp24 code repository into. Now, clone the repository into the current directory by typing the command
-
-```bash
-git clone https://github.com/w-chang/ae353-sp24.git
-```
-
-The ae353-sp24 code repository is now cloned to your machine. You will find all design projects in this repository.
-
-#### 2 Install Miniconda for Linux
+#### 1 Install Miniconda for Linux
 
 - **If you already have Miniconda installed, you can ignore this step.**
 
@@ -379,7 +349,7 @@ conda --version
 
 You should get a response that lists the version of Miniconda you just installed. If you do not, more help on installation can be found [here](https://docs.conda.io/projects/miniconda/en/latest/).
 
-#### 3 Install condynsate in a Miniconda virtual environment in Linux
+#### 2 Install condynsate in a Miniconda virtual environment in Linux
 
 To install condynsate in a Miniconda virtual environment, open the Terminal and run the command
 
@@ -406,7 +376,7 @@ conda clean -a -y
 Now install the Conda-Forge dependencies by running the command
 
 ```bash
-conda install -y python=3 git control matplotlib notebook numpy pybullet pynput pyside6 sympy
+conda install -y git matplotlib notebook numpy pybullet pynput pyside6 sympy scipy
 ```
 
 Once the installation is complete, install condynsate by running the commands
@@ -452,7 +422,7 @@ git fetch
 git pull
 ```
 
-Do not worry, this will not overwrite any of your own work. If you see any errors or warnings, post a note to [Piazza](https://piazza.com/) and course staff will help resolve them.
+Do not worry, this will not overwrite any of your own work.
 
 #### 3 Activate your Conda environment in Linux
 
@@ -472,7 +442,7 @@ Run the command
 jupyter notebook
 ```
 
-A browser window should open with the Jupyter Notebook interface. You can now navigate to and open any of the notebooks (with extension `.ipynb`) used for in-class examples or for design projects.
+A browser window should open with the Jupyter Notebook interface. You can now navigate to and open any of the notebooks (with extension `.ipynb`) used for examples, tutorials, or design projects.
 
 **We strongly recommend you duplicate and work with a copy of any given notebook rather than working with the original.** Feel free to ignore this suggestion if you are a `git` expert.
 
@@ -522,11 +492,11 @@ where "`path/to/directory`" is replaced by the location of the directory in whic
 timothybretl@Timothys-MacBook-Pro ~ % cd 
 ```
 
-Then, I would drag a folder into the terminal window and press return. For instance, suppose I had created a folder called `ae353-sp24` somewhere on my computer and dragged it in, then pressed return --- I would see something like this:
+Then, I would drag a folder into the terminal window and press return. For instance, suppose I had created a folder called `ae353` somewhere on my computer and dragged it in, then pressed return --- I would see something like this:
 
 ```bash
-timothybretl@Timothys-MacBook-Pro ~ % cd /Users/timothybretl/Documents/ae353-sp24
-timothybretl@Timothys-MacBook-Pro ae353-sp24 %
+timothybretl@Timothys-MacBook-Pro ~ % cd /Users/timothybretl/Documents/ae353
+timothybretl@Timothys-MacBook-Pro ae353 %
 ```
 
 See documentation on [Specify files and folders in Terminal on Mac](https://support.apple.com/guide/terminal/specify-files-and-folders-apd3cf6fe02-3ec8-48f1-951f-866e52955fc8/mac) for other ways to specify the path to a directory.
@@ -693,16 +663,6 @@ quit()
 
 to quit the Python shell.
 
-#### 5 Clone the ae353-sp24 Repository using Git in MacOS
-
-In your already opened Terminal, navigate to the directory you want to clone the ae353-sp24 code repository into. Now, clone the repository into the current directory by typing the command
-
-```bash
-git clone https://github.com/w-chang/ae353-sp24.git
-```
-
-The ae353-sp24 code repository is now cloned to your machine. You will find all design projects in this repository.
-
 ### Running Projects in MacOS
 
 #### 1 Change your working directory in MacOS
@@ -726,7 +686,7 @@ git fetch
 git pull
 ```
 
-Do not worry, this will not overwrite any of your own work. If you see any errors or warnings, post a note to [Piazza](https://piazza.com/) and course staff will help resolve them.
+Do not worry, this will not overwrite any of your own work.
 
 #### 3 Start a Jupyter Notebook in MacOS
 
@@ -736,7 +696,7 @@ In your already open Terminal run the command
 jupyter notebook
 ```
 
-A browser window should open with the Jupyter Notebook interface. You can now navigate to and open any of the notebooks (with extension `.ipynb`) used for in-class examples or for design projects.
+A browser window should open with the Jupyter Notebook interface. You can now navigate to and open any of the notebooks (with extension `.ipynb`) used for examples, tutorials, or design projects.
 
 **We strongly recommend you duplicate and work with a copy of any given notebook rather than working with the original.** Feel free to ignore this suggestion if you are a `git` expert. 
 
