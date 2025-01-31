@@ -59,7 +59,7 @@ class Project():
         # Load the sphere so that its bottom plane is sitting on the ground
         self.pendulum = self.s.load_urdf(urdf_path=pendulum_path,
                                          position=[0., 0., 0.],
-                                         yaw=1.570796327,
+                                         yaw=1.5708,
                                          wxyz_quaternion=[1.,0.,0.,0],
                                          fixed=True,
                                          update_vis=True)
@@ -67,7 +67,7 @@ class Project():
         # Set the initial angle of the pendulum arm
         self.s.set_joint_velocity(urdf_obj=self.pendulum,
                                   joint_name='chassis_to_arm',
-                                  velocity=90*0.017453292519943295,
+                                  velocity=1.5708,
                                   initial_cond=True,
                                   physics=False)
 

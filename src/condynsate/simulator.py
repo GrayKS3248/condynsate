@@ -3008,7 +3008,7 @@ class Simulator:
         # Calculate the mass saturation and get the associated color
         sat = (mass - min_mass) / (max_mass - min_mass)
         sat = np.clip(sat, 0.0, 1.0)
-        col = cmaps['binary'](round(255*sat))[0:3]
+        col = cmaps['plasma'](round(255*sat))[0:3]
         col = format_RGB(col,
                          range_to_255=True)
         
