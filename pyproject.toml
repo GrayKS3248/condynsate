@@ -1,14 +1,26 @@
 [build-system]
-requires      = ["setuptools>=61.0.0", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
 
 [project]
 name = "condynsate"
-version = "0.6.10"
+dynamic = ["version"]
 description = "Simulates and visualizes articulated systems in real time"
 readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE.txt" }
+keywords = [
+    "dynamic",
+    "control",
+    "visualization",
+    "simulation",
+    "education",
+    "pybullet",
+    "meshcat",
+]
 authors = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
-license = { file = "LICENSE" }
+maintainers = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
@@ -22,15 +34,6 @@ classifiers = [
     "Topic :: Education :: Computer Aided Instruction (CAI)",
     "Topic :: Scientific/Engineering :: Visualization"
 ]
-keywords = [
-    "dynamic",
-    "control",
-    "visualization",
-    "simulation",
-    "education",
-    "pybullet",
-    "meshcat",
-]
 dependencies = [
     "wheel",
     "matplotlib",
@@ -43,13 +46,21 @@ dependencies = [
     "scipy",
     "pyside6",
 ]
-requires-python = ">=3.8"
+
 
 [project.urls]
-Homepage = "https://github.com/GrayKS3248/condynsate"
+"Homepage" = "https://github.com/GrayKS3248/condynsate"
+"Bug Reports" = "https://github.com/GrayKS3248/condynsate/issues"
+"Source" = "https://github.com/GrayKS3248/condynsate"
+
+
+[tool.setuptools.package-data]
+"*" = ["*.stl", "*.obj", "*.png"]
+
+
+[tool.setuptools.dynamic]
+version = {attr = "condynsate.__version__"}
+
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-"*" = ["*.*"]
