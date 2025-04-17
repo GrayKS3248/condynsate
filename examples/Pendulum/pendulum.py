@@ -1,7 +1,17 @@
+"""
+This modules provides a backend for a pendulum example
+"""
+
+###############################################################################
+#DEPENDENCIES
+###############################################################################
 from condynsate.simulator import Simulator as conSim
-from pathlib import Path
+from condynsate import __assets__ as assets
 
 
+###############################################################################
+#SIMULATION CLASS
+###############################################################################
 class Pendulum_sim():
     def __init__(self,
                  use_keyboard=True,
@@ -15,14 +25,8 @@ class Pendulum_sim():
                         visualization_fr=visualization_fr,
                         animation=False)
         
-        # Get the path to the current directory
-        path = (Path(__file__).parents[0]).absolute().as_posix()
-        
-        # Get the absolute paths that point to the plane and sphere URDF files
-        pendulum_path = path + "/pendulum_vis/pendulum.urdf"
-
         # Load the pendulum
-        self.pendulum = self.s.load_urdf(urdf_path=pendulum_path,
+        self.pendulum = self.s.load_urdf(urdf_path=assets['pendulum'],
                                          position=[0., 0., 0.],
                                          yaw=1.5708,
                                          pitch=3.1416,

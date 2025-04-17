@@ -6,7 +6,7 @@ This modules provides a backend for the a 2 axis gyroscope example
 #DEPENDENCIES
 ###############################################################################
 from condynsate.simulator import Simulator
-from pathlib import Path
+from condynsate import __assets__ as assets
 import numpy as np
 
 
@@ -40,19 +40,14 @@ class Gyro_sim():
                              visualization_fr=visualization_fr,
                              animation=False,
                              dt=0.005)
-        
-        # Get the path to the current directory
-        path = (Path(__file__).parents[0]).absolute().as_posix()
-        
+
         # Load the ground
-        plane_path = path + "/gyro_vis/plane.urdf"
-        self.plane_obj = self.sim.load_urdf(urdf_path=plane_path,
+        self.plane_obj = self.sim.load_urdf(urdf_path=assets['plane_big'],
                                            fixed=True,
                                            update_vis=False)
         
         # Load the gyro
-        gyro_path = path + "/gyro_vis/gyro.urdf"
-        self.gyro_obj = self.sim.load_urdf(urdf_path=gyro_path,
+        self.gyro_obj = self.sim.load_urdf(urdf_path=assets['gyro'],
                                            fixed=True,
                                            update_vis=True,
                                            position=[0.,0.,0.05])

@@ -1,12 +1,12 @@
 """
-This modules provides a backend for the ae353 cart example
+This modules provides a backend for a cart example
 """
 
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-from condynsate.simulator import Simulator
-from pathlib import Path
+from condynsate.simulator import Simulator as con_sim
+from condynsate import __assets__ as assets
 import numpy as np
 
 
@@ -51,41 +51,34 @@ class Cart_sim():
         self.animation = animation
 
         # Initialize and instance of the simulator
-        self.sim = Simulator(keyboard=use_keyboard,
-                             visualization=visualization,
-                             visualization_fr=visualization_fr,
-                             animation=animation,
-                             animation_fr=animation_fr)
-        
-        # Get the path to the current directory
-        path = (Path(__file__).parents[0]).absolute().as_posix()
-        
+        self.sim = con_sim(keyboard=use_keyboard,
+                           visualization=visualization,
+                           visualization_fr=visualization_fr,
+                           animation=animation,
+                           animation_fr=animation_fr)
         # Load the ground
-        plane_path = path + "/cart_vis/plane.urdf"
-        self.ground_obj = self.sim.load_urdf(urdf_path=plane_path,
+        self.ground_obj = self.sim.load_urdf(urdf_path=assets['plane_big'],
                                         position=[0., 0., 0.],
                                         wxyz_quaternion=[1., 0., 0., 0],
                                         fixed=True,
                                         update_vis=False)
 
         # Load the walls
-        concrete_path = path + "/cart_vis/concrete.png"
-        self.left_wall_obj = self.sim.load_urdf(urdf_path=plane_path,
-                                           tex_path=concrete_path,
+        self.left_wall_obj = self.sim.load_urdf(urdf_path=assets['plane_big'],
+                                           tex_path=assets['concrete_img'],
                                            position=[0., -5., 0.],
                                            roll=-np.pi/2.,
                                            fixed=True,
                                            update_vis=False)
-        self.right_wall_obj = self.sim.load_urdf(urdf_path=plane_path,
-                                            tex_path=concrete_path,
+        self.right_wall_obj = self.sim.load_urdf(urdf_path=assets['plane_big'],
+                                            tex_path=assets['concrete_img'],
                                             position=[0., 5., 0.],
                                             roll=np.pi/2.,
                                             fixed=True,
                                             update_vis=False)
         
         # Load the cart
-        cart_path = path + "/cart_vis/cart.urdf"
-        self.cart_obj = self.sim.load_urdf(urdf_path=cart_path,
+        self.cart_obj = self.sim.load_urdf(urdf_path=assets['cart'],
                                            position=[0., 0., 0.25],
                                            yaw=np.pi/2,
                                            fixed=False,
@@ -337,4 +330,3 @@ class Cart_sim():
                 'wheel_velocity' : wheel_velocity_history,
                 'torque' : torque_history}
         return data
-            

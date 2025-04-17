@@ -1,12 +1,12 @@
 """
-This modules provides a backend for the ae353 wheel example
+This modules provides a backend for a wheel controls example
 """
 
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
 from condynsate.simulator import Simulator
-from pathlib import Path
+from condynsate import __assets__ as assets
 
 
 ###############################################################################
@@ -64,17 +64,14 @@ class Wheel_sim():
         
         # Load urdf objects
         if visualization:
-            path = (Path(__file__).parents[0]).absolute().as_posix()
-            wheel_path = path + "/wheel_vis/wheel.urdf"
-            self.wheel_obj = self.sim.load_urdf(urdf_path=wheel_path,
+            self.wheel_obj = self.sim.load_urdf(urdf_path=assets['wheel'],
                                                 position=[0., 0., 0.],
                                                 fixed=True,
                                                 update_vis=True)
-            target_path = path + "/wheel_vis/target_arrow.urdf"
-            self.target_obj = self.sim.load_urdf(urdf_path=target_path,
-                                                  position=[0., 0., 0.6655],
-                                                  fixed=True,
-                                                  update_vis=True)
+            self.target_obj = self.sim.load_urdf(urdf_path=assets['target_arrow'],
+                                                 position=[0., 0., 0.6655],
+                                                 fixed=True,
+                                                 update_vis=True)
         
         # If there is no animation, do not add subplots
         if not animation:
