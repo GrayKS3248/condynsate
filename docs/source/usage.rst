@@ -2,7 +2,6 @@ Usage
 =====
 
 
-
 Installation
 ------------
 todo
@@ -27,7 +26,6 @@ Linux
 todo
 
 
-Test
-----
-Use the ``condynsate`` module:
-.. automodule:: condynsate
+Examples
+--------
+todo

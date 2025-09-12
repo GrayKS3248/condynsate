@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import os
+import condynsate
 parent = str(Path(__file__).resolve().parents[2])
 source = r'src\condynsate'
 sys.path.insert(0, os.path.join(parent, source))
@@ -16,21 +17,25 @@ sys.path.insert(0, os.path.join(parent, source))
 project = 'condynsate'
 copyright = '2025, G. Schaer'
 author = 'G. Schaer'
-release = '0.6.11'
+release = condynsate.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc',
-              'numpydoc']
+extensions = ['sphinx.ext.autodoc', 
+              'sphinx.ext.coverage', 
+              'sphinx.ext.napoleon',
+              'numpydoc',
+              'autoclasstoc',]
 
 templates_path = ['_templates']
 exclude_patterns = []
 
+numpydoc_show_class_members = False
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'nature'
 html_static_path = ['_static']

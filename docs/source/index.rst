@@ -1,10 +1,5 @@
-.. condynsate documentation master file, created by
-   sphinx-quickstart on Thu Sep 11 12:18:37 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-condynsate documentation
-========================
+condynsate
+==========
 
 **condynsate** (/con'din'sate/) is a simulation and visualization tool built on PyBullet_ and MeshCat_.  It provides real-time, nonlinear simulation and browser-based visualization of multiple stl_ or obj_ rigid bodies and\or urdf_ defined articulated bodies in a Python environment. It was built by `G. Schaer`_ during the 2023 Fall semester at the University of Illinois at Urbana-Champaign under the Grainger College of Engineering 2023-2025 Strategic Instructional Innovations Program: Computational Tools for Dynamics and Control grant_. condynsate is optimized for education and promotes easy in-class demonstrations and lab demos without the need for physical equipment. Further, it encourages students to activate motor neurons by a mimicking play in a familiar video game inspired environment which is `beneficial to the processes of memory and learning during education`_.
 
@@ -24,3 +19,7 @@ Contents
 .. toctree::
 
    usage
+
+   package
+
+   tutorials
