@@ -9,7 +9,8 @@ This module provides the Visualizer class.
 import numpy as np
 import meshcat
 import meshcat.geometry as geo
-from condynsate.utils import format_path, wxyz_from_euler
+from condynsate.misc import (format_path, 
+                             wxyz_from_euler)
 
 
 ###############################################################################

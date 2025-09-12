@@ -7,17 +7,24 @@ functions that are used by it.
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-import numpy as np
+from pathlib import Path
 import time
+import numpy as np
 import pybullet
 from pybullet_utils import bullet_client as bc
-from condynsate.visualizer import Visualizer
-from condynsate.animator import Animator
-from condynsate.utils import format_path,format_RGB,wxyz_to_xyzw,xyzw_to_wxyz
-from condynsate.utils import get_rot_from_2_vecs, vc_inA_toB, RAB_to_RBA
-from condynsate.keyboard import Keys
 from matplotlib import colormaps as cmaps
-from pathlib import Path
+from condynsate.animator import Animator
+from condynsate.keyboard import Keys
+from condynsate.misc import (format_path,
+                             format_RGB,
+                             wxyz_to_xyzw,
+                             xyzw_to_wxyz,
+                             get_rot_from_2_vecs, 
+                             vc_inA_toB, 
+                             RAB_to_RBA)
+from condynsate.visualizer import Visualizer
+
+
 
 
 ###############################################################################
@@ -426,7 +433,7 @@ class Simulator:
         # Add urdf objects to the visualizer if visualization is occuring
         if self.visualization:
             if tex_path == None:
-                condynsate_path = Path(__file__).parents[0]
+                condynsate_path = Path(__file__).parents[1]
                 condynsate_path = condynsate_path.absolute().as_posix()
                 tex_path = condynsate_path + "/__assets__/check.png"
             self.add_urdf_to_visualizer(urdf_obj=urdf_obj,
@@ -2332,7 +2339,7 @@ class Simulator:
                 arr_name = self.lin_arr_map[urdf_force]['name']
                 
                 # Get the path to the arrow asset
-                arr_path = Path(__file__).parents[0]
+                arr_path = Path(__file__).parents[1]
                 arr_path = arr_path.absolute().as_posix()
                 arr_path = arr_path + "/__assets__/arrow_lin.stl"
                 
@@ -2473,7 +2480,7 @@ class Simulator:
                 arr_name = self.ccw_arr_map[urdf_torque]['name']
                 
                 # Get the path to the arrow asset
-                arr_path = Path(__file__).parents[0]
+                arr_path = Path(__file__).parents[1]
                 arr_path = arr_path.absolute().as_posix()
                 arr_path = arr_path + "/__assets__/arrow_ccw.stl"
                 
@@ -2528,7 +2535,7 @@ class Simulator:
         # Make the URDF name and format the texture path
         urdf_name = str(urdf_obj.urdf_id)
         if tex_path == None:
-            condynsate_path = Path(__file__).parents[0]
+            condynsate_path = Path(__file__).parents[1]
             condynsate_path = condynsate_path.absolute().as_posix()
             tex_path = condynsate_path + "/__assets__/check.png"
         tex_path = format_path(tex_path)

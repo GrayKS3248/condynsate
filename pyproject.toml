@@ -41,9 +41,9 @@ dependencies = [
     "numpy",
     "pybullet",
     "pynput",
-    "sympy",
-    "scipy",
     "pyside6",
+    "scipy",
+    "sympy",
 ]
 
 

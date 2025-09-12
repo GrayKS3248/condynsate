@@ -5,7 +5,7 @@ This modules provides a backend for the a 2 axis gyroscope example
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-from condynsate.simulator import Simulator
+from condynsate import Simulator
 from condynsate import __assets__ as assets
 import numpy as np
 

@@ -5,7 +5,7 @@ This modules provides a backend for a pendulum example
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-from condynsate.simulator import Simulator as conSim
+from condynsate import Simulator as conSim
 from condynsate import __assets__ as assets
 
 

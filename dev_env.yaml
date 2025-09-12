@@ -1,0 +1,19 @@
+name: condev
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - git
+  - matplotlib
+  - notebook
+  - numpy
+  - pip
+  - pybullet
+  - pynput
+  - scipy
+  - sphinx
+  - spyder
+  - sympy
+  - pyside6
+  - pip: 
+    - meshcat

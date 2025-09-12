@@ -5,7 +5,7 @@ This modules provides a backend for a cart example
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
-from condynsate.simulator import Simulator as con_sim
+from condynsate import Simulator as con_sim
 from condynsate import __assets__ as assets
 import numpy as np
 
