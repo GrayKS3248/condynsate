@@ -35,7 +35,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization"
 ]
 dependencies = [
-    "wheel",
     "matplotlib",
     "meshcat",
     "notebook",

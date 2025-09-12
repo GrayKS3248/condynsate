@@ -70,10 +70,10 @@ class Keys:
         """
         # If exception KeyboardInterrupt, then exit gracefully
         print("Exit command detected. " +
-              "Terminating keyboard listener. " + 
-              "Goodbye.")
-        self.running=False
+              "Terminating keyboard listener.")
         self.listener.stop()
+        self.running=False
+        print("Goodbye.")
         
         
     def _get_key_string(self,
