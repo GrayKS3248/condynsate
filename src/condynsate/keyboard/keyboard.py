@@ -18,17 +18,13 @@ import time
 class Keys:
     """
     Keys detected keyboard events and stores key information. Used for 
-    polling key presses.
+    polling key presses. Starts a new non-blocking thread that
+    listens to the keyboard. Starts 2 new threads to detect script 
+    termination events.
     """
     def __init__(self):
         """
-        Initializes the Keys class. Starts a new non-blocking thread that
-        listens to the keyboard. Starts 2 new threads to detect script 
-        termination events.
-
-        Returns
-        -------
-        None.
+        Constructor method.
 
         """
         # Set that no key is down

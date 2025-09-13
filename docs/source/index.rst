@@ -1,3 +1,4 @@
+==========
 condynsate
 ==========
 
@@ -18,7 +19,7 @@ Contents
 
 .. toctree::
 
-   usage
+   installation
 
    package
 

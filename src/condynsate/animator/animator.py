@@ -18,22 +18,18 @@ import matplotlib as mpl
 ###############################################################################
 class Animator():
     """
-    Animator manages the real time plotting of states.
+    Animator manages the real time plotting in QT GUI.
+    
+    Parameters
+    ----------
+    fr : float
+        The frame rate (frames per second) at which the animated plots are
+        updated.
+        
     """
     def __init__(self, fr):
         """
-        Initializes a new instance of an animator
-
-        Parameters
-        ----------
-        fr : float
-            The frame rate (frames per second) at which the animated plots are
-            updated.
-
-        Returns
-        -------
-        None.
-
+        Constructor method.
         """
         # Plot data
         self.xs = []
@@ -770,7 +766,7 @@ class Animator():
     def create_figure(self):
         """
         Creates, renders, and draws on GUI a figure containing all specified
-        subsplots.
+        subsplots. To be run after all desired subplots are added.
 
         Returns
         -------

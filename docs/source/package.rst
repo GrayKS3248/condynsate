@@ -1,28 +1,8 @@
+======================
 The condynsate Package
 ======================
 Classes
 -------
-The Animator Class
-~~~~~~~~~~~~~~~~~~
-.. autoclass:: condynsate.Animator
-   :no-members:
-
-Creating the Figure
-^^^^^^^^^^^^^^^^^^^
-.. automethod:: condynsate.Animator.create_figure
-.. automethod:: condynsate.Animator.add_subplot
-
-The Animation Sequence
-^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: condynsate.Animator.add_subplot_point
-.. automethod:: condynsate.Animator.step
-.. automethod:: condynsate.Animator.flush_events
-.. automethod:: condynsate.Animator.reset_plots
-
-
-
-
-
 The Simulator Class
 ~~~~~~~~~~~~~~~~~~~
 .. autoclass:: condynsate.Simulator
@@ -116,6 +96,27 @@ Using the Keyboard
 .. automethod:: condynsate.Simulator.is_pressed
 .. automethod:: condynsate.Simulator.await_keypress
 .. automethod:: condynsate.Simulator.iterate_val
+
+
+
+
+
+The Animator Class
+~~~~~~~~~~~~~~~~~~
+.. autoclass:: condynsate.Animator
+   :no-members:
+
+Creating the Figure
+^^^^^^^^^^^^^^^^^^^
+.. automethod:: condynsate.Animator.add_subplot
+.. automethod:: condynsate.Animator.create_figure
+
+The Animation Sequence
+^^^^^^^^^^^^^^^^^^^^^^
+.. automethod:: condynsate.Animator.add_subplot_point
+.. automethod:: condynsate.Animator.step
+.. automethod:: condynsate.Animator.flush_events
+.. automethod:: condynsate.Animator.reset_plots
 
 
 

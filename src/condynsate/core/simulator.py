@@ -32,7 +32,23 @@ from condynsate.visualizer import Visualizer
 ###############################################################################
 class URDF_Obj:
     """
-    URDF_Obj encapsulates a urdf id, a joint map, and a link map.
+    URDF_Obj encapsulates a urdf id, a joint map, and a link map. This class is 
+    used to store information relating to a urdf described by a .urdf file.
+    
+    Parameters
+    ----------
+    urdf_id : int
+        The unique integer ID of the loaded urdf in the simulation
+        engine.
+    joint_map : dictionary
+        A dictionary that maps all urdf joint names to joint
+        indices.
+    link_map : dictionary
+        A dictionary that maps all urdf link names to joint indices.
+    update_vis : bool
+        A boolean flag that indicates whether this urdf will be updated
+        by the visualizer each time step.
+        
     """
     def __init__(self,
                  urdf_id,
@@ -40,27 +56,8 @@ class URDF_Obj:
                  link_map,
                  update_vis):
         """
-        Initialize an instance of the URDF_Obj class. This class is used to
-        store information relating to a urdf described by a .urdf file.
-
-        Parameters
-        ----------
-        urdf_id : int
-            The unique integer ID of the loaded urdf in the simulation
-            engine.
-        joint_map : dictionary
-            A dictionary that maps all urdf joint names to joint
-            indices.
-        link_map : dictionary
-            A dictionary that maps all urdf link names to joint indices.
-        update_vis : bool
-            A boolean flag that indicates whether this urdf will be updated
-            by the visualizer each time step.
-            
-        Returns
-        -------
-        None.
-
+        Constructor Method.
+        
         """
         # Identification number
         self.urdf_id = urdf_id
@@ -99,8 +96,33 @@ class URDF_Obj:
 ###############################################################################
 class Simulator:
     """
-    Simulator manages the PyBullet based simulation of dynamic objects and 
-    handles automatic visualization
+    Simulator manages the PyBullet based simulation of dynamic objects. It also
+    provides wrappers for the Animator, Keys, and Visualizer classes so that 
+    the average condynsate project need only interact with the simulator class.
+    
+    Parameters
+    ----------
+    keyboard : bool, optional
+        A boolean flag that indicates whether the simulator will allow
+        the use of keyboard interactivity. The default is True.
+    visualization : bool, optional
+        A boolean flag that indicates whether the simulation will be 
+        visualized in meshcat. The default is True.
+    visualization_fr : float, optional
+        The frame rate (frames per second) at which the visualizer is
+        updated. The default is 30..
+    animation : bool, optional
+        A boolean flag that indicates whether animated plots are created
+        in real time. The default is True.
+    animation_fr : float, optional
+        The frame rate (frames per second) at which the animated plots are
+        updated. The default is 7.5.
+    gravity : array-like, shape (3,) optional
+        The gravity vectory in m/s^2. The default is [0., 0., -9.81].
+    dt : float, optional
+        The fixed time step of the simulator in seconds. The default is
+        0.01 seconds.
+            
     """
     def __init__(self,
                  keyboard=True,
@@ -111,34 +133,7 @@ class Simulator:
                  gravity=[0., 0., -9.81],
                  dt=0.01):
         """
-        Initializes an instance of the Simulator class.
-
-        Parameters
-        ----------
-        keyboard : bool, optional
-            A boolean flag that indicates whether the simulator will allow
-            the use of keyboard interactivity. The default is True.
-        visualization : bool, optional
-            A boolean flag that indicates whether the simulation will be 
-            visualized in meshcat. The default is True.
-        visualization_fr : float, optional
-            The frame rate (frames per second) at which the visualizer is
-            updated. The default is 30..
-        animation : bool, optional
-            A boolean flag that indicates whether animated plots are created
-            in real time. The default is True.
-        animation_fr : float, optional
-            The frame rate (frames per second) at which the animated plots are
-            updated. The default is 7.5.
-        gravity : array-like, shape (3,) optional
-            The gravity vectory in m/s^2. The default is [0., 0., -9.81].
-        dt : float, optional
-            The fixed time step of the simulator in seconds. The default is
-            0.01 seconds.
-
-        Returns
-        -------
-        None.
+        Constructor method.
 
         """
         # Note that the simulator is running

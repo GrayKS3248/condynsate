@@ -19,25 +19,22 @@ from condynsate.misc import (format_path,
 class Visualizer():
     """
     Visualizer manages the meshcat based visulation.
+    
+    Parameters
+    ----------
+    grid_vis : bool, optional
+        The boolean value to which the visibility of the XY grid is set. 
+        The default is True.
+    axes_vis : bool, optional
+        The boolean value to which the visibility of the axes is set.
+        The default is True.
+        
     """
     def __init__(self,
                  grid_vis=True,
                  axes_vis=True):
         """
-        Initializes a new instance of a visualizer
-
-        Parameters
-        ----------
-        grid_vis : bool, optional
-            The boolean value to which the visibility of the XY grid is set. 
-            The default is True.
-        axes_vis : bool, optional
-            The boolean value to which the visibility of the axes is set.
-            The default is True.
-
-        Returns
-        -------
-        None.
+        Constructor method.
 
         """
         # Open a new instance of a meshcat visualizer
