@@ -941,6 +941,10 @@ class Simulator:
                                         joint_name=joint_name,
                                         min_pos=min_pos, 
                                         max_pos=max_pos)
+        
+        # Update the visualizer
+        if urdf_obj.update_vis:
+            self._update_urdf_visual(urdf_obj)
                 
     
     def set_joint_velocity(self,
@@ -1755,6 +1759,10 @@ class Simulator:
             urdf_obj.initial_conds['orientation'] = xyzw_ori
             urdf_obj.initial_conds['velocity'] = v_inW
             urdf_obj.initial_conds['angular velocity'] = w_inW
+            
+        # Update the visualizer
+        if urdf_obj.update_vis:
+            self._update_urdf_visual(urdf_obj)
         
 
     ###########################################################################
@@ -3754,6 +3762,10 @@ class Simulator:
                                           torque=0.,
                                           show_arrow=False,
                                           color=False,)
+                    
+            # Update the visualizer
+            if urdf_obj.update_vis:
+                self._update_urdf_visual(urdf_obj)
         
         # Reset the plots
         self.reset_plots()
@@ -3791,7 +3803,33 @@ class Simulator:
 
         Returns
         -------
-        None.
+        ret_code: int
+            The return code of the simulation steps. The codes are as follows:
+                
+            -4: Keyboard LOS indicating simulation step failure. No 
+            simulation step taken. No further simulation steps are to
+            be taken. is_done flag is now true.
+            
+            -3: User initiated simulation termination. No simulation step 
+            taken. No further simulation steps are to be taken. 
+            is_done flag is now true.
+            
+            -2: User initiated pause is occuring. No simulation step taken.
+            paused flag remains true.
+            
+            -1: User initiated pause has ended. No simulation step taken. 
+            paused flag is now false.
+            
+            0: User initiated simulation reset. No simulation step taken.
+            
+            1: Normal and successful simulation step.
+            
+            2: User initiated pause has started. Normal simulation step 
+            taken. paused flag is now true.
+            
+            3: max_time is now reached. Normal simulation step taken. No 
+            further simulation steps are to be taken. is_done flag is
+            now true.
 
         """
         # Make sure that if there is not keyboard, the simulation only lasts
@@ -3805,13 +3843,13 @@ class Simulator:
             if not self.keys.running:
                 self.is_done = True
                 print("KEYBOARD LOST. QUITTING...")
-                return -2 # Return LOS end code
+                return -4 # Return LOS end code
 
         # Collect keyboard IO for termination
         if self.is_pressed("esc"):
             self.is_done = True
             print("QUITTING...")
-            return -1 # Return end code
+            return -3 # Return end code
 
         # Suspend if paused or resume if space is pressed
         if self.paused:
@@ -3823,15 +3861,15 @@ class Simulator:
                 print("RESUME")
                 time.sleep(0.2)
                 self.pause_elapsed_time += time.time() - self.pause_start_time
-                return 1 # Return end pause code
-            return 2 # Return paused code
+                return -1 # Return end pause code
+            return -2 # Return paused code
   
         # Reset upon request
         if self.is_pressed("backspace"):
             self.reset()
             time.sleep(0.2)
             print("RESET")
-            return 3 # Return reset code
+            return 0 # Return reset code
 
         # Step the physics engine
         self.engine.stepSimulation()
@@ -3889,13 +3927,13 @@ class Simulator:
                 self.ani.flush_events()
             print("PAUSED")
             time.sleep(0.2)
-            return 4 # Return start pause code
+            return 2 # Return start pause code
 
         # Check for max time
         if max_time != None:
             if self.time > max_time:
                 self.is_done = True
-                return 5 # Return time out code
+                return 3 # Return time out code
 
-        return 0 # Return normal code
+        return 1 # Return normal code
             

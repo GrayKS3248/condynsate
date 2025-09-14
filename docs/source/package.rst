@@ -160,3 +160,11 @@ Adjusting Elements in the Viewer
 
 
 
+
+
+Examples
+--------
+.. toctree::
+   examples/pendulum
+   examples/gyro
+
