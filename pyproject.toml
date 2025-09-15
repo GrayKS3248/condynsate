@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0", "wheel", "cython"]
 build-backend = "setuptools.build_meta"
 
 
@@ -16,16 +16,17 @@ keywords = [
     "visualization",
     "simulation",
     "education",
-    "pybullet",
-    "meshcat",
 ]
 authors = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
 maintainers = [{ name = "Grayson Schaer", email = "gschaer2@illinois.edu" }]
 classifiers = [
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Development Status :: 4 - Beta",
     "Natural Language :: English", 
     "Operating System :: Microsoft :: Windows",
@@ -35,15 +36,15 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization"
 ]
 dependencies = [
-    "matplotlib",
-    "meshcat",
-    "notebook",
-    "numpy",
-    "pybullet",
-    "pynput",
-    "pyside6",
-    "scipy",
-    "sympy",
+   "matplotlib",
+   "meshcat",
+   "notebook",
+   "numpy",
+   "pybullet",
+   "pynput",
+   "pyside6",
+   "scipy",
+   "sympy",
 ]
 
 

@@ -22,6 +22,7 @@ class Visualizer():
     
     Parameters
     ----------
+    
     grid_vis : bool, optional
         The boolean value to which the visibility of the XY grid is set. 
         The default is True.

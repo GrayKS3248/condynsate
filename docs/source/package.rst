@@ -167,4 +167,5 @@ Examples
 .. toctree::
    examples/pendulum
    examples/gyro
+   examples/cart
 
