@@ -1,3 +1,9 @@
+# Specifc files
+sphinx_docs/
+dev_env.yaml
+environment.yaml
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
