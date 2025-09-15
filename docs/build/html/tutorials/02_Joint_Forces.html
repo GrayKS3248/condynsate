@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 02: Joint Forces &mdash; condynsate 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/autoclasstoc.css?v=08871587" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 03: The Animator" href="03_The_Animator.html" />
+    <link rel="prev" title="Tutorial 01: External Forces" href="01_External_Forces.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            condynsate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../package.html">The condynsate Package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="00_Introduction.html">Tutorial 00: Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_External_Forces.html">Tutorial 01: External Forces</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial 02: Joint Forces</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Tutorial-Description">Tutorial Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Imports">Imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Building-the-Project-Class">Building the Project Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Running-the-Project-Class">Running the Project Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Challenge">Challenge</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="03_The_Animator.html">Tutorial 03: The Animator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_Links_and_Data_Collection.html">Tutorial 04: Links and Data Collection</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">condynsate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Tutorial 02: Joint Forces</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/02_Joint_Forces.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial-02:-Joint-Forces">
+<h1>Tutorial 02: Joint Forces<a class="headerlink" href="#Tutorial-02:-Joint-Forces" title="Link to this heading"></a></h1>
+<section id="Tutorial-Description">
+<h2>Tutorial Description<a class="headerlink" href="#Tutorial-Description" title="Link to this heading"></a></h2>
+<p>This tutorial covers creating the backend of a project using condynsate that applies torques to specific joints of a .URDF object. In this tutorial, we will cover:</p>
+<ol class="arabic simple">
+<li><p>Applying torques to continuous joints of a .URDF object.</p></li>
+<li><p>Measuring the position and velocity of joints of a .URDF object.</p></li>
+</ol>
+</section>
+<section id="Imports">
+<h2>Imports<a class="headerlink" href="#Imports" title="Link to this heading"></a></h2>
+<p>To begin, we import the same modules for the same reasons as tutorial 00.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">condynsate</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span> <span class="k">as</span> <span class="n">con_sim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">condynsate</span><span class="w"> </span><span class="kn">import</span> <span class="n">__assets__</span> <span class="k">as</span> <span class="n">assets</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Building-the-Project-Class">
+<h2>Building the Project Class<a class="headerlink" href="#Building-the-Project-Class" title="Link to this heading"></a></h2>
+<p>We now create a <code class="docutils literal notranslate"><span class="pre">Project</span></code> class with <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and <code class="docutils literal notranslate"><span class="pre">run</span></code> functions. In <code class="docutils literal notranslate"><span class="pre">__init__</span></code> a pendulum is loaded using the same technique as tutorial 00. In <code class="docutils literal notranslate"><span class="pre">run</span></code>, we cover how to read the state of the joint of the pendulum and apply torques to the joint based on its state.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Create a instance of the simulator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">con_sim</span><span class="p">(</span><span class="n">animation</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                         <span class="n">keyboard</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Load the pendulum in the orientation we want</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pendulum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">load_urdf</span><span class="p">(</span><span class="n">urdf_path</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[</span><span class="s1">&#39;pendulum&#39;</span><span class="p">],</span>
+                                         <span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
+                                         <span class="n">yaw</span> <span class="o">=</span> <span class="mf">1.571</span><span class="p">,</span>
+                                         <span class="n">wxyz_quaternion</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                                         <span class="n">fixed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                         <span class="n">update_vis</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        After loading our pendulum, we want to set its joint so that it</span>
+<span class="sd">        is at a slight angle. This is done using the</span>
+<span class="sd">        condynsate.simulator.set_joint_position function. It has 5</span>
+<span class="sd">        arguments:</span>
+<span class="sd">        urdf_obj : URDF_Obj</span>
+<span class="sd">            A URDF_Obj that contains that joint whose position is being</span>
+<span class="sd">            set.</span>
+<span class="sd">        joint_name : string</span>
+<span class="sd">            The name of the joint whose position is set. The joint name</span>
+<span class="sd">            is</span>
+<span class="sd">            specified in the .urdf file.</span>
+<span class="sd">        position : float, optional</span>
+<span class="sd">            The position in rad to be applied to the joint.</span>
+<span class="sd">            The default is 0..</span>
+<span class="sd">        physics : bool, optional</span>
+<span class="sd">            A boolean flag that indicates whether physics based</span>
+<span class="sd">            poisiton controller will be used to change joint position</span>
+<span class="sd">            or whether the joint position will be reset immediately</span>
+<span class="sd">            to the target position with zero end velocity. The</span>
+<span class="sd">            default is False.</span>
+<span class="sd">        initial_cond : bool, optional</span>
+<span class="sd">            A boolean flag that indicates whether the position set</span>
+<span class="sd">            is an initial condition of the system. If it is an</span>
+<span class="sd">            initial condition, when the simulation is reset using</span>
+<span class="sd">            backspace, the joint position will be set again.</span>
+
+<span class="sd">        Note that because this is an intial condition, we set the</span>
+<span class="sd">        initial_cond flag to true.</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Set the initial angle of the pendulum joint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">set_joint_position</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pendulum</span><span class="p">,</span>
+                                  <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">,</span>
+                                  <span class="n">position</span> <span class="o">=</span> <span class="mf">0.175</span><span class="p">,</span>
+                                  <span class="n">initial_cond</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">physics</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        This run function does all the same basic functions as in</span>
+<span class="sd">        tutorial 00 but with the added functionality of joint torques</span>
+<span class="sd">        forces to the pendulum during the simulation loop</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Reset the simulator.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1"># Run the simulation loop until done</span>
+        <span class="k">while</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">is_done</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            First we want to measure the state (position, and velocity)</span>
+<span class="sd">            of the pendulum joint. The name of the pendulum joint set in</span>
+<span class="sd">            the .URDF file is &quot;chassis_to_arm&quot;. For a given URDF object</span>
+<span class="sd">            with joints that has already been loaded into the physics</span>
+<span class="sd">            environment, we can measure this by using the</span>
+<span class="sd">            condynsate.simulator.get_joint_state function. There are two</span>
+<span class="sd">            arguments to this function:</span>
+<span class="sd">                1) urdf_obj : URDF_Obj</span>
+<span class="sd">                   A URDF_Obj whose joint state is being measured.</span>
+<span class="sd">                2) joint_name : string</span>
+<span class="sd">                   The name of the joint whose state is measured. The</span>
+<span class="sd">                   joint name is specified in the .urdf file.</span>
+
+<span class="sd">            state, which is returned by</span>
+<span class="sd">            condynsate.simulator.get_joint_state has the following form:</span>
+<span class="sd">            state : dictionary with the following keys</span>
+<span class="sd">                &#39;position&#39; : float</span>
+<span class="sd">                    The position value of this joint.</span>
+<span class="sd">                &#39;velocity&#39; : float</span>
+<span class="sd">                    The velocity value of this joint.</span>
+<span class="sd">                &#39;reaction force&#39; : list shape(3,)</span>
+<span class="sd">                    These are the joint reaction forces. Only read if</span>
+<span class="sd">                    a torque sensor is enabled for this joint.</span>
+<span class="sd">                &#39;reaction torque&#39; : list shape(3,)</span>
+<span class="sd">                    These are the joint reaction torques. Only read if</span>
+<span class="sd">                    a torque sensor is enabled for this joint.</span>
+<span class="sd">                &#39;applied torque&#39; : float</span>
+<span class="sd">                    This is the motor torque applied during the last</span>
+<span class="sd">                    stepSimulation. Note that this only applies in</span>
+<span class="sd">                    VELOCITY_CONTROL and POSITION_CONTROL. If you use</span>
+<span class="sd">                    TORQUE_CONTROL then the applied joint motor torque is</span>
+<span class="sd">                    exactly what you provide, so there is no need to</span>
+<span class="sd">                    report it separately.</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="c1"># Get the pendulum joint (&quot;chassis_to_arm&quot;) state</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">get_joint_state</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pendulum</span><span class="p">,</span>
+                                           <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">)</span>
+
+
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            Suppose we wanted to apply a returning torque whenever the</span>
+<span class="sd">            pendulum angle is above some threshold. To do this, we would</span>
+<span class="sd">            need to first measure the angle of the pendulum. We can do</span>
+<span class="sd">            this by extracting the position (angle for a continuous</span>
+<span class="sd">            joint) from its state.</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="c1"># Extract angle of the pendulum joint</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="mf">180.</span> <span class="o">*</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">3.141592654</span>
+
+
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            Now we write an if statement that applies a returning torque</span>
+<span class="sd">            to the joint if its angle is greater than 5.0 degrees. To</span>
+<span class="sd">            apply a torque about a joint, we use the</span>
+<span class="sd">            condynsate.simulator.set_joint_torque function. This function</span>
+<span class="sd">            has six arguments:</span>
+<span class="sd">                urdf_obj : URDF_Obj</span>
+<span class="sd">                    A URDF_Obj that contains that joint whose torque is</span>
+<span class="sd">                    being set.</span>
+<span class="sd">                joint_name : string</span>
+<span class="sd">                    The name of the joint whose torque is set. The joint</span>
+<span class="sd">                    name is specified in the .urdf file</span>
+<span class="sd">                torque : float, optional</span>
+<span class="sd">                    The torque in NM to be applied to the joint. The</span>
+<span class="sd">                    default is 0..</span>
+<span class="sd">                show_arrow : bool, optional</span>
+<span class="sd">                    A boolean flag that indicates whether an arrow will</span>
+<span class="sd">                    be rendered on the link to visualize the applied</span>
+<span class="sd">                    torque. The default is False.</span>
+<span class="sd">                arrow_scale : float, optional</span>
+<span class="sd">                    The scaling factor that determines the size of the</span>
+<span class="sd">                    arrow. The default is 0.1.</span>
+<span class="sd">                arrow_offset : float, optional</span>
+<span class="sd">                    The amount to offset the drawn arrow along the</span>
+<span class="sd">                    joint axis. The default is 0.0.</span>
+
+<span class="sd">            In this case, we want to draw the torque arrow so we set</span>
+<span class="sd">            show_arrow to True and adjust arrow_scale and arrow_offset</span>
+<span class="sd">            until the size and position of the arrow look correct,</span>
+<span class="sd">            respectively.</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="c1"># If positive angle, apply negative torque</span>
+            <span class="k">if</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="mf">5.</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">set_joint_torque</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pendulum</span><span class="p">,</span>
+                                        <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">,</span>
+                                        <span class="n">torque</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span>
+                                        <span class="n">show_arrow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">arrow_scale</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+                                        <span class="n">arrow_offset</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span>
+
+            <span class="c1"># If negative angle, apply positive torque</span>
+            <span class="k">elif</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">5.</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">set_joint_torque</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pendulum</span><span class="p">,</span>
+                                        <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">,</span>
+                                        <span class="n">torque</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                                        <span class="n">show_arrow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">arrow_scale</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+                                        <span class="n">arrow_offset</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span>
+
+            <span class="c1"># If low angle magnitude, apply no torque</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">set_joint_torque</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pendulum</span><span class="p">,</span>
+                                        <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">,</span>
+                                        <span class="n">torque</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                                        <span class="n">show_arrow</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            As usual, at the bottom of the run function we step the</span>
+<span class="sd">            simulation.</span>
+<span class="sd">            ##############################################################</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="n">ret_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">max_time</span><span class="o">=</span><span class="n">max_time</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Running-the-Project-Class">
+<h2>Running the Project Class<a class="headerlink" href="#Running-the-Project-Class" title="Link to this heading"></a></h2>
+<p>Now that we have made the <code class="docutils literal notranslate"><span class="pre">Project</span></code> class, we can test it by initializing it and then calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> function.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an instance of the Project class.</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+
+<span class="c1"># Run the simulation.</span>
+<span class="n">proj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_time</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+You can open the visualizer by visiting the following URL:
+http://127.0.0.1:7002/static/
+</pre></div></div>
+</div>
+</section>
+<section id="Challenge">
+<h2>Challenge<a class="headerlink" href="#Challenge" title="Link to this heading"></a></h2>
+<p>This tutorial is now complete. For an added challenge, think of how you would modify the Project.run() to implement a PD controller.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="01_External_Forces.html" class="btn btn-neutral float-left" title="Tutorial 01: External Forces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03_The_Animator.html" class="btn btn-neutral float-right" title="Tutorial 03: The Animator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, G. Schaer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
