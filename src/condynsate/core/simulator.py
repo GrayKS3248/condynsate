@@ -110,13 +110,13 @@ class Simulator:
         visualized in meshcat. The default is True.
     visualization_fr : float, optional
         The frame rate (frames per second) at which the visualizer is
-        updated. The default is 30..
+        updated. The default is 24.0.
     animation : bool, optional
         A boolean flag that indicates whether animated plots are created
         in real time. The default is True.
     animation_fr : float, optional
         The frame rate (frames per second) at which the animated plots are
-        updated. The default is 7.5.
+        updated. The default is 8.0.
     gravity : array-like, shape (3,) optional
         The gravity vectory in m/s^2. The default is [0., 0., -9.81].
     dt : float, optional
@@ -127,9 +127,9 @@ class Simulator:
     def __init__(self,
                  keyboard=True,
                  visualization=True,
-                 visualization_fr = 30.,
+                 visualization_fr = 24.0,
                  animation=True,
-                 animation_fr = 7.5,
+                 animation_fr = 8.0,
                  gravity=[0., 0., -9.81],
                  dt=0.01):
         """
@@ -215,10 +215,6 @@ class Simulator:
         None.
 
         """
-        # Do nothing if paused
-        if self.paused:
-            return
-        
         # Configure gravity
         self.engine.setGravity(gravity[0],
                                gravity[1],

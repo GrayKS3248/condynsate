@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 from condynsate.misc import print_exception
-
+FONT_SIZE = 7
 
 ###############################################################################
 #ANIMATOR CLASS
@@ -29,10 +29,10 @@ class Animator():
     ----------
     fr : float, optional
         The frame rate (frames per second) at which the animated plots are
-        updated. The default is 12.0.
+        updated. The default is 8.0.
         
     """
-    def __init__(self, fr=12.0):
+    def __init__(self, fr=8.0):
         """
         Constructor method.
         """
@@ -499,14 +499,14 @@ class Animator():
     
     
     def _create_plot(self,
-                        axis,
-                        title,
-                        x_label,
-                        y_label,
-                        x_plot_lim,
-                        y_plot_lim,
-                        h_zero_line,
-                        v_zero_line):
+                     axis,
+                     title,
+                     x_label,
+                     y_label,
+                     x_plot_lim,
+                     y_plot_lim,
+                     h_zero_line,
+                     v_zero_line):
         """
         Creates a single plot and sets axis artist setting. Subsequently 
         renders axis artis updates. Does not update GUI.
@@ -546,9 +546,13 @@ class Animator():
         axis.clear()
         
         # Set the labels
-        axis.set_title(title)
-        axis.set_xlabel(x_label)
-        axis.set_ylabel(y_label)
+        axis.set_title(title, fontsize=FONT_SIZE+1)
+        axis.set_xlabel(x_label, fontsize=FONT_SIZE)
+        axis.set_ylabel(y_label, fontsize=FONT_SIZE)
+        
+        # Tickmark size
+        axis.tick_params(axis='both', which='major', labelsize=FONT_SIZE)
+        axis.tick_params(axis='both', which='minor', labelsize=FONT_SIZE)
         
         # Set the limits if there are any
         if x_plot_lim != [None, None]:
@@ -681,14 +685,8 @@ class Animator():
             return
         with self.lock:
             self.fig.canvas.draw()
-            img_shape = self.fig.canvas.get_width_height()
-            img_shape = (img_shape[1], img_shape[0], 4) 
-            img = np.frombuffer(self.fig.canvas.tostring_argb(), 
-                                dtype=np.uint8)
-            try:
-                img = img.reshape(img_shape)[:,:,1:] 
-            except ValueError:
-                pass
+            buf = self.fig.canvas.buffer_rgba()
+            img = np.asarray(buf)
             cv2.imshow(self.window_name, cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
             
     
@@ -737,8 +735,8 @@ class Animator():
         
         # Calculate the plot shape and create the figure
         (n_rows, n_cols) = self._get_plot_shape(self.n_plots)
-        fig_res = 360 * n_rows
-        fig_dpi = 144
+        fig_res = 300 * n_rows
+        fig_dpi = 150
         fig_AR = 1.6*(n_cols/n_rows)
         fig_size = (fig_AR*fig_res/fig_dpi, fig_res/fig_dpi)
         self.fig = plt.figure(figsize=fig_size, dpi=fig_dpi, frameon=True, 
@@ -767,13 +765,13 @@ class Animator():
             
             # Create the plot
             self._create_plot(axis=axis,
-                                 title=title,
-                                 x_label=x_label,
-                                 y_label=y_label,
-                                 x_plot_lim=x_plot_lim,
-                                 y_plot_lim=y_plot_lim,
-                                 h_zero_line=h_zero_line,
-                                 v_zero_line=v_zero_line)
+                              title=title,
+                              x_label=x_label,
+                              y_label=y_label,
+                              x_plot_lim=x_plot_lim,
+                              y_plot_lim=y_plot_lim,
+                              h_zero_line=h_zero_line,
+                              v_zero_line=v_zero_line)
             
             # Create line artists for plot
             if plt_type == 'line':
@@ -800,7 +798,8 @@ class Animator():
                 if any([not x is None for x in self.labels[plot_id]]):
                     axis.legend(self.artists[plot_id],
                                 self.labels[plot_id],
-                                loc="upper right")
+                                loc="upper right", 
+                                fontsize=FONT_SIZE-1)
                     
             # Make bar artists for plot
             elif plt_type == 'bar':

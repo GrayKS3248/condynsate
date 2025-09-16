@@ -122,7 +122,7 @@
 <h3>The Simulator Class<a class="headerlink" href="#the-simulator-class" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="condynsate.Simulator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyboard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualization_fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">-9.81]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyboard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualization_fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">24.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">-9.81]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator" title="Link to this definition"></a></dt>
 <dd><p>Simulator manages the PyBullet based simulation of dynamic objects. It also
 provides wrappers for the Animator, Keys, and Visualizer classes so that
 the average condynsate project need only interact with the simulator class.</p>
@@ -134,11 +134,11 @@ the use of keyboard interactivity. The default is True.</p></li>
 <li><p><strong>visualization</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the simulation will be
 visualized in meshcat. The default is True.</p></li>
 <li><p><strong>visualization_fr</strong> (<em>float</em><em>, </em><em>optional</em>) – The frame rate (frames per second) at which the visualizer is
-updated. The default is 30..</p></li>
+updated. The default is 24.0.</p></li>
 <li><p><strong>animation</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether animated plots are created
 in real time. The default is True.</p></li>
 <li><p><strong>animation_fr</strong> (<em>float</em><em>, </em><em>optional</em>) – The frame rate (frames per second) at which the animated plots are
-updated. The default is 7.5.</p></li>
+updated. The default is 8.0.</p></li>
 <li><p><strong>gravity</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>) </em><em>optional</em>) – The gravity vectory in m/s^2. The default is [0., 0., -9.81].</p></li>
 <li><p><strong>dt</strong> (<em>float</em><em>, </em><em>optional</em>) – The fixed time step of the simulator in seconds. The default is
 0.01 seconds.</p></li>
@@ -1399,12 +1399,12 @@ The default is np.inf.</p></li>
 <h3>The Animator Class<a class="headerlink" href="#the-animator-class" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="condynsate.Animator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Animator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Animator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator" title="Link to this definition"></a></dt>
 <dd><p>Animator manages the real time plotting in QT GUI.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>fr</strong> (<em>float</em><em>, </em><em>optional</em>) – The frame rate (frames per second) at which the animated plots are
-updated. The default is 12.0.</p>
+updated. The default is 8.0.</p>
 </dd>
 </dl>
 </dd></dl>
