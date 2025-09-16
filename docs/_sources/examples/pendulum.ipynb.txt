@@ -54,7 +54,7 @@
      "output_type": "stream",
      "text": [
       "You can open the visualizer by visiting the following URL:\n",
-      "http://127.0.0.1:7002/static/\n"
+      "http://127.0.0.1:7007/static/\n"
      ]
     }
    ],
@@ -309,14 +309,6 @@
    "source": [
     "As expected, because the initial angle was small (~10 degrees) the period of the nonlinear simulation and linear approximation are close; however, due to the joint damping the amplitude of the simulation decreases with time. This behavior is not captured by the small-angle approximation. "
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "b733978f-5ec7-4ff5-9aa4-59cd69f88e69",
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {

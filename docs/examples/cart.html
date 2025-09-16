@@ -203,47 +203,62 @@ http://127.0.0.1:7000/static/
 </section>
 <section id="Setting-up-the-Animator">
 <h2>Setting up the Animator<a class="headerlink" href="#Setting-up-the-Animator" title="Link to this heading"></a></h2>
-<p>Because we set <code class="docutils literal notranslate"><span class="pre">animator</span> <span class="pre">=</span> <span class="pre">True</span></code> in the simulator initialization, the animator is ready to add new subplots to it. To do this we use the <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_subplot</span></code> function.</p>
-<p>In the first subplot, we want to plot only the wheel torque as a function of time. To do so, we create a line plot with 1 artist. This is done with the arguments <code class="docutils literal notranslate"><span class="pre">n_artists</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">subplot_type</span> <span class="pre">=</span> <span class="pre">'line'</span></code>. Further wee add a subplot title and axis labels with the <code class="docutils literal notranslate"><span class="pre">title</span> <span class="pre">=</span> <span class="pre">&quot;Torque</span> <span class="pre">vs</span> <span class="pre">Time&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">x_label</span> <span class="pre">=</span> <span class="pre">&quot;Time</span> <span class="pre">[Seconds]&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">y_label</span> <span class="pre">=</span> <span class="pre">&quot;Torque</span> <span class="pre">[Nm]&quot;</span></code>, respectively. Next, to format the line itself, we set its color to black with <code class="docutils literal notranslate"><span class="pre">colors</span> <span class="pre">=</span> <span class="pre">[&quot;k&quot;]</span></code>, set its line width to 2.5 with
-<code class="docutils literal notranslate"><span class="pre">line_widths</span> <span class="pre">=</span> <span class="pre">[2.5]</span></code>, and make it a solid line with <code class="docutils literal notranslate"><span class="pre">line_styles</span> <span class="pre">=</span> <span class="pre">[&quot;-&quot;]</span></code>. Finally, we limit the y-axis view between -0.8 and 0.8 with <code class="docutils literal notranslate"><span class="pre">y_lim</span> <span class="pre">=</span> <span class="pre">[-0.80,</span> <span class="pre">0.80]</span></code> and add a thin horizontal line across y=0 with <code class="docutils literal notranslate"><span class="pre">h_zero_line</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
+<p>Because we set <code class="docutils literal notranslate"><span class="pre">animator</span> <span class="pre">=</span> <span class="pre">True</span></code> in the simulator initialization, the animator is ready to add new plots to it. To do this we use the <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_plot</span></code> function.</p>
+<p>In the first plot, we want to show the mean wheel torque as a function of time. To do so, we create a simple line plot. This is done with the argument <code class="docutils literal notranslate"><span class="pre">plot_type</span> <span class="pre">=</span> <span class="pre">'line'</span></code>. Further we add a title and axis labels with the <code class="docutils literal notranslate"><span class="pre">title</span> <span class="pre">=</span> <span class="pre">&quot;Torque</span> <span class="pre">vs</span> <span class="pre">Time&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">x_label</span> <span class="pre">=</span> <span class="pre">&quot;Time</span> <span class="pre">[Seconds]&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">y_label</span> <span class="pre">=</span> <span class="pre">&quot;Torque</span> <span class="pre">[Nm]&quot;</span></code>, respectively. Next, to format the line itself, we set its line width to 2.5 with <code class="docutils literal notranslate"><span class="pre">line_width</span> <span class="pre">=</span> <span class="pre">2.5</span></code>. Finally, we limit the y-axis view between -0.8 and 0.8 with
+<code class="docutils literal notranslate"><span class="pre">y_lim</span> <span class="pre">=</span> <span class="pre">[-0.80,</span> <span class="pre">0.80]</span></code> and add a thin horizontal line across y=0 with <code class="docutils literal notranslate"><span class="pre">h_zero_line</span> <span class="pre">=</span> <span class="pre">True</span></code>. The return value of <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_plot</span></code> is the identifier of the plot just added. It will be used to later to tell the animator which plot to update when adding data points.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subplot_1</span><span class="p">,</span> <span class="n">suplot_1_artists</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">n_artists</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                                                    <span class="n">subplot_type</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span>
-                                                    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Torque vs Time&quot;</span><span class="p">,</span>
-                                                    <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Time [Seconds]&quot;</span><span class="p">,</span>
-                                                    <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Torque [Nm]&quot;</span><span class="p">,</span>
-                                                    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;k&quot;</span><span class="p">],</span>      <span class="c1"># List of length equal to n_artists</span>
-                                                    <span class="n">line_widths</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">],</span> <span class="c1"># List of length equal to n_artists</span>
-                                                    <span class="n">line_styles</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">],</span> <span class="c1"># List of length equal to n_artists</span>
-                                                    <span class="n">y_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.80</span><span class="p">,</span> <span class="mf">0.80</span><span class="p">],</span>
-                                                    <span class="n">h_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_1</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">plot_type</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span>
+                            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Torque vs Time&quot;</span><span class="p">,</span>
+                            <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Time [Seconds]&quot;</span><span class="p">,</span>
+                            <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Torque [Nm]&quot;</span><span class="p">,</span>
+                            <span class="n">line_width</span> <span class="o">=</span> <span class="mf">2.5</span><span class="p">,</span>
+                            <span class="n">y_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.80</span><span class="p">,</span> <span class="mf">0.80</span><span class="p">],</span>
+                            <span class="n">h_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>We make a similar subplot for the pendulum and wheel angles. Because we want two lines on this subplot, we call for 2 artists, one for each line. All other arguments are similar aside for <code class="docutils literal notranslate"><span class="pre">labels</span> <span class="pre">=</span> <span class="pre">[&quot;Pendulum&quot;,</span> <span class="pre">&quot;Wheel&quot;]</span></code> which tells the animator what each arist should be called for the legend.</p>
+<p>Now we want another line plot that shows both the pendulum angle and mean wheel angle simultaneously. Because we want two lines on this plot, we call for 2 artists, one for each line. All other arguments are similar aside for <code class="docutils literal notranslate"><span class="pre">labels</span> <span class="pre">=</span> <span class="pre">[&quot;Pendulum&quot;,</span> <span class="pre">&quot;Wheel&quot;]</span></code> which tells the animator what each arist should be called for the legend. Further, when multiple artists are used <code class="docutils literal notranslate"><span class="pre">color</span></code>, <code class="docutils literal notranslate"><span class="pre">line_width</span></code>, and <code class="docutils literal notranslate"><span class="pre">line_style</span></code> may either be a single argument (applied to all artists) or a list of arguemnts
+with length equal to number of artists. When <code class="docutils literal notranslate"><span class="pre">n_artists</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>, the return value of <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_plot</span></code> is the identifier of the plot just added and a tuple of artist identifiers (one for each artist). These will also be used to later to tell the animator which plot adn artist to update when adding data points.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subplot_2</span><span class="p">,</span> <span class="n">suplot_2_artists</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">n_artists</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-                                                    <span class="n">subplot_type</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span>
-                                                    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Angles vs Time&quot;</span><span class="p">,</span>
-                                                    <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Time [Seconds]&quot;</span><span class="p">,</span>
-                                                    <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Angles [Rad]&quot;</span><span class="p">,</span>
-                                                    <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">],</span>      <span class="c1"># List of length equal to n_artists</span>
-                                                    <span class="n">line_widths</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="c1"># List of length equal to n_artists</span>
-                                                    <span class="n">line_styles</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">],</span> <span class="c1"># List of length equal to n_artists</span>
-                                                    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pendulum&quot;</span><span class="p">,</span> <span class="s2">&quot;Wheel&quot;</span><span class="p">],</span>
-                                                    <span class="n">h_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_2</span><span class="p">,</span> <span class="n">plot_2_artists</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">n_artists</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                                            <span class="n">plot_type</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span>
+                                            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Angles vs Time&quot;</span><span class="p">,</span>
+                                            <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Time [Seconds]&quot;</span><span class="p">,</span>
+                                            <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Angles [Rad]&quot;</span><span class="p">,</span>
+                                            <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">],</span> <span class="c1"># One color for each artist</span>
+                                            <span class="n">line_width</span> <span class="o">=</span> <span class="mf">2.5</span><span class="p">,</span>   <span class="c1"># Single value to give all artists same line_width</span>
+                                            <span class="n">line_style</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>   <span class="c1"># Single value to give all artists same line_style</span>
+                                            <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Pendulum&quot;</span><span class="p">,</span> <span class="s2">&quot;Wheel&quot;</span><span class="p">],</span> <span class="c1"># One label for each artist</span>
+                                            <span class="n">h_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>The subplots are now set up how we want, so we can open the animator GUI. Once opened, no additional subplots can be added. Note: <code class="docutils literal notranslate"><span class="pre">%%capture</span></code> is required to supress the animator drawing the first frame to this notebook. Though it is not required, it is reccomended. It must be the first line in the cell in which it’s called.</p>
+<p>Finally, we would like a bar plot that shows each wheel’s deviation from the mean wheel angle. To do so, we add a new plot of type <code class="docutils literal notranslate"><span class="pre">'bar'</span></code> with 4 artists. This time, we also add a thin verticle line along x=0 so we can see if the wheel deviation is leading or lagging the mean. Also, we fix the x axis limits so it is easier to read.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_3</span><span class="p">,</span> <span class="n">plot_3_artists</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">add_plot</span><span class="p">(</span><span class="n">n_artists</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+                                            <span class="n">plot_type</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+                                            <span class="n">x_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span>
+                                            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Wheel Deviation from Mean&quot;</span><span class="p">,</span>
+                                            <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Deviation [Rad]&quot;</span><span class="p">,</span>
+                                            <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Wheel Number&quot;</span><span class="p">,</span>
+                                            <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+                                            <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;W1&quot;</span><span class="p">,</span> <span class="s2">&quot;W2&quot;</span><span class="p">,</span> <span class="s2">&quot;W3&quot;</span><span class="p">,</span> <span class="s2">&quot;W4&quot;</span><span class="p">],</span>
+                                            <span class="n">v_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The plots are now set up how we want, so we can open the animator GUI. Once opened, no additional plots can be added. Note: <code class="docutils literal notranslate"><span class="pre">%%capture</span></code> is required to supress the animator drawing the first frame to this notebook. Though it is not required, it is reccomended. It must be the first line in the cell in which it’s called.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
@@ -251,7 +266,7 @@ http://127.0.0.1:7000/static/
 </pre></div>
 </div>
 </div>
-<p>As expected, a figure with our two subplots opens.</p>
+<p>As expected, a figure with our three plots opens.</p>
 </section>
 <section id="Running-the-Simulation">
 <h2>Running the Simulation<a class="headerlink" href="#Running-the-Simulation" title="Link to this heading"></a></h2>
@@ -264,7 +279,7 @@ http://127.0.0.1:7000/static/
 </ol>
 <p>Let’s start by making a function that reads each angle and angular velocity we want.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_states</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">cart</span><span class="p">):</span>
@@ -285,15 +300,21 @@ http://127.0.0.1:7000/static/
         <span class="n">angular_vels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;velocity&#39;</span><span class="p">])</span>
 
     <span class="c1"># For the wheels, return the mean angle and angular vel.</span>
-    <span class="n">angles</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">angles</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">angles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="n">angular_vels</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">angular_vels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">angular_vels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">angular_vels</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">angular_vels</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">mean_wheel_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">angles</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">mean_wheel_ang_vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">angular_vels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Additionally, calculate the wheel deviation from mean.</span>
+    <span class="n">wheel_deviations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">wheel_angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">wheel_deviations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wheel_angle</span> <span class="o">-</span> <span class="n">mean_wheel_angle</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">mean_wheel_angle</span><span class="p">,</span> <span class="n">mean_wheel_ang_vel</span><span class="p">),</span> <span class="p">(</span><span class="n">angles</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">angular_vels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">wheel_deviations</span>
 </pre></div>
 </div>
 </div>
 <p>Next we make a function that applies torque based on the state we read.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">apply_torque</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">cart</span><span class="p">,</span> <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">):</span>
@@ -327,40 +348,52 @@ http://127.0.0.1:7000/static/
 </pre></div>
 </div>
 </div>
-<p>Next we want to build a function that updates the first subplot. We want this function to add a single datum to the end of the data list being plotted. To do this, we will use the <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_subplot_point</span></code> function. The arguments to this function are the subplot to which the point is added, the artist index which draws the point, and the (x,y) coordinates of the point. In our case, the subplot is called <code class="docutils literal notranslate"><span class="pre">subplot_1</span></code> and it only has one artist, <code class="docutils literal notranslate"><span class="pre">suplot_1_artists[0]</span></code>. The x
-coordinate will be simulation time which we extract with <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.time</span></code>, and the y coordinate is the torque we calculated in the previous function. After <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_subplot_point</span></code> is called, the animator automatically updates to add the point at the specified frame rate.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_torque_point</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">subplot</span><span class="p">,</span> <span class="n">suplot_artists</span><span class="p">,</span> <span class="n">torque</span><span class="p">):</span>
-    <span class="n">simulator</span><span class="o">.</span><span class="n">add_datum</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
-                        <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
-                        <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
-                        <span class="n">y</span> <span class="o">=</span> <span class="n">torque</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>We build a similar function for the wheel and pendulum angles, but this time we interact with two artists on the same subplot by calling <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_subplot_point</span></code> twice, once for each artist.</p>
+<p>Next we want to build a function that updates the first line plot. We want this function to add a single datum to the end of the data list being plotted as a line. To do this, we will use the <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_line_datum</span></code> function. The arguments to this function are the plot to which the point is added and the (x,y) coordinates of the point. The x coordinate will be simulation time which we extract with <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.time</span></code>, and the y coordinate is the torque we calculated in
+the previous function. After <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.add_line_datum</span></code> is called, the animator automatically updates to add the point at the specified frame rate.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_state_points</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">subplot</span><span class="p">,</span> <span class="n">suplot_artists</span><span class="p">,</span> <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">):</span>
-    <span class="n">simulator</span><span class="o">.</span><span class="n">add_datum</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
-                        <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
-                        <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
-                        <span class="n">y</span> <span class="o">=</span> <span class="n">pendulum_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">simulator</span><span class="o">.</span><span class="n">add_datum</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
-                        <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
-                        <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
-                        <span class="n">y</span> <span class="o">=</span> <span class="n">mean_wheel_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_torque_point</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">plot_id</span><span class="p">,</span> <span class="n">torque</span><span class="p">):</span>
+    <span class="n">simulator</span><span class="o">.</span><span class="n">add_line_datum</span><span class="p">(</span><span class="n">plot_id</span> <span class="o">=</span> <span class="n">plot_id</span><span class="p">,</span>
+                             <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                             <span class="n">y</span> <span class="o">=</span> <span class="n">torque</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We build a similar function for the wheel and pendulum angles, but this time the plot has 2 artists. Therefore, we need to specify to which artist we are adding the data points. This is done with the <code class="docutils literal notranslate"><span class="pre">artist_id</span></code> argument.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_state_points</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">plot_artists</span><span class="p">,</span> <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">):</span>
+    <span class="n">simulator</span><span class="o">.</span><span class="n">add_line_datum</span><span class="p">(</span><span class="n">plot_id</span> <span class="o">=</span> <span class="n">plot</span><span class="p">,</span>
+                             <span class="n">artist_id</span> <span class="o">=</span> <span class="n">plot_artists</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># Draw to the first artist (whose label is &quot;Pendulum&quot;)</span>
+                             <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                             <span class="n">y</span> <span class="o">=</span> <span class="n">pendulum_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">simulator</span><span class="o">.</span><span class="n">add_line_datum</span><span class="p">(</span><span class="n">plot_id</span> <span class="o">=</span> <span class="n">plot</span><span class="p">,</span>
+                             <span class="n">artist_id</span> <span class="o">=</span> <span class="n">plot_artists</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="c1"># Draw to the second artist (whose label is &quot;Wheel&quot;)</span>
+                             <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                             <span class="n">y</span> <span class="o">=</span> <span class="n">mean_wheel_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Now we want a function to edit the bar chart. This is very similar to <code class="docutils literal notranslate"><span class="pre">add_state_points</span></code>, however we use the function ‘condynsate.Simulator.set_bar_value’ to edit a bar chart’s values.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_deviation_values</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">plot_artists</span><span class="p">,</span> <span class="n">wheel_deviations</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">plot_artist</span><span class="p">,</span> <span class="n">wheel_deviation</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">plot_artists</span><span class="p">,</span> <span class="n">wheel_deviations</span><span class="p">):</span>
+        <span class="n">simulator</span><span class="o">.</span><span class="n">set_bar_value</span><span class="p">(</span><span class="n">plot_id</span> <span class="o">=</span> <span class="n">plot</span><span class="p">,</span>
+                                <span class="n">artist_id</span> <span class="o">=</span> <span class="n">plot_artist</span><span class="p">,</span>
+                                <span class="n">value</span> <span class="o">=</span> <span class="n">wheel_deviation</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>Finally, we build our simulation loop. By setting the <code class="docutils literal notranslate"><span class="pre">real_time</span> <span class="pre">=</span> <span class="pre">True</span></code> flag and <code class="docutils literal notranslate"><span class="pre">max_time</span> <span class="pre">=</span> <span class="pre">10.0</span></code> in <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.step</span></code>, we tell the simulation to attempt to run in real time for 5 seconds.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset before running a simulation loop</span>
@@ -375,30 +408,23 @@ coordinate will be simulation time which we extract with <code class="docutils l
     <span class="c1"># If successful step was taken</span>
     <span class="k">if</span> <span class="n">ret_code</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Read the states and apply the torque</span>
-        <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span> <span class="o">=</span> <span class="n">read_states</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">cart</span><span class="p">)</span>
+        <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">,</span> <span class="n">wheel_deviations</span> <span class="o">=</span> <span class="n">read_states</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">cart</span><span class="p">)</span>
         <span class="n">torque</span> <span class="o">=</span> <span class="n">apply_torque</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">cart</span><span class="p">,</span> <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">)</span>
 
         <span class="c1"># Add the new data points to the animator</span>
-        <span class="n">add_torque_point</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">subplot_1</span><span class="p">,</span> <span class="n">suplot_1_artists</span><span class="p">,</span> <span class="n">torque</span><span class="p">)</span>
-        <span class="n">add_state_points</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">subplot_2</span><span class="p">,</span> <span class="n">suplot_2_artists</span><span class="p">,</span> <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">)</span>
+        <span class="n">add_torque_point</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">plot_1</span><span class="p">,</span> <span class="n">torque</span><span class="p">)</span>
+        <span class="n">add_state_points</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">plot_2</span><span class="p">,</span> <span class="n">plot_2_artists</span><span class="p">,</span> <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">)</span>
+        <span class="n">set_deviation_values</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">plot_3</span><span class="p">,</span> <span class="n">plot_3_artists</span><span class="p">,</span> <span class="n">wheel_deviations</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>Watch as the pendulum magically balances while the torque and angles are plotted in real time on the animator GUI.</p>
 <p>Once the simulation is done, we terminate the animator</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulator</span><span class="o">.</span><span class="n">terminate_animator</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>

@@ -125,7 +125,7 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 You can open the visualizer by visiting the following URL:
-http://127.0.0.1:7002/static/
+http://127.0.0.1:7007/static/
 </pre></div></div>
 </div>
 <p>Load the pendulum into the simulator. Set <code class="docutils literal notranslate"><span class="pre">fixed</span> <span class="pre">=</span> <span class="pre">true</span></code> so that the base link of the pendulum is fixed in space. Set <code class="docutils literal notranslate"><span class="pre">update_vis</span> <span class="pre">=</span> <span class="pre">true</span></code> so that its position updates are reflected in the visualizer. Additionally, set the base pitch to 180 degrees and the yaw to 90 degrees so the pendulum is oriented downward and swings in the YZ visual plane, respectively.</p>
@@ -279,14 +279,6 @@ http://127.0.0.1:7002/static/
 </div>
 </div>
 <p>As expected, because the initial angle was small (~10 degrees) the period of the nonlinear simulation and linear approximation are close; however, due to the joint damping the amplitude of the simulation decreases with time. This behavior is not captured by the small-angle approximation.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 

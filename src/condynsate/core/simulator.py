@@ -3307,50 +3307,51 @@ class Simulator:
     ###########################################################################
     #ANIMATOR MANIPULATION
     ###########################################################################
-    def add_subplot(self,
-                    n_artists=1,
-                    subplot_type='line',
-                    title=None,
-                    x_label=None,
-                    y_label=None,
-                    x_lim=[None, None],
-                    y_lim=[None, None],
-                    h_zero_line=False,
-                    v_zero_line=False,
-                    colors=None,
-                    labels=None,
-                    line_widths=None,
-                    line_styles=None,
-                    tail=None):
+    def add_plot(self,
+                 n_artists=1,
+                 plot_type='line',
+                 title=None,
+                 x_label=None,
+                 y_label=None,
+                 x_lim=[None, None],
+                 y_lim=[None, None],
+                 h_zero_line=False,
+                 v_zero_line=False,
+                 color='black',
+                 label=None,
+                 line_width=1.5,
+                 line_style='solid',
+                 tail=-1):
         """
-        Adds a subplot to the animator. This function needs to be called to 
-        define a subplot before data can be added to that plot.
+        Adds a plot to the animator. This function needs to be called to 
+        define a plot before data can be added to that plot. If called after
+        start_animator, this function will do nothing.
 
         Parameters
         ----------
         n_artists : int, optional
-            The number of artists that draw on the subplot
+            The number of artists that draw on the plot
             The default is 1.
-        subplot_type: either 'line' or 'bar', optional
+        plot_type: either 'line' or 'bar', optional
             The type of plot. May either be 'line' or 'bar'. The default
             is 'line'.
         title : string, optional
             The title of the plot. Will be written above the plot when
             rendered. The default is None.
         x_label : string, optional
-            The label to apply to the x axis. Will be written under the subplot
+            The label to apply to the x axis. Will be written under the plot
             when rendered. The default is None.
         y_label : string, optional
             The label to apply to the y axis. Will be written to the left of
-            the subplot when rendered. The default is None.
+            the plot when rendered. The default is None.
         x_lim : [float, float], optional
-            The limits to apply to the x axis of the subplot. A value of None
+            The limits to apply to the x axis of the plot. A value of None
             will apply automatically updating limits to the corresponding
             bound of the axis. For example [None, 10.] will fix the upper
             bound to exactly 10, but the lower bound will freely change to
             show all data.The default is [None, None].
         y_lim : [float, float], optional
-            The limits to apply to the y axis of the subplot. A value of None
+            The limits to apply to the y axis of the plot. A value of None
             will apply automatically updating limits to the corresponding
             bound of the axis. For example [None, 10.] will fix the upper
             bound to exactly 10, but the lower bound will freely change to
@@ -3361,105 +3362,144 @@ class Simulator:
         v_zero_line : boolean, optional
             A boolean flag that indicates whether a vertical line will be
             drawn on the x=0 line. The default is false
-        colors : list of matplotlib color string, optional
-            A list of the color each artist draws in. Must have length
-            n_artists. If n_artists = 1, has the form ['COLOR']. When None,
-            all artists will default to drawing in black. The default is None.
-        labels : list of strings, optional
-            A list of the label applied to each artist. For line charts, 
+        color : matplotlib color string or tuple of color strings, optional
+            The color each artist draws in. When tuple, must have length 
+            n_artists. The default is 'black'.
+        label : string or tuple of strings, optional
+            The label applied to each artist. For line charts, 
             the labels are shown in a legend in the top right of the plot. For
             bar charts, the labels are shown on the y axis next to their 
-            corresponging bars. Must have length n_artists. If n_artists = 1,
-            has the form ['LABEL']. When None, no labels will be made for any
-            aritsts. The default is None.
-        line_widths : list of floats, optional
+            corresponging bars. When tuple, must have length n_artists.
+            When None, no labels are made. The default is None.
+        line_width : float or tuple of floats, optional
             The line weigth each artist uses. For line plots, this is the
             width of the plotted line, for bar charts, this is the width of 
-            the border around each bar. Must be length n_artists. If
-            n_artists = 1, has the form [LINE_WIDTH]. When set to None,
-            defaults to 1.0 for all lines. The default is None.
-        line_styles : list of matplotlib line style string, optional
+            the border around each bar. When tuple, must have length n_artists.
+            The default is 1.5.
+        line_style : line style string or tuple of ls strings, optional
             The line style each artist uses. For line plots, this is the
             style of the plotted line, for bar charts, this argument is not
-            used and therefore ignored. Must be length n_artists. If
-            n_artists = 1, has the form ['LINE_STYLE']. When set to None,
-            defaults to 'solid' for all lines. The default is None.
-        tail : int, optional
+            used and therefore ignored. When tuple, must have length n_artists.
+            The default is 'solid'.
+        tail : int or tuple of ints optional
             Specifies how many data points are used to draw a line. Only the
             most recently added data points are kept. Any data points added
             more than tail data points ago are discarded and not plotted. Only
-            valid for line plots, and applied to all artists in the plot. For 
-            bar plots, this argument is ignored and not used. A value of None
-            means that no data is ever discarded and all data points added to
-            the animator will be drawn. The default is None.
+            valid for line plots. When tuple, must have length n_artists. A 
+            value less than or equal to 0 means that no data is ever discarded 
+            and all data points added to the animator will be drawn. 
+            The default is -1.
             
         Raises
         ------
-        Exception
-            At least one of the arguments colors, labels, line_widths, or 
-            line_styles do not have length n_artists.
         TypeError
-            At least one of the arguments colors, labels, line_widths, or 
-            line_styles is not a list.
+            At least one of the arguments color, label, line_width, 
+            line_style, or tail is not parasble to all artists.
         
         Returns
         -------
-        subplot_index : int
-            A integer identifier that is unique to the subplot created. 
-            This allows future interaction with this subplot (adding data
+        plot_id : int
+            A integer identifier that is unique to the plot created. 
+            This allows future interaction with this plot (adding data
             points, etc.).
-        artist_inds : tuple of ints
+        artist_ids : tuple of ints, optional
             A tuple of integer identifiers that are unique to the artist
             created. This allows future interaction with these artists (adding
-            data points, etc.).
+            data points, etc.). Is only returned when n_artists > 1.
         """
         # If there is no animator, do not attempt to add a plot to it
         if not self.animation:
             return None, None
         
         # Add the plot data to the plot
-        v1, v2 = self.ani.add_subplot(n_artists=n_artists,
-                                      subplot_type=subplot_type,
-                                      title=title,
-                                      x_label=x_label,
-                                      y_label=y_label,
-                                      colors=colors,
-                                      labels=labels,
-                                      x_lim=x_lim,
-                                      y_lim=y_lim,
-                                      h_zero_line=h_zero_line,
-                                      v_zero_line=v_zero_line,
-                                      line_widths=line_widths,
-                                      line_styles=line_styles,
-                                      tail=tail)
-        subplot_index = v1
-        artist_inds = v2
-        
-        # Return the plot index
-        return subplot_index, artist_inds
-        
-        
-    def add_datum(self,
-                  subplot_index,
-                  artist_index,
-                  x=None,
-                  y=None):
+        return self.ani.add_plot(n_artists,
+                                 plot_type,
+                                 title,
+                                 x_label,
+                                 y_label,
+                                 x_lim,
+                                 y_lim,
+                                 h_zero_line,
+                                 v_zero_line,
+                                 color,
+                                 label,
+                                 line_width,
+                                 line_style,
+                                 tail)
+            
+    
+    def start_animator(self):
         """
-        Adds a single data point to the plot. Data point is appended to the end
-        of all previously plotted data points.
+        Opens the Animator GUI with the specified plots. After the Animator
+        is open, no more plots can be added; however, the plot data can still
+        be set.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Open the animator figure window if it exists
+        if self.animation:
+            self.ani.start_animator()
+            
+            
+    def add_line_datum(self,
+                       plot_id,
+                       x,
+                       y,
+                       artist_id=0):
+        """
+        Adds a single data point to the plot. Data point is appended to the
+        end of all previously plotted data points on the specified line.
 
         Parameters
         ----------
-        plot_index : int
-            The subplot's unique identifier.
-        artist_index : int
-            The subplot's artist index to which the data is added.
-        x : float, optional
-            The x value of the data point added to the plot. The default
-            value is None.
-        y : float, optional
-            The y value of the data point added to the plot. The default
-            value is None.
+        plot_id : int
+            The plot's unique identifier.
+        x : float
+            The x value of the data point added to the plot.
+        y : float
+            The y value of the data point added to the plot.
+        artist_id : int, optional
+            The plot's artist index to which the data is added. If plot
+            only has a single artist, is ignored. The default value is 0.
+            
+        Returns
+        -------
+        None.
+
+        """
+        # Do nothing if paused
+        if self.paused:
+            return
+        
+        # If there is no animator, do not attempt to update it
+        if not self.animation:
+            return
+        
+        # Update the plot
+        self.ani.add_line_datum(plot_id,
+                                x,
+                                y,
+                                artist_id)
+        
+    
+    def set_bar_value(self, 
+                      plot_id,
+                      artist_id,
+                      value):
+        """
+        Sets the value of one of the bars in a bar plot.
+
+        Parameters
+        ----------
+        plot_id : int
+            The plot's unique identifier.
+        artist_id : int
+            The plot's artist index whose value is being set.
+        value : float
+            The value to which the bar is being set.
 
         Returns
         -------
@@ -3475,13 +3515,12 @@ class Simulator:
             return
         
         # Update the plot
-        self.ani.add_datum(subplot_index=subplot_index,
-                                   artist_index=artist_index,
-                                   x=x,
-                                   y=y)
+        self.ani.set_bar_value(plot_id,
+                               artist_id,
+                               value)
+    
         
-        
-    def reset_plots(self):
+    def reset_animator(self):
         """
         Removes all previously plotted data from all plots.
 
@@ -3498,23 +3537,7 @@ class Simulator:
         if not self.animation:
             return
         
-        self.ani.reset()
-        
-        
-    def start_animator(self):
-        """
-        Opens the Animator GUI with the specified plots. After the Animator
-        is open, no more plots can be added; however, the plot data can still
-        be set.
-
-        Returns
-        -------
-        None.
-
-        """
-        # Open the animator figure window if it exists
-        if self.animation:
-            self.ani.start_animator()
+        self.ani.reset_animator()
             
     
     def terminate_animator(self):
@@ -3776,7 +3799,7 @@ class Simulator:
                 self._update_urdf_visual(urdf_obj)
         
         # Reset the plots
-        self.reset_plots()
+        self.reset_animator()
         
         
     def step(self,

@@ -1164,29 +1164,30 @@ The default is False.</p></li>
 <section id="using-the-animator">
 <h4>Using the Animator<a class="headerlink" href="#using-the-animator" title="Link to this heading"></a></h4>
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Simulator.add_subplot">
-<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_subplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_widths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_styles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_subplot" title="Link to this definition"></a></dt>
-<dd><p>Adds a subplot to the animator. This function needs to be called to
-define a subplot before data can be added to that plot.</p>
+<dt class="sig sig-object py" id="condynsate.Simulator.add_plot">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'solid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_plot" title="Link to this definition"></a></dt>
+<dd><p>Adds a plot to the animator. This function needs to be called to
+define a plot before data can be added to that plot. If called after
+start_animator, this function will do nothing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_artists</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of artists that draw on the subplot
+<li><p><strong>n_artists</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of artists that draw on the plot
 The default is 1.</p></li>
-<li><p><strong>subplot_type</strong> (<em>either 'line'</em><em> or </em><em>'bar'</em><em>, </em><em>optional</em>) – The type of plot. May either be ‘line’ or ‘bar’. The default
+<li><p><strong>plot_type</strong> (<em>either 'line'</em><em> or </em><em>'bar'</em><em>, </em><em>optional</em>) – The type of plot. May either be ‘line’ or ‘bar’. The default
 is ‘line’.</p></li>
 <li><p><strong>title</strong> (<em>string</em><em>, </em><em>optional</em>) – The title of the plot. Will be written above the plot when
 rendered. The default is None.</p></li>
-<li><p><strong>x_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the x axis. Will be written under the subplot
+<li><p><strong>x_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the x axis. Will be written under the plot
 when rendered. The default is None.</p></li>
 <li><p><strong>y_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the y axis. Will be written to the left of
-the subplot when rendered. The default is None.</p></li>
-<li><p><strong>x_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the x axis of the subplot. A value of None
+the plot when rendered. The default is None.</p></li>
+<li><p><strong>x_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the x axis of the plot. A value of None
 will apply automatically updating limits to the corresponding
 bound of the axis. For example [None, 10.] will fix the upper
 bound to exactly 10, but the lower bound will freely change to
 show all data.The default is [None, None].</p></li>
-<li><p><strong>y_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the y axis of the subplot. A value of None
+<li><p><strong>y_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the y axis of the plot. A value of None
 will apply automatically updating limits to the corresponding
 bound of the axis. For example [None, 10.] will fix the upper
 bound to exactly 10, but the lower bound will freely change to
@@ -1195,50 +1196,42 @@ show all data.The default is [None, None].</p></li>
 drawn on the y=0 line. The default is false</p></li>
 <li><p><strong>v_zero_line</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether a vertical line will be
 drawn on the x=0 line. The default is false</p></li>
-<li><p><strong>colors</strong> (<em>list</em><em> of </em><em>matplotlib color string</em><em>, </em><em>optional</em>) – A list of the color each artist draws in. Must have length
-n_artists. If n_artists = 1, has the form [‘COLOR’]. When None,
-all artists will default to drawing in black. The default is None.</p></li>
-<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em><em>, </em><em>optional</em>) – A list of the label applied to each artist. For line charts,
+<li><p><strong>color</strong> (<em>matplotlib color string</em><em> or </em><em>tuple</em><em> of </em><em>color strings</em><em>, </em><em>optional</em>) – The color each artist draws in. When tuple, must have length
+n_artists. The default is ‘black’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>tuple</em><em> of </em><em>strings</em><em>, </em><em>optional</em>) – The label applied to each artist. For line charts,
 the labels are shown in a legend in the top right of the plot. For
 bar charts, the labels are shown on the y axis next to their
-corresponging bars. Must have length n_artists. If n_artists = 1,
-has the form [‘LABEL’]. When None, no labels will be made for any
-aritsts. The default is None.</p></li>
-<li><p><strong>line_widths</strong> (<em>list</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – The line weigth each artist uses. For line plots, this is the
+corresponging bars. When tuple, must have length n_artists.
+When None, no labels are made. The default is None.</p></li>
+<li><p><strong>line_width</strong> (<em>float</em><em> or </em><em>tuple</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – The line weigth each artist uses. For line plots, this is the
 width of the plotted line, for bar charts, this is the width of
-the border around each bar. Must be length n_artists. If
-n_artists = 1, has the form [LINE_WIDTH]. When set to None,
-defaults to 1.0 for all lines. The default is None.</p></li>
-<li><p><strong>line_styles</strong> (<em>list</em><em> of </em><em>matplotlib line style string</em><em>, </em><em>optional</em>) – The line style each artist uses. For line plots, this is the
+the border around each bar. When tuple, must have length n_artists.
+The default is 1.5.</p></li>
+<li><p><strong>line_style</strong> (<em>line style string</em><em> or </em><em>tuple</em><em> of </em><em>ls strings</em><em>, </em><em>optional</em>) – The line style each artist uses. For line plots, this is the
 style of the plotted line, for bar charts, this argument is not
-used and therefore ignored. Must be length n_artists. If
-n_artists = 1, has the form [‘LINE_STYLE’]. When set to None,
-defaults to ‘solid’ for all lines. The default is None.</p></li>
-<li><p><strong>tail</strong> (<em>int</em><em>, </em><em>optional</em>) – Specifies how many data points are used to draw a line. Only the
+used and therefore ignored. When tuple, must have length n_artists.
+The default is ‘solid’.</p></li>
+<li><p><strong>tail</strong> (<em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints optional</em>) – Specifies how many data points are used to draw a line. Only the
 most recently added data points are kept. Any data points added
 more than tail data points ago are discarded and not plotted. Only
-valid for line plots, and applied to all artists in the plot. For
-bar plots, this argument is ignored and not used. A value of None
-means that no data is ever discarded and all data points added to
-the animator will be drawn. The default is None.</p></li>
+valid for line plots. When tuple, must have length n_artists. A
+value less than or equal to 0 means that no data is ever discarded
+and all data points added to the animator will be drawn.
+The default is -1.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>Exception</strong> – At least one of the arguments colors, labels, line_widths, or
-line_styles do not have length n_artists.</p></li>
-<li><p><strong>TypeError</strong> – At least one of the arguments colors, labels, line_widths, or
-line_styles is not a list.</p></li>
-</ul>
+<dd class="field-even"><p><strong>TypeError</strong> – At least one of the arguments color, label, line_width,
+line_style, or tail is not parasble to all artists.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p><strong>subplot_index</strong> (<em>int</em>) – A integer identifier that is unique to the subplot created.
-This allows future interaction with this subplot (adding data
+<li><p><strong>plot_id</strong> (<em>int</em>) – A integer identifier that is unique to the plot created.
+This allows future interaction with this plot (adding data
 points, etc.).</p></li>
-<li><p><strong>artist_inds</strong> (<em>tuple of ints</em>) – A tuple of integer identifiers that are unique to the artist
+<li><p><strong>artist_ids</strong> (<em>tuple of ints, optional</em>) – A tuple of integer identifiers that are unique to the artist
 created. This allows future interaction with these artists (adding
-data points, etc.).</p></li>
+data points, etc.). Is only returned when n_artists &gt; 1.</p></li>
 </ul>
 </p>
 </dd>
@@ -1259,19 +1252,18 @@ be set.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Simulator.add_datum">
-<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_datum" title="Link to this definition"></a></dt>
-<dd><p>Adds a single data point to the plot. Data point is appended to the end
-of all previously plotted data points.</p>
+<dt class="sig sig-object py" id="condynsate.Simulator.add_line_datum">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_line_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_line_datum" title="Link to this definition"></a></dt>
+<dd><p>Adds a single data point to the plot. Data point is appended to the
+end of all previously plotted data points on the specified line.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>plot_index</strong> (<em>int</em>) – The subplot’s unique identifier.</p></li>
-<li><p><strong>artist_index</strong> (<em>int</em>) – The subplot’s artist index to which the data is added.</p></li>
-<li><p><strong>x</strong> (<em>float</em><em>, </em><em>optional</em>) – The x value of the data point added to the plot. The default
-value is None.</p></li>
-<li><p><strong>y</strong> (<em>float</em><em>, </em><em>optional</em>) – The y value of the data point added to the plot. The default
-value is None.</p></li>
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The x value of the data point added to the plot.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – The y value of the data point added to the plot.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index to which the data is added. If plot
+only has a single artist, is ignored. The default value is 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1281,8 +1273,26 @@ value is None.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Simulator.reset_plots">
-<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">reset_plots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.reset_plots" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="condynsate.Simulator.set_bar_value">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_bar_value" title="Link to this definition"></a></dt>
+<dd><p>Sets the value of one of the bars in a bar plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em>) – The plot’s artist index whose value is being set.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – The value to which the bar is being set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.reset_animator">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">reset_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.reset_animator" title="Link to this definition"></a></dt>
 <dd><p>Removes all previously plotted data from all plots.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1389,12 +1399,12 @@ The default is np.inf.</p></li>
 <h3>The Animator Class<a class="headerlink" href="#the-animator-class" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="condynsate.Animator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Animator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Animator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator" title="Link to this definition"></a></dt>
 <dd><p>Animator manages the real time plotting in QT GUI.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fr</strong> (<em>float</em>) – The frame rate (frames per second) at which the animated plots are
-updated.</p>
+<dd class="field-odd"><p><strong>fr</strong> (<em>float</em><em>, </em><em>optional</em>) – The frame rate (frames per second) at which the animated plots are
+updated. The default is 12.0.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1402,30 +1412,30 @@ updated.</p>
 <section id="the-animation-sequence">
 <h4>The Animation Sequence<a class="headerlink" href="#the-animation-sequence" title="Link to this heading"></a></h4>
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.add_subplot">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_subplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_widths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_styles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_subplot" title="Link to this definition"></a></dt>
-<dd><p>Adds a subplot to the animator. This function needs to be called to
-define a subplot before data can be added to that plot. If called after
+<dt class="sig sig-object py" id="condynsate.Animator.add_plot">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'solid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_plot" title="Link to this definition"></a></dt>
+<dd><p>Adds a plot to the animator. This function needs to be called to
+define a plot before data can be added to that plot. If called after
 start_animator, this function will do nothing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_artists</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of artists that draw on the subplot
+<li><p><strong>n_artists</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of artists that draw on the plot
 The default is 1.</p></li>
-<li><p><strong>subplot_type</strong> (<em>either 'line'</em><em> or </em><em>'bar'</em><em>, </em><em>optional</em>) – The type of plot. May either be ‘line’ or ‘bar’. The default
+<li><p><strong>plot_type</strong> (<em>either 'line'</em><em> or </em><em>'bar'</em><em>, </em><em>optional</em>) – The type of plot. May either be ‘line’ or ‘bar’. The default
 is ‘line’.</p></li>
 <li><p><strong>title</strong> (<em>string</em><em>, </em><em>optional</em>) – The title of the plot. Will be written above the plot when
 rendered. The default is None.</p></li>
-<li><p><strong>x_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the x axis. Will be written under the subplot
+<li><p><strong>x_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the x axis. Will be written under the plot
 when rendered. The default is None.</p></li>
 <li><p><strong>y_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the y axis. Will be written to the left of
-the subplot when rendered. The default is None.</p></li>
-<li><p><strong>x_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the x axis of the subplot. A value of None
+the plot when rendered. The default is None.</p></li>
+<li><p><strong>x_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the x axis of the plot. A value of None
 will apply automatically updating limits to the corresponding
 bound of the axis. For example [None, 10.] will fix the upper
 bound to exactly 10, but the lower bound will freely change to
 show all data.The default is [None, None].</p></li>
-<li><p><strong>y_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the y axis of the subplot. A value of None
+<li><p><strong>y_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the y axis of the plot. A value of None
 will apply automatically updating limits to the corresponding
 bound of the axis. For example [None, 10.] will fix the upper
 bound to exactly 10, but the lower bound will freely change to
@@ -1434,50 +1444,42 @@ show all data.The default is [None, None].</p></li>
 drawn on the y=0 line. The default is false</p></li>
 <li><p><strong>v_zero_line</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether a vertical line will be
 drawn on the x=0 line. The default is false</p></li>
-<li><p><strong>colors</strong> (<em>list</em><em> of </em><em>matplotlib color string</em><em>, </em><em>optional</em>) – A list of the color each artist draws in. Must have length
-n_artists. If n_artists = 1, has the form [‘COLOR’]. When None,
-all artists will default to drawing in black. The default is None.</p></li>
-<li><p><strong>labels</strong> (<em>list</em><em> of </em><em>strings</em><em>, </em><em>optional</em>) – A list of the label applied to each artist. For line charts,
+<li><p><strong>color</strong> (<em>matplotlib color string</em><em> or </em><em>tuple</em><em> of </em><em>color strings</em><em>, </em><em>optional</em>) – The color each artist draws in. When tuple, must have length
+n_artists. The default is ‘black’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>tuple</em><em> of </em><em>strings</em><em>, </em><em>optional</em>) – The label applied to each artist. For line charts,
 the labels are shown in a legend in the top right of the plot. For
 bar charts, the labels are shown on the y axis next to their
-corresponging bars. Must have length n_artists. If n_artists = 1,
-has the form [‘LABEL’]. When None, no labels will be made for any
-aritsts. The default is None.</p></li>
-<li><p><strong>line_widths</strong> (<em>list</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – The line weigth each artist uses. For line plots, this is the
+corresponging bars. When tuple, must have length n_artists.
+When None, no labels are made. The default is None.</p></li>
+<li><p><strong>line_width</strong> (<em>float</em><em> or </em><em>tuple</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – The line weigth each artist uses. For line plots, this is the
 width of the plotted line, for bar charts, this is the width of
-the border around each bar. Must be length n_artists. If
-n_artists = 1, has the form [LINE_WIDTH]. When set to None,
-defaults to 1.0 for all lines. The default is None.</p></li>
-<li><p><strong>line_styles</strong> (<em>list</em><em> of </em><em>matplotlib line style string</em><em>, </em><em>optional</em>) – The line style each artist uses. For line plots, this is the
+the border around each bar. When tuple, must have length n_artists.
+The default is 1.5.</p></li>
+<li><p><strong>line_style</strong> (<em>line style string</em><em> or </em><em>tuple</em><em> of </em><em>ls strings</em><em>, </em><em>optional</em>) – The line style each artist uses. For line plots, this is the
 style of the plotted line, for bar charts, this argument is not
-used and therefore ignored. Must be length n_artists. If
-n_artists = 1, has the form [‘LINE_STYLE’]. When set to None,
-defaults to ‘solid’ for all lines. The default is None.</p></li>
-<li><p><strong>tail</strong> (<em>int</em><em>, </em><em>optional</em>) – Specifies how many data points are used to draw a line. Only the
+used and therefore ignored. When tuple, must have length n_artists.
+The default is ‘solid’.</p></li>
+<li><p><strong>tail</strong> (<em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints optional</em>) – Specifies how many data points are used to draw a line. Only the
 most recently added data points are kept. Any data points added
 more than tail data points ago are discarded and not plotted. Only
-valid for line plots, and applied to all artists in the plot. For
-bar plots, this argument is ignored and not used. A value of None
-means that no data is ever discarded and all data points added to
-the animator will be drawn. The default is None.</p></li>
+valid for line plots. When tuple, must have length n_artists. A
+value less than or equal to 0 means that no data is ever discarded
+and all data points added to the animator will be drawn.
+The default is -1.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>Exception</strong> – At least one of the arguments colors, labels, line_widths, or
-line_styles do not have length n_artists.</p></li>
-<li><p><strong>TypeError</strong> – At least one of the arguments colors, labels, line_widths, or
-line_styles is not a list.</p></li>
-</ul>
+<dd class="field-even"><p><strong>TypeError</strong> – At least one of the arguments color, label, line_width,
+line_style, or tail is not parasble to all artists.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p><strong>subplot_index</strong> (<em>int</em>) – A integer identifier that is unique to the subplot created.
-This allows future interaction with this subplot (adding data
+<li><p><strong>plot_id</strong> (<em>int</em>) – A integer identifier that is unique to the plot created.
+This allows future interaction with this plot (adding data
 points, etc.).</p></li>
-<li><p><strong>artist_inds</strong> (<em>tuple of ints</em>) – A tuple of integer identifiers that are unique to the artist
+<li><p><strong>artist_ids</strong> (<em>tuple of ints, optional</em>) – A tuple of integer identifiers that are unique to the artist
 created. This allows future interaction with these artists (adding
-data points, etc.).</p></li>
+data points, etc.). Is only returned when n_artists &gt; 1.</p></li>
 </ul>
 </p>
 </dd>
@@ -1489,7 +1491,7 @@ data points, etc.).</p></li>
 <span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">start_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.start_animator" title="Link to this definition"></a></dt>
 <dd><p>Builds and shows the animator GUI. Starts the GUI thread that runs
 until the terminate_animator function is called. Once start_animator
-is called, no more subplots can be added.</p>
+is called, no more plots can be added.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None.</p>
@@ -1498,17 +1500,18 @@ is called, no more subplots can be added.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.add_datum">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_datum" title="Link to this definition"></a></dt>
-<dd><p>Adds a single data point to the subplot. Data point is appended to the
+<dt class="sig sig-object py" id="condynsate.Animator.add_line_datum">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_line_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_line_datum" title="Link to this definition"></a></dt>
+<dd><p>Adds a single data point to the plot. Data point is appended to the
 end of all previously plotted data points on the specified line.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subplot_index</strong> (<em>int</em>) – The subplot’s unique identifier.</p></li>
-<li><p><strong>artist_index</strong> (<em>int</em>) – The subplot’s artist index to which the data is added.</p></li>
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
 <li><p><strong>x</strong> (<em>float</em>) – The x value of the data point added to the plot.</p></li>
 <li><p><strong>y</strong> (<em>float</em>) – The y value of the data point added to the plot.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index to which the data is added. If plot
+only has a single artist, is ignored. The default value is 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1518,8 +1521,26 @@ end of all previously plotted data points on the specified line.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.reset">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.reset" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="condynsate.Animator.set_bar_value">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.set_bar_value" title="Link to this definition"></a></dt>
+<dd><p>Sets the value of one of the bars in a bar plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em>) – The plot’s artist index whose value is being set.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – The value to which the bar is being set.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.reset_animator">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">reset_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.reset_animator" title="Link to this definition"></a></dt>
 <dd><p>Removes all previously plotted data from all plots.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

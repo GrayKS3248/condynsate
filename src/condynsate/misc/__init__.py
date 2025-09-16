@@ -12,6 +12,8 @@ from condynsate.misc.utils import (get_rot_from_2_vecs,
                                    vc_inA_toB,
                                    pt_inA_toB)
 
+from condynsate.misc.exception_handling import print_exception
+
 __all__ = ["get_rot_from_2_vecs",
            "xyzw_to_wxyz",
            "wxyz_to_xyzw",
@@ -24,4 +26,5 @@ __all__ = ["get_rot_from_2_vecs",
            "RAB_to_RBA",
            "OAB_to_OBA",
            "vc_inA_toB",
-           "pt_inA_toB",]
+           "pt_inA_toB",
+           "print_exception",]
