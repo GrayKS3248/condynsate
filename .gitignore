@@ -1,8 +1,4 @@
 # Specifc files
-sphinx_docs/
-dev_env.yaml
-environment.yaml
-test.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,0 +1,16 @@
+name: condynsate
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - matplotlib
+  - notebook
+  - numpy
+  - pip
+  - pybullet
+  - pynput
+  - scipy
+  - sympy
+  - pyside6
+  - pip: 
+    - meshcat
