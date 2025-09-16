@@ -7,10 +7,11 @@ functions that are used by it.
 ###############################################################################
 #DEPENDENCIES
 ###############################################################################
+from threading import (Thread, Lock)
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-import matplotlib as mpl
+import cv2
 
 
 ###############################################################################
@@ -61,11 +62,18 @@ class Animator():
         self.y_plot_lims = []
     
         # Boolean flag that indicates whether the figure is made
+        self.window_name = 'condynsate: Animator'
+        self.lock = Lock()
         self.figure_is_made = False
+        self.done = True
         
         # Frame rate data
         self.fr = fr
         self.last_step_time = 0.0
+    
+    
+    def __del__(self):
+        self.terminate_animator()
     
     
     ###########################################################################
@@ -127,7 +135,8 @@ class Animator():
                     tail=None):
         """
         Adds a subplot to the animator. This function needs to be called to 
-        define a subplot before data can be added to that plot.
+        define a subplot before data can be added to that plot. If called after
+        start_animator, this function will do nothing.
 
         Parameters
         ----------
@@ -216,7 +225,10 @@ class Animator():
             created. This allows future interaction with these artists (adding
             data points, etc.).
         """
-        
+        # Ensure figure is not already open
+        if self.figure_is_made:
+            return None, None
+
         # Ensure valid inputs
         self._validate_inputs(colors, 'colors', n_artists)
         self._validate_inputs(labels, 'labels', n_artists)
@@ -269,7 +281,7 @@ class Animator():
     ###########################################################################
     #RESET ALL SUBPLOTS
     ###########################################################################
-    def reset_plots(self):
+    def reset(self):
         """
         Removes all previously plotted data from all plots.
 
@@ -279,49 +291,23 @@ class Animator():
 
         """
         # Reset plot data
-        for plot_index in range(len(self.xs)):
-            n_artists = len(self.xs[plot_index])
-            self.xs[plot_index] = []
-            self.ys[plot_index] = []
-            for i in range(n_artists):
-                self.xs[plot_index].append([])
-                self.ys[plot_index].append([])
-            self.x_data_ranges[plot_index] = [-np.inf, np.inf]
-            self.y_data_ranges[plot_index] = [-np.inf, np.inf]
-            self.x_plot_lims[plot_index] = [None, None]
-            self.y_plot_lims[plot_index] = [None, None]
+        with self.lock:
+            for plot_index in range(len(self.xs)):
+                n_artists = len(self.xs[plot_index])
+                self.xs[plot_index] = []
+                self.ys[plot_index] = []
+                for i in range(n_artists):
+                    self.xs[plot_index].append([])
+                    self.ys[plot_index].append([])
+                self.x_data_ranges[plot_index] = [-np.inf, np.inf]
+                self.y_data_ranges[plot_index] = [-np.inf, np.inf]
+                self.x_plot_lims[plot_index] = [None, None]
+                self.y_plot_lims[plot_index] = [None, None]
             
         
     ###########################################################################
     #CREATE FIGURE
-    ###########################################################################    
-    def _disable_keystrokes(self):
-        """
-        Disables most keystrokes for the matplotlib QT widget to prevent
-        unexpected interactions while simulations are occuring.
-
-        Returns
-        -------
-        None.
-
-        """
-        mpl.rcParams["keymap.fullscreen"] = []
-        mpl.rcParams["keymap.home"] = []
-        mpl.rcParams["keymap.back"] = []
-        mpl.rcParams["keymap.forward"] = []
-        mpl.rcParams["keymap.pan"] = []
-        mpl.rcParams["keymap.zoom"] = []
-        mpl.rcParams["keymap.save"] = ['ctrl+s']
-        mpl.rcParams["keymap.help"] = []
-        mpl.rcParams["keymap.quit"] = []
-        mpl.rcParams["keymap.quit_all"] = []
-        mpl.rcParams["keymap.grid"] = []
-        mpl.rcParams["keymap.grid_minor"] = []
-        mpl.rcParams["keymap.yscale"] = []
-        mpl.rcParams["keymap.xscale"] = []
-        mpl.rcParams["keymap.copy"] = []
-    
-    
+    ###########################################################################       
     def _get_n_plots(self):
         """
         Calculates how many plots have been set by the user.
@@ -480,34 +466,34 @@ class Animator():
         -------
         None.
         """
+        with self.lock:
+            # Collect the current relevant information for the x axis
+            data_range = self.x_data_ranges[subplot_index]
+            fixed_lims = self.fixed_x_plot_lims[subplot_index]
+            data = self.xs[subplot_index]
+            
+            # Calcaulate the new data range and the new plot limits for the x
+            data_range, plot_lims = self._get_lims(data=data,
+                                                   data_range=data_range,
+                                                   fixed_lims=fixed_lims)
+            
+            # Apply the new data range and new plot limits for the x axis
+            self.x_data_ranges[subplot_index] = data_range
+            self.x_plot_lims[subplot_index] = plot_lims
         
-        # Collect the current relevant information for the x axis
-        data_range = self.x_data_ranges[subplot_index]
-        fixed_lims = self.fixed_x_plot_lims[subplot_index]
-        data = self.xs[subplot_index]
-        
-        # Calcaulate the new data range and the new plot limits for the x axis
-        data_range, plot_lims = self._get_lims(data=data,
-                                               data_range=data_range,
-                                               fixed_lims=fixed_lims)
-        
-        # Apply the new data range and new plot limits for the x axis
-        self.x_data_ranges[subplot_index] = data_range
-        self.x_plot_lims[subplot_index] = plot_lims
-    
-        # Collect the current relevant information for the y axis
-        data_range = self.y_data_ranges[subplot_index]
-        fixed_lims = self.fixed_y_plot_lims[subplot_index]
-        data = self.ys[subplot_index]
-        
-        # Calcaulate the new data range and the new plot limits for the y axis
-        data_range, plot_lims = self._get_lims(data=data,
-                                               data_range=data_range,
-                                               fixed_lims=fixed_lims)
-        
-        # Apply the new data range and new plot limits for the y axis
-        self.y_data_ranges[subplot_index] = data_range
-        self.y_plot_lims[subplot_index] = plot_lims
+            # Collect the current relevant information for the y axis
+            data_range = self.y_data_ranges[subplot_index]
+            fixed_lims = self.fixed_y_plot_lims[subplot_index]
+            data = self.ys[subplot_index]
+            
+            # Calcaulate the new data range and the new plot limits for the y
+            data_range, plot_lims = self._get_lims(data=data,
+                                                   data_range=data_range,
+                                                   fixed_lims=fixed_lims)
+            
+            # Apply the new data range and new plot limits for the y axis
+            self.y_data_ranges[subplot_index] = data_range
+            self.y_plot_lims[subplot_index] = plot_lims
     
     
     def _create_subplot(self,
@@ -740,69 +726,84 @@ class Animator():
         # Extract the rectangle artists from the container
         artists = [artist for artist in container]
         return artists
-            
     
-    def _on_resize(self, event):
+    
+    def _show(self):
         """
-        Sets actions to do to GUI event loop upon resize event.
-
-        Parameters
-        ----------
-        event : matplotlib.backend_bases.ResizeEvent
-            A member of the ResizeEvent class.
+        Renders and shows the current figure.
 
         Returns
         -------
         None.
 
         """
-        plt.ion()
-        self.fig.tight_layout()
-        self.fig.canvas.draw_idle()
-        self.fig.canvas.flush_events() 
-        plt.ioff()
+        if not self.figure_is_made:
+            return
+        with self.lock:
+            try:
+                self.fig.canvas.draw()
+                img_shape = self.fig.canvas.get_width_height()
+                img_shape = (img_shape[1], img_shape[0], 4) 
+                img = np.frombuffer(self.fig.canvas.tostring_argb(), 
+                                    dtype=np.uint8)
+                img = img.reshape(img_shape)[:,:,1:] 
+                cv2.imshow(self.window_name, img)
+            except:
+                pass
     
-            
-    def create_figure(self):
+    
+    def _start(self):
+        cv2.namedWindow(self.window_name, cv2.WINDOW_AUTOSIZE) 
+        time.sleep(0.1)
+        while True:
+            self._step()
+            self._show()
+            plt.close()
+            cv2.waitKey(int(1000.*(1.0/self.fr)))
+            with self.lock:
+                if self.done:
+                    break
+
+        
+    def start_animator(self):
         """
-        Creates, renders, and draws on GUI a figure containing all specified
-        subsplots. To be run after all desired subplots are added.
+        Builds and shows the animator GUI. Starts the GUI thread that runs
+        until the terminate_animator function is called. Once start_animator
+        is called, no more subplots can be added.
 
         Returns
         -------
         None.
 
         """       
-        # Setup the rcparams to prevent unwanted keypresses
-        self._disable_keystrokes()
-        
-        # Set the desired backend and matplotlib parameters for interactive
-        # plotting
-        plt.switch_backend("QtAgg")
-        
-        # Turn on interactive mode to run the GUI event loop
-        plt.ion()
+        # If figure is already made, do nothing
+        if self.figure_is_made:
+            return
         
         # Determine the number of plots and only continue if it's greater than
         # 0.
         self.n_plots = self._get_n_plots()
         if self.n_plots == 0:
-            plt.ioff()
             return
         
         # Calculate the subplot shape and create the figure
         (n_rows, n_cols) = self._get_subplot_shape(self.n_plots)
-        self.fig, self.axes = plt.subplots(n_rows, n_cols)
-        if self.n_plots > 1:
-            self.axes = self.axes.flatten()
+        fig_res = 480 * self.n_plots
+        fig_dpi = 144
+        fig_AR = 1.6*(n_cols/n_rows)
+        fig_size = (fig_AR*fig_res/fig_dpi, fig_res/fig_dpi)
+        self.fig = plt.figure(figsize=fig_size, dpi=fig_dpi, frameon=True, 
+                              facecolor="w")
+        self.axes = []
+        for i in range(n_cols):
+            for j in range(n_rows):
+                ind = 100*self.n_plots + 10*(i+1) + (j+1)
+                self.axes.append(self.fig.add_subplot(ind))
 
         # Create each subplot
         for subplot_index in range(self.n_plots):
             # Get the axis on which the subplot is drawn
-            if self.n_plots > 1:
-                axis = self.axes[subplot_index]
-            else:
-                axis = self.axes    
+            axis = self.axes[subplot_index] 
             
             # Retrieve the label data
             title = self.titles[subplot_index]
@@ -878,18 +879,13 @@ class Animator():
         # Set the layout
         self.fig.tight_layout()
         
-        # Tell what to do during resize
-        self.fig.canvas.mpl_connect('resize_event', self._on_resize)
-        
-        # Manually cycle the GUI loop
-        self.fig.canvas.draw_idle()
-        self.fig.canvas.flush_events() 
-        
         # Flag that the figure is done being made
         self.figure_is_made = True
+        self.done = False
         
-        # Turn off interactive mode to suspend the GUI event loop
-        plt.ioff()
+        # Start the GUI thread
+        self.thread = Thread(target=self._start)
+        self.thread.start()
        
         
     ###########################################################################
@@ -952,20 +948,21 @@ class Animator():
         None.
 
         """
-        # Add the data point
-        self.xs[subplot_index][artist_index].append(x)
-        self.ys[subplot_index][artist_index].append(y)
-        
-        # Trim the data
-        tail = self.tails[subplot_index]
-        x, y = self._trim_data(x = 
-                               self.xs[subplot_index][artist_index],
-                               y = self.ys[subplot_index][artist_index],
-                               tail = tail)
-        
-        # Update the stored data to the trimmed version
-        self.xs[subplot_index][artist_index] = x
-        self.ys[subplot_index][artist_index] = y
+        with self.lock:
+            # Add the data point
+            self.xs[subplot_index][artist_index].append(x)
+            self.ys[subplot_index][artist_index].append(y)
+            
+            # Trim the data
+            tail = self.tails[subplot_index]
+            x, y = self._trim_data(x = 
+                                   self.xs[subplot_index][artist_index],
+                                   y = self.ys[subplot_index][artist_index],
+                                   tail = tail)
+            
+            # Update the stored data to the trimmed version
+            self.xs[subplot_index][artist_index] = x
+            self.ys[subplot_index][artist_index] = y
 
 
     def _add_bar_point(self,
@@ -989,15 +986,16 @@ class Animator():
         None.
 
         """
-        # Store the data point
-        self.xs[subplot_index][artist_index] = [0., width]
+        with self.lock:
+            # Store the data point
+            self.xs[subplot_index][artist_index] = [0., width]
         
         
-    def add_subplot_point(self,
-                          subplot_index,
-                          artist_index,
-                          x,
-                          y):
+    def add_datum(self,
+                  subplot_index,
+                  artist_index,
+                  x,
+                  y):
         """
         Adds a single data point to the subplot. Data point is appended to the
         end of all previously plotted data points on the specified line.
@@ -1075,18 +1073,19 @@ class Animator():
         None.
 
         """
-        # If there is a head marker, adjust it
-        if head_marker:
-            artist.set_markevery((len(x)-1, 1))
-            
-        # Update the line artist's data
-        artist.set_data(x, y)
-            
-        # Reset the axis limits
-        axis.set_xlim(x_plot_lim[0],
-                      x_plot_lim[1])
-        axis.set_ylim(y_plot_lim[0],
-                      y_plot_lim[1])
+        with self.lock:
+            # If there is a head marker, adjust it
+            if head_marker:
+                artist.set_markevery((len(x)-1, 1))
+                
+            # Update the line artist's data
+            artist.set_data(x, y)
+                
+            # Reset the axis limits
+            axis.set_xlim(x_plot_lim[0],
+                          x_plot_lim[1])
+            axis.set_ylim(y_plot_lim[0],
+                          y_plot_lim[1])
     
     
     def _step_bar(self,
@@ -1114,22 +1113,20 @@ class Animator():
         None.
         
         """
-        # Makes sure we are not trying to plot empty data
-        if width == []:
-            width = [0.0]
-        
-        # Change the widths
-        artist.set_width(width[-1])
+        with self.lock:
+            # Makes sure we are not trying to plot empty data
+            if width == []:
+                width = [0.0]
             
-        # Reset the x limits
-        axis.set_xlim(x_plot_lim[0],
-                      x_plot_lim[1])
+            # Change the widths
+            artist.set_width(width[-1])
+                
+            # Reset the x limits
+            axis.set_xlim(x_plot_lim[0],
+                          x_plot_lim[1])
         
-        # Return the bar container
-        return artist
         
-        
-    def step(self):
+    def _step(self):
         """
         Takes a single animator step. If called before redraw period (defined
         by frame rate), cycle the GUI event loop and return. If called
@@ -1142,27 +1139,15 @@ class Animator():
         -------
         None.
 
-        """
-        # Turn on interactive mode to run the GUI event loop
-        plt.ion()
-        
-        # Determine if step is to be taken based on set frame rate
-        self.time_since_last_step = time.time() - self.last_step_time
-        if self.time_since_last_step < (1. / self.fr):
-            plt.ioff()
-            return
-        
+        """        
         # Create the figure if it is not already made
         if not self.figure_is_made:
-            self.create_figure()
+            self.start_animator()
         
         # Update each plot
         for subplot in range(self.n_plots):
             # Get the axis on which the subplot is drawn
-            if self.n_plots > 1:
-                subplot_axis = self.axes[subplot]
-            else:
-                subplot_axis = self.axes    
+            subplot_axis = self.axes[subplot]
     
             # Retrieve the plot data
             subplot_xs = self.xs[subplot]
@@ -1204,29 +1189,17 @@ class Animator():
                                    artist=artist,
                                    axis=subplot_axis,
                                    x_plot_lim=subplot_x_lim)
-        
-        # Manually cycle the GUI loop
-        self.fig.canvas.draw_idle()
-        self.fig.canvas.flush_events() 
-        
-        # Update time keeping
-        self.last_step_time = time.time()
-        
-        # Turn off interactive mode to suspend the GUI event loop
-        plt.ioff()
-
-
-    def flush_events(self):
+                    
+    def terminate_animator(self):
         """
-        Suspends the GUI keeping it responsive. Call regularly when not
-        stepping.
-
+        Terminates the animator window.
+        
         Returns
         -------
         None.
 
         """
-        plt.ion()
-        self.fig.canvas.flush_events() 
-        plt.ioff()
+        if self.figure_is_made and not self.done:
+            with self.lock:
+                self.done = True
         

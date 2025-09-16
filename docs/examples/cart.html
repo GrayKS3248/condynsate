@@ -241,12 +241,13 @@ http://127.0.0.1:7000/static/
 </pre></div>
 </div>
 </div>
-<p>The subplots are now set up how we want, so we can open the animator GUI. Once opened, no additional subplots can be added.</p>
+<p>The subplots are now set up how we want, so we can open the animator GUI. Once opened, no additional subplots can be added. Note: <code class="docutils literal notranslate"><span class="pre">%%capture</span></code> is required to supress the animator drawing the first frame to this notebook. Though it is not required, it is reccomended. It must be the first line in the cell in which it’s called.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulator</span><span class="o">.</span><span class="n">open_animator_gui</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">start_animator</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -333,10 +334,10 @@ coordinate will be simulation time which we extract with <code class="docutils l
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_torque_point</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">subplot</span><span class="p">,</span> <span class="n">suplot_artists</span><span class="p">,</span> <span class="n">torque</span><span class="p">):</span>
-    <span class="n">simulator</span><span class="o">.</span><span class="n">add_subplot_point</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
-                                <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
-                                <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
-                                <span class="n">y</span> <span class="o">=</span> <span class="n">torque</span><span class="p">)</span>
+    <span class="n">simulator</span><span class="o">.</span><span class="n">add_datum</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
+                        <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
+                        <span class="n">y</span> <span class="o">=</span> <span class="n">torque</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -346,14 +347,14 @@ coordinate will be simulation time which we extract with <code class="docutils l
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">add_state_points</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">subplot</span><span class="p">,</span> <span class="n">suplot_artists</span><span class="p">,</span> <span class="n">mean_wheel_state</span><span class="p">,</span> <span class="n">pendulum_state</span><span class="p">):</span>
-    <span class="n">simulator</span><span class="o">.</span><span class="n">add_subplot_point</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
-                                <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
-                                <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
-                                <span class="n">y</span> <span class="o">=</span> <span class="n">pendulum_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">simulator</span><span class="o">.</span><span class="n">add_subplot_point</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
-                                <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
-                                <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
-                                <span class="n">y</span> <span class="o">=</span> <span class="n">mean_wheel_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">simulator</span><span class="o">.</span><span class="n">add_datum</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
+                        <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
+                        <span class="n">y</span> <span class="o">=</span> <span class="n">pendulum_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">simulator</span><span class="o">.</span><span class="n">add_datum</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">,</span>
+                        <span class="n">artist_index</span> <span class="o">=</span> <span class="n">suplot_artists</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="c1"># artists is always list but add_subplot_point</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>               <span class="c1"># expects int. Therefore, index suplot_artists.</span>
+                        <span class="n">y</span> <span class="o">=</span> <span class="n">mean_wheel_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -384,6 +385,15 @@ coordinate will be simulation time which we extract with <code class="docutils l
 </div>
 </div>
 <p>Watch as the pendulum magically balances while the torque and angles are plotted in real time on the animator GUI.</p>
+<p>Once the simulation is done, we terminate the animator</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulator</span><span class="o">.</span><span class="n">terminate_animator</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>

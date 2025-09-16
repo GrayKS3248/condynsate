@@ -87,9 +87,10 @@ Manipulating the Visualizer
 Using the Animator
 ^^^^^^^^^^^^^^^^^^
 .. automethod:: condynsate.Simulator.add_subplot
-.. automethod:: condynsate.Simulator.open_animator_gui
-.. automethod:: condynsate.Simulator.add_subplot_point
+.. automethod:: condynsate.Simulator.start_animator
+.. automethod:: condynsate.Simulator.add_datum
 .. automethod:: condynsate.Simulator.reset_plots
+.. automethod:: condynsate.Simulator.terminate_animator
 
 Using the Keyboard
 ^^^^^^^^^^^^^^^^^^
@@ -106,17 +107,13 @@ The Animator Class
 .. autoclass:: condynsate.Animator
    :no-members:
 
-Creating the Figure
-^^^^^^^^^^^^^^^^^^^
-.. automethod:: condynsate.Animator.add_subplot
-.. automethod:: condynsate.Animator.create_figure
-
 The Animation Sequence
 ^^^^^^^^^^^^^^^^^^^^^^
-.. automethod:: condynsate.Animator.add_subplot_point
-.. automethod:: condynsate.Animator.step
-.. automethod:: condynsate.Animator.flush_events
-.. automethod:: condynsate.Animator.reset_plots
+.. automethod:: condynsate.Animator.add_subplot
+.. automethod:: condynsate.Animator.start_animator
+.. automethod:: condynsate.Animator.add_datum
+.. automethod:: condynsate.Animator.reset
+.. automethod:: condynsate.Animator.terminate_animator
 
 
 

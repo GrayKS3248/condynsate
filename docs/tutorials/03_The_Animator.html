@@ -128,6 +128,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># Create a instance of the simulator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">con_sim</span><span class="p">(</span><span class="n">animation</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                         <span class="n">animation_fr</span> <span class="o">=</span> <span class="mf">12.0</span><span class="p">,</span>
                          <span class="n">keyboard</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Load the pendulum in the orientation we want</span>
@@ -251,17 +252,17 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># Make plot for phase space</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">n_artists</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                                        <span class="n">subplot_type</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span>
-                                        <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Phase Space&quot;</span><span class="p">,</span>
-                                        <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Angle [Deg]&quot;</span><span class="p">,</span>
-                                        <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Angle Rate [Deg / Sec]&quot;</span><span class="p">,</span>
-                                        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;k&quot;</span><span class="p">],</span>
-                                        <span class="n">line_widths</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">],</span>
-                                        <span class="n">line_styles</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">],</span>
-                                        <span class="n">x_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">40.</span><span class="p">,</span><span class="mi">40</span><span class="p">],</span>
-                                        <span class="n">y_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">275.</span><span class="p">,</span><span class="mi">275</span><span class="p">],</span>
-                                        <span class="n">h_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                                        <span class="n">v_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+                                            <span class="n">subplot_type</span> <span class="o">=</span> <span class="s1">&#39;line&#39;</span><span class="p">,</span>
+                                            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Phase Space&quot;</span><span class="p">,</span>
+                                            <span class="n">x_label</span> <span class="o">=</span> <span class="s2">&quot;Angle [Deg]&quot;</span><span class="p">,</span>
+                                            <span class="n">y_label</span> <span class="o">=</span> <span class="s2">&quot;Angle Rate [Deg / Sec]&quot;</span><span class="p">,</span>
+                                            <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;k&quot;</span><span class="p">],</span>
+                                            <span class="n">line_widths</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.5</span><span class="p">],</span>
+                                            <span class="n">line_styles</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">],</span>
+                                            <span class="n">x_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">40.</span><span class="p">,</span><span class="mi">40</span><span class="p">],</span>
+                                            <span class="n">y_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">275.</span><span class="p">,</span><span class="mi">275</span><span class="p">],</span>
+                                            <span class="n">h_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                            <span class="n">v_zero_line</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        ##################################################################</span>
@@ -270,7 +271,7 @@
 <span class="sd">        ##################################################################</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># Open the animator GUI</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">open_animator_gui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">start_animator</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
@@ -314,10 +315,10 @@
 <span class="sd">            ##############################################################</span>
 <span class="sd">            &#39;&#39;&#39;</span>
             <span class="c1"># Add (angle, angle_vel) point to subplot self.p</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">add_subplot_point</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
-                                     <span class="n">artist_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                     <span class="n">x</span> <span class="o">=</span> <span class="n">angle</span><span class="p">,</span>
-                                     <span class="n">y</span> <span class="o">=</span> <span class="n">angle_vel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">add_datum</span><span class="p">(</span><span class="n">subplot_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
+                             <span class="n">artist_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                             <span class="n">x</span> <span class="o">=</span> <span class="n">angle</span><span class="p">,</span>
+                             <span class="n">y</span> <span class="o">=</span> <span class="n">angle_vel</span><span class="p">)</span>
 
 <span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">            ##############################################################</span>
@@ -326,33 +327,33 @@
 <span class="sd">            ##############################################################</span>
 <span class="sd">            &#39;&#39;&#39;</span>
             <span class="n">ret_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">max_time</span><span class="o">=</span><span class="n">max_time</span><span class="p">)</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##############################################################</span>
+<span class="sd">        Finally, when the simulation loop is over and we are done with</span>
+<span class="sd">        the animator, we terminate it.</span>
+<span class="sd">        ##############################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">terminate_animator</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Running-the-Project-Class">
 <h2>Running the Project Class<a class="headerlink" href="#Running-the-Project-Class" title="Link to this heading"></a></h2>
-<p>Now that we have made the <code class="docutils literal notranslate"><span class="pre">Project</span></code> class, we can test it by initializing it and then calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> function.</p>
-<div class="nbinput docutils container">
+<p>Now that we have made the <code class="docutils literal notranslate"><span class="pre">Project</span></code> class, we can test it by initializing it and then calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> function. Note: <code class="docutils literal notranslate"><span class="pre">%%capture</span></code> is required to supress the animator drawing the first frame to this notebook. Though it is not required, it is reccomended. It must be the first line in the cell in which it’s called.</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an instance of the Project class.</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
+<span class="c1"># Create an instance of the Project class.</span>
 <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
 
-<span class="c1"># Run the simulation.</span>
+<span class="c1"># Run the simulation</span>
 <span class="n">proj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_time</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-You can open the visualizer by visiting the following URL:
-http://127.0.0.1:7003/static/
-</pre></div></div>
 </div>
 </section>
 <section id="Challenge">

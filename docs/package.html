@@ -63,7 +63,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#the-animator-class">The Animator Class</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#condynsate.Animator"><code class="docutils literal notranslate"><span class="pre">Animator</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#creating-the-figure">Creating the Figure</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#the-animation-sequence">The Animation Sequence</a></li>
 </ul>
 </li>
@@ -217,7 +216,7 @@ the simulation.</p>
 <h4>Running a Simulation<a class="headerlink" href="#running-a-simulation" title="Link to this heading"></a></h4>
 <dl class="py method">
 <dt class="sig sig-object py" id="condynsate.Simulator.step">
-<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_vis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_ani</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.step" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_vis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.step" title="Link to this definition"></a></dt>
 <dd><p>Takes a single step of the simulation. In this step, the physics
 engine, the Visualizer (3D visualization of urdfs), and the Animator
 (2D animation of plots) are all updated.</p>
@@ -230,8 +229,6 @@ last step is equal to dt seconds (the time step of the
 physics engine). If False, step() is run as quickly as possible.
 The default is True.</p></li>
 <li><p><strong>update_vis</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the Visualizer is updated.
-The default is True.</p></li>
-<li><p><strong>update_ani</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the Animator is updated.
 The default is True.</p></li>
 <li><p><strong>max_time</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The maximum amount of simulated seconds the simulator is allowed to
 run. If None, the simulation will run until “ESC” is pressed. If
@@ -1249,8 +1246,8 @@ data points, etc.).</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Simulator.open_animator_gui">
-<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">open_animator_gui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.open_animator_gui" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="condynsate.Simulator.start_animator">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">start_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.start_animator" title="Link to this definition"></a></dt>
 <dd><p>Opens the Animator GUI with the specified plots. After the Animator
 is open, no more plots can be added; however, the plot data can still
 be set.</p>
@@ -1262,8 +1259,8 @@ be set.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Simulator.add_subplot_point">
-<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_subplot_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_subplot_point" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="condynsate.Simulator.add_datum">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_datum" title="Link to this definition"></a></dt>
 <dd><p>Adds a single data point to the plot. Data point is appended to the end
 of all previously plotted data points.</p>
 <dl class="field-list simple">
@@ -1287,6 +1284,17 @@ value is None.</p></li>
 <dt class="sig sig-object py" id="condynsate.Simulator.reset_plots">
 <span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">reset_plots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.reset_plots" title="Link to this definition"></a></dt>
 <dd><p>Removes all previously plotted data from all plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.terminate_animator">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">terminate_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.terminate_animator" title="Link to this definition"></a></dt>
+<dd><p>Terminates the animator window.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None.</p>
@@ -1391,13 +1399,14 @@ updated.</p>
 </dl>
 </dd></dl>
 
-<section id="creating-the-figure">
-<h4>Creating the Figure<a class="headerlink" href="#creating-the-figure" title="Link to this heading"></a></h4>
+<section id="the-animation-sequence">
+<h4>The Animation Sequence<a class="headerlink" href="#the-animation-sequence" title="Link to this heading"></a></h4>
 <dl class="py method">
 <dt class="sig sig-object py" id="condynsate.Animator.add_subplot">
 <span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_subplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_widths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_styles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_subplot" title="Link to this definition"></a></dt>
 <dd><p>Adds a subplot to the animator. This function needs to be called to
-define a subplot before data can be added to that plot.</p>
+define a subplot before data can be added to that plot. If called after
+start_animator, this function will do nothing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1476,10 +1485,11 @@ data points, etc.).</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.create_figure">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">create_figure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.create_figure" title="Link to this definition"></a></dt>
-<dd><p>Creates, renders, and draws on GUI a figure containing all specified
-subsplots. To be run after all desired subplots are added.</p>
+<dt class="sig sig-object py" id="condynsate.Animator.start_animator">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">start_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.start_animator" title="Link to this definition"></a></dt>
+<dd><p>Builds and shows the animator GUI. Starts the GUI thread that runs
+until the terminate_animator function is called. Once start_animator
+is called, no more subplots can be added.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None.</p>
@@ -1487,12 +1497,9 @@ subsplots. To be run after all desired subplots are added.</p>
 </dl>
 </dd></dl>
 
-</section>
-<section id="the-animation-sequence">
-<h4>The Animation Sequence<a class="headerlink" href="#the-animation-sequence" title="Link to this heading"></a></h4>
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.add_subplot_point">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_subplot_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_subplot_point" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="condynsate.Animator.add_datum">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_datum" title="Link to this definition"></a></dt>
 <dd><p>Adds a single data point to the subplot. Data point is appended to the
 end of all previously plotted data points on the specified line.</p>
 <dl class="field-list simple">
@@ -1511,37 +1518,20 @@ end of all previously plotted data points on the specified line.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.step">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.step" title="Link to this definition"></a></dt>
-<dd><p>Takes a single animator step. If called before redraw period (defined
-by frame rate), cycle the GUI event loop and return. If called
-during a redraw period, re-render plots and update GUI. Must be called
-regularly to keep GUI fresh. If not called regularly, GUI will become
-unresponsive. If you wish to suspend the GUI but keep it responsive,
-call the flush_events() function in a loop.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.flush_events">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">flush_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.flush_events" title="Link to this definition"></a></dt>
-<dd><p>Suspends the GUI keeping it responsive. Call regularly when not
-stepping.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="condynsate.Animator.reset_plots">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">reset_plots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.reset_plots" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="condynsate.Animator.reset">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.reset" title="Link to this definition"></a></dt>
 <dd><p>Removes all previously plotted data from all plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.terminate_animator">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">terminate_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.terminate_animator" title="Link to this definition"></a></dt>
+<dd><p>Terminates the animator window.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None.</p>

@@ -3439,11 +3439,11 @@ class Simulator:
         return subplot_index, artist_inds
         
         
-    def add_subplot_point(self,
-                          subplot_index,
-                          artist_index,
-                          x=None,
-                          y=None):
+    def add_datum(self,
+                  subplot_index,
+                  artist_index,
+                  x=None,
+                  y=None):
         """
         Adds a single data point to the plot. Data point is appended to the end
         of all previously plotted data points.
@@ -3475,7 +3475,7 @@ class Simulator:
             return
         
         # Update the plot
-        self.ani.add_subplot_point(subplot_index=subplot_index,
+        self.ani.add_datum(subplot_index=subplot_index,
                                    artist_index=artist_index,
                                    x=x,
                                    y=y)
@@ -3498,10 +3498,10 @@ class Simulator:
         if not self.animation:
             return
         
-        self.ani.reset_plots()
+        self.ani.reset()
         
         
-    def open_animator_gui(self):
+    def start_animator(self):
         """
         Opens the Animator GUI with the specified plots. After the Animator
         is open, no more plots can be added; however, the plot data can still
@@ -3514,7 +3514,22 @@ class Simulator:
         """
         # Open the animator figure window if it exists
         if self.animation:
-            self.ani.create_figure()
+            self.ani.start_animator()
+            
+    
+    def terminate_animator(self):
+        """
+        Terminates the animator window.
+        
+        Returns
+        -------
+        None.
+
+        """
+        
+        # Open the animator figure window if it exists
+        if self.animation:
+            self.ani.terminate_animator()
         
         
     ###########################################################################
@@ -3587,10 +3602,6 @@ class Simulator:
             
             # Await keypress
             while True:
-                # Ensure so the GUI remains interactive
-                if self.animation:
-                    self.ani.flush_events()
-                    
                 # Termination condition
                 if self.is_pressed("esc"):
                     self.is_done = True
@@ -3609,9 +3620,6 @@ class Simulator:
         else:
             start_time = time.time()
             while (time.time() - start_time) < 1.0:
-                # Ensure so the GUI remains interactive
-                if self.animation:
-                    self.ani.flush_events()
                 time.sleep(0.05)
             return
       
@@ -3774,7 +3782,6 @@ class Simulator:
     def step(self,
              real_time=True,
              update_vis=True,
-             update_ani=True,
              max_time=None):
         """
         Takes a single step of the simulation. In this step, the physics
@@ -3791,9 +3798,6 @@ class Simulator:
             The default is True.
         update_vis : bool, optional
             A boolean flag that indicates whether the Visualizer is updated.
-            The default is True.
-        update_ani : bool, optional
-            A boolean flag that indicates whether the Animator is updated.
             The default is True.
         max_time : float or None, optional
             The maximum amount of simulated seconds the simulator is allowed to
@@ -3854,8 +3858,6 @@ class Simulator:
         # Suspend if paused or resume if space is pressed
         if self.paused:
             time.sleep(0.05)
-            if self.animation:
-                self.ani.flush_events()
             if self.is_pressed("space"):
                 self.paused = False
                 print("RESUME")
@@ -3904,10 +3906,6 @@ class Simulator:
             for urdf_obj in self.urdf_objs:
                 if urdf_obj.update_vis:
                     self._update_urdf_visual(urdf_obj)
-       
-        # Update the animator if it exists
-        if update_ani and self.animation:
-            self.ani.step()
 
         # Calculate suspend time if running simulation in real time
         if real_time:
@@ -3923,8 +3921,6 @@ class Simulator:
         if self.is_pressed("space"):
             self.pause_start_time = time.time()
             self.paused = True
-            if self.animation:
-                self.ani.flush_events()
             print("PAUSED")
             time.sleep(0.2)
             return 2 # Return start pause code
