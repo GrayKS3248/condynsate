@@ -2,8 +2,8 @@
 Tutorials
 =========
 .. toctree::
-   tutorials/00_Introduction
-   tutorials/01_External_Forces
-   tutorials/02_Joint_Forces
-   tutorials/03_The_Animator
-   tutorials/04_Links_and_Data_Collection
+   _collections/tutorials/00_Introduction
+   _collections/tutorials/01_External_Forces
+   _collections/tutorials/02_Joint_Forces
+   _collections/tutorials/03_The_Animator
+   _collections/tutorials/04_Links_and_Data_Collection

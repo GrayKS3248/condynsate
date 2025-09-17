@@ -913,8 +913,8 @@ class Animator():
         
     def set_bar_value(self, 
                       plot_id,
-                      artist_id,
-                      value,):
+                      value,
+                      artist_id=0):
         """
         Sets the value of one of the bars in a bar plot.
 
@@ -922,11 +922,11 @@ class Animator():
         ----------
         plot_id : int
             The plot's unique identifier.
-        artist_id : int
-            The plot's artist index whose value is being set.
         value : float
             The value to which the bar is being set.
-
+        artist_id : int, optional
+            The plot's artist index whose value is being set. 
+            The default is 0.
         Returns
         -------
         None.

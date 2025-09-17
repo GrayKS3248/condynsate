@@ -23,7 +23,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="condynsate.Simulator" href="examples/pendulum.html" />
+    <link rel="next" title="condynsate.Simulator" href="_collections/examples/pendulum.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
@@ -80,9 +80,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="examples/pendulum.html">condynsate.Simulator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/gyro.html">Keyboard Interactivity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/cart.html">Animator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/pendulum.html">condynsate.Simulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/gyro.html">Keyboard Interactivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/cart.html">Animator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/wheel.html">Wheel Project</a></li>
 </ul>
 </li>
 </ul>
@@ -1274,14 +1275,15 @@ only has a single artist, is ignored. The default value is 0.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="condynsate.Simulator.set_bar_value">
-<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_bar_value" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_bar_value" title="Link to this definition"></a></dt>
 <dd><p>Sets the value of one of the bars in a bar plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
-<li><p><strong>artist_id</strong> (<em>int</em>) – The plot’s artist index whose value is being set.</p></li>
 <li><p><strong>value</strong> (<em>float</em>) – The value to which the bar is being set.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index whose value is being set.
+The default is 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1522,14 +1524,15 @@ only has a single artist, is ignored. The default value is 0.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="condynsate.Animator.set_bar_value">
-<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.set_bar_value" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.set_bar_value" title="Link to this definition"></a></dt>
 <dd><p>Sets the value of one of the bars in a bar plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
-<li><p><strong>artist_id</strong> (<em>int</em>) – The plot’s artist index whose value is being set.</p></li>
 <li><p><strong>value</strong> (<em>float</em>) – The value to which the bar is being set.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index whose value is being set.
+The default is 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1926,23 +1929,30 @@ The default is [1., 0., 0., 0.].</p></li>
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/pendulum.html">condynsate.Simulator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/pendulum.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/pendulum.html#Setting-up-Data-Collection">Setting up Data Collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/pendulum.html#Running-the-Simulation">Running the Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/pendulum.html#Post-Processing">Post-Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/pendulum.html">condynsate.Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Setting-up-Data-Collection">Setting up Data Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Running-the-Simulation">Running the Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Post-Processing">Post-Processing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples/gyro.html">Keyboard Interactivity</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/gyro.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/gyro.html#Enabling-Keyboard-Interactivity">Enabling Keyboard Interactivity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/gyro.html#Running-the-Simulation">Running the Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/gyro.html">Keyboard Interactivity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/gyro.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/gyro.html#Enabling-Keyboard-Interactivity">Enabling Keyboard Interactivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/gyro.html#Running-the-Simulation">Running the Simulation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples/cart.html">Animator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/cart.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/cart.html#Setting-up-the-Animator">Setting up the Animator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/cart.html#Running-the-Simulation">Running the Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/cart.html">Animator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/cart.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/cart.html#Setting-up-the-Animator">Setting up the Animator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/cart.html#Running-the-Simulation">Running the Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/wheel.html">Wheel Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Setting-up-the-Animator">Setting up the Animator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Setting-up-the-Simulation-Loop">Setting up the Simulation Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Running-the-Simulation-Loop">Running the Simulation Loop</a></li>
 </ul>
 </li>
 </ul>
@@ -1955,7 +1965,7 @@ The default is [1., 0., 0., 0.].</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="examples/pendulum.html" class="btn btn-neutral float-right" title="condynsate.Simulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="_collections/examples/pendulum.html" class="btn btn-neutral float-right" title="condynsate.Simulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

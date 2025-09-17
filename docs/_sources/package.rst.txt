@@ -163,7 +163,8 @@ Adjusting Elements in the Viewer
 Examples
 --------
 .. toctree::
-   examples/pendulum
-   examples/gyro
-   examples/cart
+   _collections/examples/pendulum
+   _collections/examples/gyro
+   _collections/examples/cart
+   _collections/examples/wheel
 

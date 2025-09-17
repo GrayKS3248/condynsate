@@ -12,6 +12,10 @@
     <material name = "heritage-orange">
         <color rgba = "0.96078431 0.50980392 0.11764706 1" />
     </material>
+
+    <material name = "storm-gray">
+        <color rgba = "0.78431372 0.7764705 0.780392 1" />
+    </material>
       
       
     <link name="ground">
@@ -65,7 +69,7 @@
             <geometry>
                 <mesh filename="arrow_lin.stl" scale="1.25 0.1 0.75"/>
             </geometry>
-            <material name = "heritage-orange"/>
+            <material name = "storm-gray"/>
         </visual>
         <inertial>
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -74,7 +78,36 @@
         </inertial>
     </link>
     
-    
+    <link name="target">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="arrow_lin.stl" scale="1.25 0.1 0.75"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
+    <link name="target_knob">
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <mesh filename="cylinder.stl" scale="0.2 0.2 0.02"/>
+            </geometry>
+            <material name = "heritage-orange"/>
+        </visual>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <mass value="0"/>
+            <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+        </inertial>
+    </link>
+
     <joint name="ground_to_axle" type="continuous">
         <parent link = "ground" />
         <child link = "axle" />
@@ -92,6 +125,19 @@
         <parent link = "wheel" />
         <child link = "arrow" />
         <origin xyz="0 0 0.17" rpy="1.5707963267948966 0 0"/>
+    </joint>
+
+    <joint name="wheel_to_target_knob" type="fixed">
+        <parent link = "wheel" />
+        <child link = "target_knob" />
+        <origin xyz="0 0 0.175" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="wheel_to_target" type="continuous">
+        <parent link = "wheel" />
+        <child link = "target" />
+        <origin xyz="0 0 0.175" rpy="1.5707963267948966 0 0"/>
+	<axis xyz = "0 1 0" />
     </joint>
 
 </robot>
