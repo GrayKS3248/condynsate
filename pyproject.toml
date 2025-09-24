@@ -43,7 +43,6 @@ dependencies = [
    "opencv-python",
    "pybullet",
    "pynput",
-   "pyside6",
    "scipy",
    "sympy",
 ]

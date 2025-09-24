@@ -1,0 +1,25 @@
+name: condev
+channels:
+  - conda-forge
+  - defaults
+dependencies: 
+  - git
+  - pip
+  - nbsphinx
+  - numpydoc
+  - sphinx
+  - sphinx-rtd-theme
+  - spyder
+  - twine
+  - pip: 
+    - autoclasstoc
+    - matplotlib
+    - meshcat
+    - notebook
+    - numpy
+    - opencv-python
+    - pybullet
+    - pynput
+    - scipy
+    - sphinx-collections
+    - sympy

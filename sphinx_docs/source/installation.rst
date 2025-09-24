@@ -3,86 +3,69 @@ Installation
 ============
 Windows
 -------
-**From Conda (Reccomended)**
-****************************
-*TODO*
+**From PyPi (Recommended)**
+***************************
+A C++ compiler for C++ 2003 is needed. On Windows, we recommend using the Desktop development with C++ workload for `Microsoft C++ Build Tools 2022`_. Additionally, `python>=3.8`_ and `pip`_ are also required. We strongly recommend installing condynsate in a virtual environment:
 
-From PyPi
-*********
-A C++ compiler for C++ 2003 is needed. On Windows, we reccomend installing the Desktop development with C++ workload for `Microsoft C++ Build Tools 2022`_.
+.. code-block:: powershell
 
-Additionally, `python>=3.8`_ and `pip`_ are required.
+   C:\Users\username> python -m venv .venv
+   C:\Users\username> .venv\Scripts\activate.bat
 
-We strongly reccomend installing in a virtual environment:
+To install: 
 
-.. code-block:: console
+.. code-block:: powershell
 
-   python -m venv .venv
-   .venv\Scripts\activate.bat
+   (.venv) C:\Users\username> pip install condynsate
 
-Installation is simple:
+When done, to deactivate the virtual environment:
 
-.. code-block:: console
+.. code-block:: powershell
 
-   (.venv) pip install condynsate
-
-Deactivate the virtual environment with:
-
-.. code-block:: console
-
-   (.venv) deactivate
+   (.venv) C:\Users\username> deactivate
 
 
 From Source
 ***********
-A C++ compiler for C++ 2003 is needed. On Windows, we reccomend installing the Desktop development with C++ workload for `Microsoft C++ Build Tools 2022`_.
+A C++ compiler for C++ 2003 is needed. On Windows, we recommend using the Desktop development with C++ workload for `Microsoft C++ Build Tools 2022`_. Additionally, `python>=3.8`_, `pip`_, and `git`_ are also required. We strongly recommend installing condynsate in a virtual environment:
 
-Additionally, `python>=3.8`_, `pip`_, and `git`_ are required.
+.. code-block:: powershell
 
-First clone the repository:
+   C:\Users\username> python -m venv .venv
+   C:\Users\username> .venv\Scripts\activate.bat
 
-.. code-block:: console
+To clone the repository: 
 
-   git clone https://github.com/GrayKS3248/condynsate.git
-   cd condynsate
+.. code-block:: powershell
 
-We strongly reccomend installing in a virtual environment:
+   (.venv) C:\Users\username> git clone https://github.com/condynsate/condynsate.git
 
-.. code-block:: console
+To install
 
-   python -m venv .venv
-   .venv\Scripts\activate.bat
+.. code-block:: powershell
 
-Then installation is simple:
+   (.venv) C:\Users\username> cd condynsate
+   (.venv) C:\Users\username> pip install -e .
 
-.. code-block:: console
+When done, to deactivate the virtual environment:
 
-   (.venv) pip install -e .
+.. code-block:: powershell
 
-Deactivate the virtual environment with:
-
-.. code-block:: console
-
-   (.venv) deactivate
+   (.venv) C:\Users\username> deactivate
 
 
 
 
 macOS
 -----
-**From Conda (Reccomended)**
-****************************
-*TODO*
-
-
-From PyPi
-*********
-*TODO*
+**From PyPi (Recommended)**
+***************************
+Coming soon!
 
 
 From Source
 ***********
-*TODO*
+Coming soon!
 
 
 
@@ -90,19 +73,14 @@ From Source
 
 Linux
 -----
-**From Conda (Reccomended)**
-****************************
-*TODO*
-
-
-From PyPi
-*********
-*TODO*
+**From PyPi (Recommended)**
+***************************
+Coming soon!
 
 
 From Source
 ***********
-*TODO*
+Coming soon!
 
 
 
