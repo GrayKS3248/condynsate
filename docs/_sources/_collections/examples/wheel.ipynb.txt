@@ -1,0 +1,645 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "1df482e6-a400-4392-9e94-71c8dcc7d594",
+   "metadata": {},
+   "source": [
+    "# Wheel Project"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e1017c22-7f08-4184-8638-f93910c970b3",
+   "metadata": {},
+   "source": [
+    "## Setting up the Simulation Environment"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4e6db3b5-b1d1-4b40-88d1-0ba3c99f8b06",
+   "metadata": {},
+   "source": [
+    "Import necessary `condynsate` modules."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e9f43b35-3dc7-4597-a80d-e631f069d348",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from condynsate import Simulator as conSim\n",
+    "from condynsate import __assets__ as assets"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "aa22ab6b-01e2-48e9-9047-f49522111f15",
+   "metadata": {},
+   "source": [
+    "Create a instance of `condynsate.simulator` that uses the keyboard, visualizer, and animator."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "254cf78e-cb9f-4c81-8c81-eb1a2c967c5d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "You can open the visualizer by visiting the following URL:\n",
+      "http://127.0.0.1:7003/static/\n"
+     ]
+    }
+   ],
+   "source": [
+    "simulator = conSim(keyboard = True,\n",
+    "                   visualization = True,\n",
+    "                   animation = True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e5ff8293-37e5-4b2e-91c7-c922c71708ff",
+   "metadata": {},
+   "source": [
+    "Load the wheel .urdf file from `condynsate`'s default assests."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "cfbc5d14-d6e2-4de9-9bc0-d4fd7fe4cdd4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Load the wheel\n",
+    "wheel = simulator.load_urdf(urdf_path = assets['wheel'],\n",
+    "                            position = [0., 0., 0.],\n",
+    "                            fixed = True, # Make the base of the wheel fixed in space\n",
+    "                            update_vis = True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "043affdb-fb6e-48b1-94ab-f4e2e4a9179d",
+   "metadata": {},
+   "source": [
+    "Add some friction to the wheel's axle."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a620efa1-bdc1-429f-ab76-d12707abd2cd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Set joint damping\n",
+    "simulator.set_joint_damping(urdf_obj = wheel,\n",
+    "                            joint_name = \"ground_to_axle\",\n",
+    "                            damping = 0.01)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c9d6b5f4-6727-418f-a3d8-40c6452fa935",
+   "metadata": {},
+   "source": [
+    "## Setting up the Animator"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dcc1cc1b-1132-49c4-87cb-4374b40ef3ad",
+   "metadata": {},
+   "source": [
+    "Here we will add a set of plots the the animator to visualizer the error between a target wheel angle and the measured wheel angle as well as a set of control gains. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "751b69e8-03fc-4bf0-99f5-0ea7790682d5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# plot_1 is a line plot that shows the wheel angle against the target angle\n",
+    "plot_1, plot_1_artists = simulator.add_plot(n_artists = 2,\n",
+    "                                            plot_type = 'line',\n",
+    "                                            y_lim = [-0.6283, 6.9115],\n",
+    "                                            title = \"Angles vs Time\",\n",
+    "                                            x_label = \"Time [Seconds]\",\n",
+    "                                            y_label = \"Angles [Rad]\",\n",
+    "                                            color = [\"k\", \"m\"], \n",
+    "                                            line_width = [2.5, 1.5],   \n",
+    "                                            line_style = [\"-\", \"--\"],   \n",
+    "                                            label = [\"Measured\", \"Target\"], \n",
+    "                                            h_zero_line = True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "e244a238-eb1e-493a-b6c9-9e596b3e316b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# plot_2 is a bar chart that shows the current value of the control gains\n",
+    "plot_2, plot_2_artists = simulator.add_plot(n_artists = 2,\n",
+    "                                            plot_type = 'bar',\n",
+    "                                            x_lim = [0, 5.0],\n",
+    "                                            title = \"Control Gains\",\n",
+    "                                            x_label = \"Set Value\",\n",
+    "                                            color = [\"r\", \"b\"],\n",
+    "                                            label = [\"Proportional\", \"Derivative\"])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "34ebd86e-c177-4c22-b460-7df43cfe9c6b",
+   "metadata": {},
+   "source": [
+    "Here we make a tuple of the plots and artists for easy accessing later."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "f673dc50-24bc-489d-b099-31bbd8898509",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "plots = (plot_1, plot_2)\n",
+    "artists = (plot_1_artists, plot_2_artists)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "00478da4-e3d6-4a51-8b0c-eddd05e7482d",
+   "metadata": {},
+   "source": [
+    "The plots are now set up how we want, so we can open the animator GUI. Once opened, no additional plots can be added. Note: `%%capture` is required to supress the animator drawing the first frame to this notebook. Though it is not required, it is reccomended. It must be the first line in the cell in which it's called."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "212a2b44-15ad-4b0a-8a67-0ff15e03b635",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%%capture \n",
+    "simulator.start_animator()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "63a9ae50-8e39-4d47-a031-dc7977f0f6fe",
+   "metadata": {},
+   "source": [
+    "## Setting up the Simulation Loop"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b2b05f81-f0c2-4410-a415-a5e44a34d367",
+   "metadata": {},
+   "source": [
+    "Below we will make a set of functions that will be used in the simulation loop."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "1f29f1ae-d070-4a30-8fa9-c0a20e5ebfd8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def detect_keypresses(simulator):\n",
+    "    \"\"\"\n",
+    "    Listens for keyboard presses and returns iteration values for\n",
+    "    the target angle, proportional control gain, and derivative \n",
+    "    control gain. Target angle is iterated up (increased) if 'e'\n",
+    "    is pressed and iterated down (decreased) if 'q' is pressed.\n",
+    "    Similarly for the proportional gain and 'r' and 'f'.\n",
+    "    Similarly for the derivative gain and 't' and 'g'.\n",
+    "\n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    simulator: condynsate.Simulator\n",
+    "        A member of the condynsate.Simulator class that is used\n",
+    "        to listen for key presses.\n",
+    "\n",
+    "    Returns\n",
+    "    -------\n",
+    "    target_iter_val: float\n",
+    "        The value by which the target angle should be iterated \n",
+    "        during the current simulation step.\n",
+    "    P_iter_val: float\n",
+    "        The value by which the proportional gain should be iterated \n",
+    "        during the current simulation step.\n",
+    "    D_iter_val: float\n",
+    "        The value by which the derivative gain should be iterated \n",
+    "        during the current simulation step.\n",
+    "    \n",
+    "    \"\"\"\n",
+    "    # Target angle iteration\n",
+    "    target_iter_val = 0.0\n",
+    "    if simulator.is_pressed('q'): target_iter_val -= 0.02\n",
+    "    if simulator.is_pressed('e'): target_iter_val += 0.02\n",
+    "\n",
+    "    # Proportional gain iteration\n",
+    "    P_iter_val = 0.0\n",
+    "    if simulator.is_pressed('f'): P_iter_val -= 0.02\n",
+    "    if simulator.is_pressed('r'): P_iter_val += 0.02\n",
+    "\n",
+    "    # Derivative gain iteration\n",
+    "    D_iter_val = 0.0\n",
+    "    if simulator.is_pressed('g'): D_iter_val -= 0.02\n",
+    "    if simulator.is_pressed('t'): D_iter_val += 0.02\n",
+    "    return (target_iter_val, P_iter_val, D_iter_val)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "b539a470-33b1-40db-b187-9b66bc7f7971",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_target_error(simulator, wheel, target_angle):\n",
+    "    \"\"\"\n",
+    "    Calculates the current error between the current wheel \n",
+    "    angle and the target wheel angle as well as the error \n",
+    "    between the current wheel velocity and the target wheel\n",
+    "    velocity (which is always 0.0).\n",
+    "\n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    simulator: condynsate.Simulator\n",
+    "        The member of the condynsate.Simulator class that is \n",
+    "        running the simulation\n",
+    "    wheel: condynsate.core.simulator.URDF_Obj\n",
+    "        The wheel URDF object whose state is measured.\n",
+    "    target_angle: float\n",
+    "        The target wheel angle in radians.\n",
+    "\n",
+    "    Returns\n",
+    "    -------\n",
+    "    angle_error: float\n",
+    "        The error between the current wheel angle and the\n",
+    "        target wheel angle in radians.\n",
+    "    velocity_error: float\n",
+    "        The error between the current wheel angular speed\n",
+    "        and the target wheel angular speed (0.0 rad/s) in \n",
+    "        radians per second.\n",
+    "        \n",
+    "    \"\"\"\n",
+    "    # Extract the current wheel speed and angle\n",
+    "    wheel_state = simulator.get_joint_state(urdf_obj = wheel,\n",
+    "                                            joint_name = \"ground_to_axle\")\n",
+    "    wheel_angle = wheel_state['position']\n",
+    "    wheel_velocity = wheel_state['velocity']\n",
+    "\n",
+    "    # Calculate the errors\n",
+    "    angle_error = target_angle - wheel_angle\n",
+    "    velocity_error = 0.0 - wheel_velocity\n",
+    "    return (angle_error, velocity_error)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "35273444-7a96-4bd7-af1b-4ff8d9287d7f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def set_target_angle(simulator, wheel, error):\n",
+    "    \"\"\"\n",
+    "    Adjusts the \"wheel_to_target\" joint angle of the wheel\n",
+    "    URDF object so it reflects the current target wheel angle.\n",
+    "    \n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    simulator: condynsate.Simulator\n",
+    "        The member of the condynsate.Simulator class that is \n",
+    "        running the simulation\n",
+    "    wheel: condynsate.core.simulator.URDF_Obj\n",
+    "        The wheel URDF object whose joint angle is set.\n",
+    "    error: tuple of floats\n",
+    "        A tuple of floats with the form (angle_error, velocity_error) \n",
+    "        where angle_error is the error between the current wheel angle \n",
+    "        and the target wheel angle in radians and velocity_error is\n",
+    "        the error between the current wheel angular speed\n",
+    "        and the target wheel angular speed (0.0 rad/s) in \n",
+    "        radians per second (as calculated by get_target_error).\n",
+    "        \n",
+    "    Returns\n",
+    "    -------\n",
+    "    None.\n",
+    "    \n",
+    "    \"\"\"\n",
+    "    simulator.set_joint_position(urdf_obj = wheel,\n",
+    "                                 joint_name = \"wheel_to_target\",\n",
+    "                                 position = error[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "04dbdc11-939b-45e4-8518-c271ed03a8d9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def set_torque(simulator, wheel, error, gains):\n",
+    "    \"\"\"\n",
+    "    Sets the torque applied to the wheel URDF object through \n",
+    "    its axle based on the current control gains and the error\n",
+    "    in the wheel's angle and angular speed.\n",
+    "    \n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    simulator: condynsate.Simulator\n",
+    "        The member of the condynsate.Simulator class that is \n",
+    "        running the simulation\n",
+    "    wheel: condynsate.core.simulator.URDF_Obj\n",
+    "        The wheel URDF object whose torque is set.\n",
+    "    error: tuple of floats\n",
+    "        A tuple of floats with the form (angle_error, velocity_error) \n",
+    "        where angle_error is the error between the current wheel angle \n",
+    "        and the target wheel angle in radians and velocity_error is\n",
+    "        the error between the current wheel angular speed\n",
+    "        and the target wheel angular speed (0.0 rad/s) in \n",
+    "        radians per second (as calculated by get_target_error).\n",
+    "    gains: tuple of floats\n",
+    "        A tuple of floats with the form (proportional gain, derivative gain).\n",
+    "        \n",
+    "    Returns\n",
+    "    -------\n",
+    "    None.\n",
+    "    \n",
+    "    \"\"\"\n",
+    "    # Calculate the applied torque based on PD control\n",
+    "    torque = gains[0] * error[0] + gains[1] * error[1]\n",
+    "    simulator.set_joint_torque(urdf_obj = wheel,\n",
+    "                               joint_name = \"ground_to_axle\",\n",
+    "                               torque = torque)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "0b71bb09-1e9e-4415-829a-7950983133c5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def update_angle_plot(simulator, plot, artists, target_angle, error):\n",
+    "    \"\"\"\n",
+    "    Updates the angle plot to reflect the current wheel angle and the \n",
+    "    target wheel angle.\n",
+    "    \n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    simulator: condynsate.Simulator\n",
+    "        The member of the condynsate.Simulator class that hosts the \n",
+    "        plot\n",
+    "    plot: int\n",
+    "        The plot descriptor of the line plot being updated.\n",
+    "    artists: tuple of ints\n",
+    "        A tuple of the two arist descriptors for each line in \n",
+    "        the plot. Has the form (wheel angle artist, target angle artist).\n",
+    "    target_angle: float\n",
+    "        The target wheel angle in radians.\n",
+    "    error: tuple of floats\n",
+    "        A tuple of floats with the form (angle_error, velocity_error) \n",
+    "        where angle_error is the error between the current wheel angle \n",
+    "        and the target wheel angle in radians and velocity_error is\n",
+    "        the error between the current wheel angular speed\n",
+    "        and the target wheel angular speed (0.0 rad/s) in \n",
+    "        radians per second (as calculated by get_target_error).\n",
+    "    \n",
+    "    Returns\n",
+    "    -------\n",
+    "    None.\n",
+    "    \n",
+    "    \"\"\"\n",
+    "    time = simulator.time\n",
+    "    wheel_angle = target_angle-error[0]\n",
+    "    simulator.add_line_datum(plot, time, wheel_angle, artist_id=artists[0])\n",
+    "    simulator.add_line_datum(plot, time, target_angle, artist_id=artists[1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "55d9e00d-f04e-48ba-a246-bc4f6668b875",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def update_gain_plot(simulator, plot, artists, gains):\n",
+    "    \"\"\"\n",
+    "    Updates the control gain plot to reflect the current control gains\n",
+    "    \n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    simulator: condynsate.Simulator\n",
+    "        The member of the condynsate.Simulator class that hosts the \n",
+    "        plot\n",
+    "    plot: int\n",
+    "        The plot descriptor of the bar plot being updated.\n",
+    "    artists: tuple of ints\n",
+    "        A tuple of the two arist descriptors for each bar in \n",
+    "        the plot. Has the form (proportional artist, derivative artist).\n",
+    "    gains: tuple of floats\n",
+    "        A tuple of floats with the form (proportional gain, derivative gain).\n",
+    "    \n",
+    "    Returns\n",
+    "    -------\n",
+    "    None.\n",
+    "    \n",
+    "    \"\"\"\n",
+    "    for a,g in zip(artists, gains):\n",
+    "        simulator.set_bar_value(plot, g, artist_id=a)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "5508dba6-6654-4d6e-9bfe-3a488af56f97",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def step(simulator, plots, artists, target_angle, gains):\n",
+    "    \"\"\"\n",
+    "    This function is called each simulation step. It does five things:\n",
+    "    1. Iterates the target angle and control gains based on key presses\n",
+    "    2. Calculates the error between the current wheel angle and the\n",
+    "       target wheel angle as well as the error between the current wheel\n",
+    "       angular speed and the target wheel angular speed and sets torque \n",
+    "       accordingly.\n",
+    "    3. Updates the target angle indicator arrow to reflect the current\n",
+    "       target angle.\n",
+    "    4. Updates both the wheel angle line plot and the control gain\n",
+    "       bar plot\n",
+    "    5. Returns the iterated target wheel angle and the iterated control gains.\n",
+    "    \n",
+    "    Parameters\n",
+    "    ----------\n",
+    "    simulator: condynsate.Simulator\n",
+    "        The member of the condynsate.Simulator class that is \n",
+    "        running the simulation.\n",
+    "    plots: tuple of ints\n",
+    "        A tuple of plot descriptors of the form \n",
+    "        (wheel angle plot, control gain plot).\n",
+    "    artists: tuple of tuple of ints\n",
+    "        A tuple of the artist descriptor tuples for each plot.\n",
+    "        Has the form ((wheel angle artist, target angle artist), \n",
+    "        (proportional gain artist, derivative gain artist)).\n",
+    "    target_angle: float\n",
+    "        The target wheel angle in radians.\n",
+    "    gains: tuple of floats\n",
+    "        A tuple of floats with the form (proportional gain, derivative gain).\n",
+    "        \n",
+    "    Returns\n",
+    "    -------\n",
+    "    target_angle: float\n",
+    "        The iterated target wheel angle in radians.\n",
+    "    gains: tuple of floats\n",
+    "        A tuple the iterated control gains with the form\n",
+    "        (proportional gain, derivative gain).\n",
+    "    \n",
+    "    \"\"\"\n",
+    "    # Iterate the target angle and control gains based on key presses\n",
+    "    target_iter_val, P_iter_val, D_iter_val = detect_keypresses(simulator)\n",
+    "    target_angle = max(min(target_angle + target_iter_val, 6.2832), 0.0) # Clip to [0.0, 2pi]\n",
+    "    gains[0] = max(min(gains[0] + P_iter_val, 5.0), 0.0) # Clip to [0.0, 5.0]\n",
+    "    gains[1] = max(min(gains[1] + D_iter_val, 5.0), 0.0) # Clip to [0.0, 5.0]\n",
+    "\n",
+    "    # Set the torque via PD control\n",
+    "    error = get_target_error(simulator, wheel, target_angle)\n",
+    "    set_torque(simulator, wheel, error, gains)\n",
+    "\n",
+    "    # Update the target angle indicator arrow\n",
+    "    set_target_angle(simulator, wheel, error)\n",
+    "\n",
+    "    # Update both plots\n",
+    "    update_angle_plot(simulator, plots[0], artists[0], target_angle, error)\n",
+    "    update_gain_plot(simulator, plots[1], artists[1], gains)\n",
+    "\n",
+    "    # Return the iterated target angle and control gains\n",
+    "    return target_angle, gains"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0a8cce9e-e082-44eb-8b3a-2572de4c146b",
+   "metadata": {},
+   "source": [
+    "## Running the Simulation Loop"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "11f982f7-e771-4d3c-aeb1-4493b0800c22",
+   "metadata": {},
+   "source": [
+    "Now that all the helper functions are defined, we can run the simulation loop. This simulation will start running when the user presses the 'enter' and continue running until the user presses the 'esc' key. During the simulation, the user can set the target angle of the wheel (indicated by the orange arrow) with the 'q' and 'e' keys. A PD controll will then apply torque to the wheel axle to attempt to enforce this angle based on a set of proportional and derivatve control gains. The proportional control gains can be adjusted by the user with the 'f' and 'r' keys and the derivative control gains can be adjusted with the 'g' and 't' keys. The animator plots the target and current wheel angle is plotted as a function of time as well as the current values of the control gains."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "c4220e17-4bf3-4a61-a00f-1f03210a9348",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PRESS ENTER TO START SIMULATION.\n",
+      "PRESS ESC TO QUIT.\n",
+      "PRESS SPACE TO PAUSE/RESUME SIMULATION.\n",
+      "PRESS BACKSPACE TO RESET SIMULATION.\n",
+      "CONTINUING...\n",
+      "QUITTING...\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Set the initial gains and target angle\n",
+    "target_angle = 0.0\n",
+    "gains = [0.0, 0.0]\n",
+    "\n",
+    "# Reset before running a simulation loop\n",
+    "simulator.reset()\n",
+    "\n",
+    "# Suspend execution until user presses enter key\n",
+    "simulator.await_keypress(key = 'enter')\n",
+    "\n",
+    "# Run the simulation loop\n",
+    "while(not simulator.is_done):\n",
+    "    # Step the sim\n",
+    "    ret_code = simulator.step(real_time = True)\n",
+    "\n",
+    "    # If successful step was taken\n",
+    "    if ret_code > 0:\n",
+    "        target_angle, gains = step(simulator, plots, artists, target_angle, gains)\n",
+    "        "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "67f7007f-0c4d-40d2-afd5-426b60636e0c",
+   "metadata": {},
+   "source": [
+    "Once the simulation is done, we terminate the animator."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "3575786f-4ef7-4da5-af33-7fa5934c288e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Termination command detected. Terminating keyboard listener. Goodbye\n"
+     ]
+    }
+   ],
+   "source": [
+    "simulator.terminate_animator()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

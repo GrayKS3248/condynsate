@@ -1,0 +1,1992 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The condynsate Package &mdash; condynsate 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/autoclasstoc.css?v=08871587" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="condynsate.Simulator" href="_collections/examples/pendulum.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            condynsate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The condynsate Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#classes">Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-simulator-class">The Simulator Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#condynsate.Simulator"><code class="docutils literal notranslate"><span class="pre">Simulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adjusting-the-physics-engine">Adjusting the Physics Engine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loading-urdf-objects-in-phyics-engine">Loading URDF Objects in Phyics Engine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#running-a-simulation">Running a Simulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interacting-with-urdf-objects-in-the-physics-engine">Interacting with URDF Objects in the Physics Engine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-the-visualizer">Using the Visualizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-the-animator">Using the Animator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-the-keyboard">Using the Keyboard</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#the-animator-class">The Animator Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#condynsate.Animator"><code class="docutils literal notranslate"><span class="pre">Animator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-animation-sequence">The Animation Sequence</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#the-keys-class">The Keys Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#condynsate.Keys"><code class="docutils literal notranslate"><span class="pre">Keys</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#the-visualizer-class">The Visualizer Class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#condynsate.Visualizer"><code class="docutils literal notranslate"><span class="pre">Visualizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adjusting-the-appearance-of-the-viewer">Adjusting the Appearance of the Viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adding-elements-to-the-viewer">Adding Elements to the Viewer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adjusting-elements-in-the-viewer">Adjusting Elements in the Viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/pendulum.html">condynsate.Simulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/gyro.html">Keyboard Interactivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/cart.html">Animator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_collections/examples/wheel.html">Wheel Project</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">condynsate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">The condynsate Package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/package.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-condynsate-package">
+<h1>The condynsate Package<a class="headerlink" href="#the-condynsate-package" title="Link to this heading"></a></h1>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<section id="the-simulator-class">
+<h3>The Simulator Class<a class="headerlink" href="#the-simulator-class" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="condynsate.Simulator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyboard</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualization_fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">24.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gravity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">-9.81]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator" title="Link to this definition"></a></dt>
+<dd><p>Simulator manages the PyBullet based simulation of dynamic objects. It also
+provides wrappers for the Animator, Keys, and Visualizer classes so that
+the average condynsate project need only interact with the simulator class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keyboard</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the simulator will allow
+the use of keyboard interactivity. The default is True.</p></li>
+<li><p><strong>visualization</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the simulation will be
+visualized in meshcat. The default is True.</p></li>
+<li><p><strong>visualization_fr</strong> (<em>float</em><em>, </em><em>optional</em>) – The frame rate (frames per second) at which the visualizer is
+updated. The default is 24.0.</p></li>
+<li><p><strong>animation</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether animated plots are created
+in real time. The default is True.</p></li>
+<li><p><strong>animation_fr</strong> (<em>float</em><em>, </em><em>optional</em>) – The frame rate (frames per second) at which the animated plots are
+updated. The default is 8.0.</p></li>
+<li><p><strong>gravity</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>) </em><em>optional</em>) – The gravity vectory in m/s^2. The default is [0., 0., -9.81].</p></li>
+<li><p><strong>dt</strong> (<em>float</em><em>, </em><em>optional</em>) – The fixed time step of the simulator in seconds. The default is
+0.01 seconds.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="adjusting-the-physics-engine">
+<h4>Adjusting the Physics Engine<a class="headerlink" href="#adjusting-the-physics-engine" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_gravity">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_gravity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gravity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_gravity" title="Link to this definition"></a></dt>
+<dd><p>Sets the acceleration due to gravity vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gravity</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The acceleration due to gravity vector in m/s^2.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="loading-urdf-objects-in-phyics-engine">
+<h4>Loading URDF Objects in Phyics Engine<a class="headerlink" href="#loading-urdf-objects-in-phyics-engine" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.load_urdf">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">load_urdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tex_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wxyz_quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pitch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ang_velocity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_vis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.load_urdf" title="Link to this definition"></a></dt>
+<dd><p>Loads a URDF to the simulation engine. All joint’s
+velocity control is disabled (this allows the joint to move freely),
+angular and linear damping is set to 0 (eliminates air resistance), and
+joint dampling is set to 0 (eliminates joint friction).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_path</strong> (<em>string</em>) – The path to the .urdf file that describes the urdf to be
+loaded into the simulation.</p></li>
+<li><p><strong>tex_path</strong> (<em>string</em><em>, </em><em>optional</em>) – The path pointing towards a texture file. This texture is applied
+only to static .obj objects.
+The default is None which loads ‘./examples/cmg_vis/check.png’.</p></li>
+<li><p><strong>position</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>) </em><em>optional</em>) – The initial position of the urdf. The default is [0., 0., 0.].</p></li>
+<li><p><strong>wxyz_quaternion</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>4</em><em>,</em><em>) </em><em>optional</em>) – A wxyz quaternion that describes the intial orientation of the
+urdf. When roll, pitch, and yaw all have None type, the
+quaternion is used. If any roll, pitch, or yaw have non None type,
+the quaternion is ignored. The default is [1., 0., 0., 0.].</p></li>
+<li><p><strong>roll</strong> (<em>float</em><em>, </em><em>optional</em>) – The initial roll angle of the urdf. The default is None.</p></li>
+<li><p><strong>pitch</strong> (<em>float</em><em>, </em><em>optional</em>) – The initial pitch angle of the urdf. The default is None.</p></li>
+<li><p><strong>yaw</strong> (<em>float</em><em>, </em><em>optional</em>) – The initial yaw angle of the urdf. The default is None.</p></li>
+<li><p><strong>velocity</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The velocity to be set in either world or body coords.
+The default is [0., 0., 0.].</p></li>
+<li><p><strong>ang_velocity</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The angular velocity to be set in either world or body coords.
+The default is [0., 0., 0.].</p></li>
+<li><p><strong>body_coords</strong> (<em>bool</em>) – A boolean flag that indicates whether the passed velocities are in
+world coords or body coords. The default is False.</p></li>
+<li><p><strong>fixed</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the base joint of the
+loaded urdf is fixed. The default is False.</p></li>
+<li><p><strong>update_vis</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether this urdf will be updated
+by the Visualizer each time step. The default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>urdf_obj</strong> – A URDF_Obj that describes the urdf that was loaded into
+the simulation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>URDF_Obj</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="running-a-simulation">
+<h4>Running a Simulation<a class="headerlink" href="#running-a-simulation" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.step">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">real_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_vis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.step" title="Link to this definition"></a></dt>
+<dd><p>Takes a single step of the simulation. In this step, the physics
+engine, the Visualizer (3D visualization of urdfs), and the Animator
+(2D animation of plots) are all updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>real_time</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether or not the step is taken in
+real time. If True, step() is suspended until the time since the
+last step is equal to dt seconds (the time step of the
+physics engine). If False, step() is run as quickly as possible.
+The default is True.</p></li>
+<li><p><strong>update_vis</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the Visualizer is updated.
+The default is True.</p></li>
+<li><p><strong>max_time</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The maximum amount of simulated seconds the simulator is allowed to
+run. If None, the simulation will run until “ESC” is pressed. If
+None and there is no keyboard interactivity, max time is set to
+10.0 seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>ret_code</strong> – The return code of the simulation steps. The codes are as follows:</p>
+<p>-4: Keyboard LOS indicating simulation step failure. No
+simulation step taken. No further simulation steps are to
+be taken. is_done flag is now true.</p>
+<p>-3: User initiated simulation termination. No simulation step
+taken. No further simulation steps are to be taken.
+is_done flag is now true.</p>
+<p>-2: User initiated pause is occuring. No simulation step taken.
+paused flag remains true.</p>
+<p>-1: User initiated pause has ended. No simulation step taken.
+paused flag is now false.</p>
+<p>0: User initiated simulation reset. No simulation step taken.</p>
+<p>1: Normal and successful simulation step.</p>
+<p>2: User initiated pause has started. Normal simulation step
+taken. paused flag is now true.</p>
+<p>3: max_time is now reached. Normal simulation step taken. No
+further simulation steps are to be taken. is_done flag is
+now true.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.reset">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.reset" title="Link to this definition"></a></dt>
+<dd><p>Reset the physics state to the initial conditions.
+Reset the visualizer to the initial conditions.
+Reset the animator to the initial conditions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="interacting-with-urdf-objects-in-the-physics-engine">
+<h4>Interacting with URDF Objects in the Physics Engine<a class="headerlink" href="#interacting-with-urdf-objects-in-the-physics-engine" title="Link to this heading"></a></h4>
+<section id="adjusting-a-urdf-s-joint-s-parameters">
+<h5>Adjusting a URDF’s Joint’s Parameters<a class="headerlink" href="#adjusting-a-urdf-s-joint-s-parameters" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_force_sensor">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_force_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_sensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_force_sensor" title="Link to this definition"></a></dt>
+<dd><p>Enables reaction force, moment, and applied torque to be calculated
+for a joint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint for which the sensor is set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose sensor is set.</p></li>
+<li><p><strong>enable_sensor</strong> (<em>bool</em>) – A boolean flag that indicates whether to enable or disable the
+force sensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_lin_ang_damp">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_lin_ang_damp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_damping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_damping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_lin_ang_damp" title="Link to this definition"></a></dt>
+<dd><p>Allows user to set the linear and angular damping of a joint. Linear
+and angular damping is a way to model drag. It is typically
+reccomended that the user set these values to 0 for all joints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose linear and angular
+damping is being set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose linear and angular damping is set. The
+joint name is specified in the .urdf file.</p></li>
+<li><p><strong>linear_damping</strong> (<em>float</em><em>, </em><em>optional</em>) – The value of linear damping to apply. The default is 0..</p></li>
+<li><p><strong>angular_damping</strong> (<em>float</em><em>, </em><em>optional</em>) – The value of angular damping to apply. The default is 0..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_damping">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_damping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_damping" title="Link to this definition"></a></dt>
+<dd><p>Sets the damping of a joint in a urdf. The damping of a joint
+defines the energy loss incurred during movement of the joint. It is
+a way to model joint friction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose damping is being set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose damping is set. The joint name is
+specified in the .urdf file.</p></li>
+<li><p><strong>damping</strong> (<em>float</em><em>, </em><em>optional</em>) – The value of damping to apply. The default is 0..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_friction_params">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_friction_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lateral_friction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spinning_friction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolling_friction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_friction_params" title="Link to this definition"></a></dt>
+<dd><p>Sets a joint’s friction parameters. These parameters determine the
+friction characteristics between 2 joints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose friction is being set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose friction is set. The joint name is
+specified in the .urdf file.</p></li>
+<li><p><strong>lateral_friction</strong> (<em>float</em><em>, </em><em>optional</em>) – The lateral friction applied to the joint. The default is 0.0.</p></li>
+<li><p><strong>spinning_friction</strong> (<em>float</em><em>, </em><em>optional</em>) – The spinning friction applied to the joint. The default is 0.0.</p></li>
+<li><p><strong>rolling_friction</strong> (<em>float</em><em>, </em><em>optional</em>) – The rolling friction applied to the joint. The default is 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_contact_params">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_contact_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restitution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_damping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact_stiffness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_contact_params" title="Link to this definition"></a></dt>
+<dd><p>Sets a joint’s contact parameters. These parameters determine the
+energy transfer between two joints in contact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose contact params are
+being set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose contact params are set.
+The joint name is specified in the .urdf file.</p></li>
+<li><p><strong>restitution</strong> (<em>float</em><em>, </em><em>optional</em>) – The restitution applied to the joint. The default is 0.0.</p></li>
+<li><p><strong>contact_damping</strong> (<em>float</em><em>, </em><em>optional</em>) – The contact damping friction applied to the joint.
+The default is 0.0.</p></li>
+<li><p><strong>contact_stiffness</strong> (<em>float</em><em>, </em><em>optional</em>) – The contact stiffness applied to the joint. The default is 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="setting-and-reading-a-urdf-s-joint-s-state">
+<h5>Setting and Reading a URDF’s Joint’s State<a class="headerlink" href="#setting-and-reading-a-urdf-s-joint-s-state" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_position">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">physics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_position" title="Link to this definition"></a></dt>
+<dd><p>Sets the position of a joint of a urdf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose position is being set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose position is set. The joint name is
+specified in the .urdf file.</p></li>
+<li><p><strong>position</strong> (<em>float</em><em>, </em><em>optional</em>) – The position in rad to be applied to the joint.
+The default is 0..</p></li>
+<li><p><strong>physics</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether physics based poisiton
+controller will be used to change joint position or whether
+the joint position will be reset immediately to the target
+position with zero end velocity. The default is False.</p></li>
+<li><p><strong>initial_cond</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the position set is an
+initial condition of the system. If it is an initial condition,
+when the simulation is reset using backspace, the joint position
+will be set again.</p></li>
+<li><p><strong>color</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether to color the joint based on
+its position. The default is False.</p></li>
+<li><p><strong>min_pos</strong> (<em>float</em>) – The minimum possible position. Used only for coloring. Value is
+ignored if color is False. The default is None. Must be set to
+a float value for coloring to be applied.</p></li>
+<li><p><strong>max_pos</strong> (<em>float</em>) – The maximum possible position. Used only for coloring. Value is
+ignored if color is False. The default is None. Must be set to
+a float value for coloring to be applied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_velocity">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">physics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_vel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_vel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_velocity" title="Link to this definition"></a></dt>
+<dd><p>Sets the velocity of a joint of a urdf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose velocity is being set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose velocity is set. The joint name is
+specified in the .urdf file.</p></li>
+<li><p><strong>velocity</strong> (<em>float</em><em>, </em><em>optional</em>) – The velocity in rad/s to be applied to the joint.
+The default is 0..</p></li>
+<li><p><strong>physics</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether physics based velocity
+controller will be used to change joint velocity or whether
+the joint velocity will be reset immediately to the target
+velocity. The default is False.</p></li>
+<li><p><strong>initial_cond</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the velocity set is an
+initial condition of the system. If it is an initial condition,
+when the simulation is reset using backspace, the joint velocity
+will be set again.</p></li>
+<li><p><strong>color</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether to color the joint based on
+its velocity. The default is False.</p></li>
+<li><p><strong>min_vel</strong> (<em>float</em>) – The minimum possible velocity. Used only for coloring. Value is
+ignored if color is False. The default is -100..</p></li>
+<li><p><strong>max_vel</strong> (<em>float</em>) – The maximum possible velocity. Used only for coloring. Value is
+ignored if color is False. The default is 100..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.get_joint_state">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">get_joint_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.get_joint_state" title="Link to this definition"></a></dt>
+<dd><p>Gets the state of a joint (angle and velocity for continuous joints).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj whose joint state is being measured.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose state is measured. The joint name is
+specified in the .urdf file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>state</strong> –</p>
+<dl class="simple">
+<dt>‘position’<span class="classifier">float</span></dt><dd><p>The position value of this joint.</p>
+</dd>
+<dt>’velocity’<span class="classifier">float</span></dt><dd><p>The velocity value of this joint.</p>
+</dd>
+<dt>’reaction force’<span class="classifier">list shape(3,)</span></dt><dd><p>These are the joint reaction forces. Only read if a torque
+sensor is enabled for this joint.</p>
+</dd>
+<dt>’reaction torque’<span class="classifier">list shape(3,)</span></dt><dd><p>These are the joint reaction torques. Only read if a torque
+sensor is enabled for this joint.</p>
+</dd>
+<dt>’applied torque’<span class="classifier">float</span></dt><dd><p>This is the motor torque applied during the last
+stepSimulation. Note that this only applies in VELOCITY_CONTROL
+and POSITION_CONTROL. If you use TORQUE_CONTROL then the
+applied joint motor torque is exactly what you provide, so
+there is no need to report it separately.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary with the following keys</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.get_joint_axis">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">get_joint_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.get_joint_axis" title="Link to this definition"></a></dt>
+<dd><p>Get the joint axis in the world frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose axis is found.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint axis is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>axis_inW</strong> (<em>array-like, shape(3,)</em>) – The joint axis in world frame.</p></li>
+<li><p><strong>pos_inW</strong> (<em>array-like, shape(3,)</em>) – The (x,y,z) coords of the center of the child link in world coords.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the child link of the joint.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="adjusting-and-reading-a-urdf-s-links-s-parameters">
+<h5>Adjusting and Reading a URDF’s Links’s Parameters<a class="headerlink" href="#adjusting-and-reading-a-urdf-s-links-s-parameters" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_link_mass">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_link_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_link_mass" title="Link to this definition"></a></dt>
+<dd><p>Sets the mass of a link in a urdf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that link whose mass is being set.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link whose mass is set. The link name is
+specified in the .urdf file.</p></li>
+<li><p><strong>mass</strong> (<em>float</em><em>, </em><em>optional</em>) – The mass to set in kg. The default is 0..</p></li>
+<li><p><strong>color</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether to color the joint based on
+its velocity. The default is False.</p></li>
+<li><p><strong>min_mass</strong> (<em>float</em>) – The minimum possible mass. Used only for coloring. Value is
+ignored if color is False. The default is None. Must be set to
+a float value for coloring to be applied.</p></li>
+<li><p><strong>max_mass</strong> (<em>float</em>) – The maximum possible mass. Used only for coloring. Value is
+ignored if color is False. The default is None. Must be set to
+a float value for coloring to be applied.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.get_link_mass">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">get_link_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.get_link_mass" title="Link to this definition"></a></dt>
+<dd><p>Gets the current mass of a link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that link whose mass is measured.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link whose mass is measured. The link name is
+specified in the .urdf file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mass</strong> – The mass of the link in Kg. If link is not found, returns none.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="setting-and-reading-a-urdf-s-links-s-state">
+<h5>Setting and Reading a URDF’s Links’s State<a class="headerlink" href="#setting-and-reading-a-urdf-s-links-s-state" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_base_state">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_base_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wxyz_quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pitch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ang_velocity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_base_state" title="Link to this definition"></a></dt>
+<dd><p>Sets the position, orientation, linear velocity, and angular velocity
+of a urdf. Does not use physics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_path</strong> (<em>string</em>) – The path to the .urdf file that describes the urdf to be
+loaded into the simulation.</p></li>
+<li><p><strong>position</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The position of the urdf.
+The default is None. When none, current state does not change.</p></li>
+<li><p><strong>wxyz_ori</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>4</em><em>,</em><em>)</em>) – A wxyz quaternion that describes the orientation of the
+urdf. When roll, pitch, and yaw all have None type, the
+quaternion is used. If any roll, pitch, or yaw have non None type,
+the quaternion is ignored.
+The default is None. When none, current state does not change.</p></li>
+<li><p><strong>roll</strong> (<em>float</em>) – The roll angle of the urdf. The default is None. When none,
+current state does not change.</p></li>
+<li><p><strong>pitch</strong> (<em>float</em>) – The pitch angle of the urdf. The default is None. When none,
+current state does not change.</p></li>
+<li><p><strong>yaw</strong> (<em>float</em>) – The yaw angle of the urdf. The default is None. When none,
+current state does not change.</p></li>
+<li><p><strong>velocity</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The velocity to be set in either world or body coords.
+The default is None. When none, current state does not change.</p></li>
+<li><p><strong>ang_velocity</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The angular velocity to be set in either world or body coords.
+The default is None. When none, current state does not change.</p></li>
+<li><p><strong>body_coords</strong> (<em>bool</em>) – A boolean flag that indicates whether the passed velocities are in
+world coords or body coords. The default is False.</p></li>
+<li><p><strong>initial_cond</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether or not
+the state set is an initial condition. If it is an initial
+condition, whenever the reset() function is called, this state will
+be set. The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.get_link_state">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">get_link_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.get_link_state" title="Link to this definition"></a></dt>
+<dd><p>Gets the rigid body states (position and orientation) of a given
+link of a given urdf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj whose state is being measured.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link whose state is measured. The link name is
+specified in the .urdf file.</p></li>
+<li><p><strong>body_coords</strong> (<em>bool</em>) – A boolean flag that indicates whether the passed velocities are in
+world coords or body coords.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>state</strong> –</p>
+<dl class="simple">
+<dt>‘position’<span class="classifier">array-like, shape (3,)</span></dt><dd><p>The (x,y,z) world coordinates of the link.</p>
+</dd>
+<dt>’roll’<span class="classifier">float</span></dt><dd><p>The Euler angle roll of the link
+that defines the link’s orientation in the world. Rotation
+of the link about the world’s x-axis.</p>
+</dd>
+<dt>’pitch’<span class="classifier">float</span></dt><dd><p>The Euler angle pitch of the link
+that defines the link’s orientation in the world. Rotation
+of the link about the world’s y-axis.</p>
+</dd>
+<dt>’yaw’<span class="classifier">float</span></dt><dd><p>The Euler angle yaw of the link
+that defines the link’s orientation in the world. Rotation
+of the link about the world’s z-axis.</p>
+</dd>
+<dt>’R of world in link’<span class="classifier">array-like, shape(3,3):</span></dt><dd><p>The rotation matrix that takes vectors in world coordinates
+to link coordinates. For example, let V_inL be a 3vector
+written in link coordinates. Let V_inW be a 3vector
+written in world coordinates. Then:
+V_inL = R_ofWorld_inLink &#64; V_inW</p>
+</dd>
+<dt>’velocity’<span class="classifier">array-like, shape (3,)</span></dt><dd><p>The (x,y,z) linear velocity in world coordinates of the link.</p>
+</dd>
+<dt>’angular velocity’<span class="classifier">array-like, shape (3,)</span></dt><dd><p>The (x,y,z) angular velocity in world coordinates of the link.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a dictionary with the following keys:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.get_base_state">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">get_base_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.get_base_state" title="Link to this definition"></a></dt>
+<dd><p>Gets the rigid body states (position, orientation, linear velocity, and
+angular velocitiy) of the base link of a given urdf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj whose state is being measured.</p></li>
+<li><p><strong>body_coords</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the velocity and angular
+velocity is given in world coords (False) or body coords (True).
+The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>state</strong> –</p>
+<dl class="simple">
+<dt>‘position’<span class="classifier">array-like, shape (3,)</span></dt><dd><p>The (x,y,z) world coordinates of the base of the urdf.</p>
+</dd>
+<dt>’roll’<span class="classifier">float</span></dt><dd><p>The Euler angle roll of the base of the urdf
+that define the body’s orientation in the world. Rotation
+of the body about the world’s x-axis.</p>
+</dd>
+<dt>’pitch’<span class="classifier">float</span></dt><dd><p>The Euler angle pitch of the base of the urdf
+that define the body’s orientation in the world. Rotation
+of the body about the world’s y-axis.</p>
+</dd>
+<dt>’yaw’<span class="classifier">float</span></dt><dd><p>The Euler angle yaw of the base of the urdf
+that define the body’s orientation in the world. Rotation
+of the body about the world’s z-axis.</p>
+</dd>
+<dt>’R of world in body’<span class="classifier">array-like, shape(3,3):</span></dt><dd><p>The rotation matrix that takes vectors in world coordinates
+to body coordinates. For example, let V_inB be a 3vector
+written in body coordinates. Let V_inW be a 3vector
+written in world coordinates. Then:
+V_inB = R_ofWorld_inBody &#64; V_inW</p>
+</dd>
+<dt>’velocity’<span class="classifier">array-like, shape (3,)</span></dt><dd><p>The linear velocity of the base of the urdf in either world
+coords or body coords. Ordered as either
+(vx_inW, vy_inW, vz_inW) or (vx_inB, vy_inB, vz_inB).</p>
+</dd>
+<dt>’angular velocity’<span class="classifier">array-like, shape (3,)</span></dt><dd><p>The angular velocity of the base of the urdf in either world
+coords or body coords. Ordered as either
+(wx_inW, wy_inW, wz_inW), or (wx_inB, wy_inB, wz_inB). When
+written in world coordinates, exactly equal to the roll rate,
+the pitch rate, and the yaw rate.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a dictionary with the following keys:</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="applying-forces-and-torques-to-a-urdf">
+<h5>Applying Forces and Torques to a URDF<a class="headerlink" href="#applying-forces-and-torques-to-a-urdf" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_joint_torque">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_joint_torque</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_arrow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_joint_torque" title="Link to this definition"></a></dt>
+<dd><p>Sets the torque of a joint of a urdf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose torque is being set.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose torque is set. The joint name is
+specified in the .urdf file</p></li>
+<li><p><strong>torque</strong> (<em>float</em><em>, </em><em>optional</em>) – The torque in NM to be applied to the joint. The default is 0..</p></li>
+<li><p><strong>show_arrow</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether an arrow will be rendered
+on the link to visualize the applied torque. The default is False.</p></li>
+<li><p><strong>arrow_scale</strong> (<em>float</em><em>, </em><em>optional</em>) – The scaling factor that determines the size of the arrow. The
+default is 0.1.</p></li>
+<li><p><strong>arrow_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – The amount to offset the drawn arrow along the joint axis.
+The default is 0.0.</p></li>
+<li><p><strong>color</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the child link will be
+colored based on the applied torque. The default is False.</p></li>
+<li><p><strong>min_torque</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum value of torque that can be applied. Used for link
+coloring. Does nothing if color is not enabled. The default is -1..</p></li>
+<li><p><strong>max_torque</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum value of torque that can be applied. Used for link
+coloring. Does nothing if color is not enabled. The default is 1..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.apply_force_to_link">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">apply_force_to_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_arrow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.apply_force_to_link" title="Link to this definition"></a></dt>
+<dd><p>Applies an external force the to center of a specified link of a urdf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that link to which the force is applied.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link to which the force is applied.
+The link name is specified in the .urdf file.</p></li>
+<li><p><strong>force</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The force vector in either world or link coordinates to apply to
+the link.</p></li>
+<li><p><strong>link_coords</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether force is given in link
+coords (True) or world coords (False). The default is False.</p></li>
+<li><p><strong>show_arrow</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether an arrow will be rendered
+on the link to visualize the applied force. The default is False.</p></li>
+<li><p><strong>arrow_scale</strong> (<em>float</em><em>, </em><em>optional</em>) – The scaling factor that determines the size of the arrow. The
+default is 0.4.</p></li>
+<li><p><strong>arrow_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – The amount by which the drawn force arrow will be offset from the
+center of mass along the direction of the applied force. The
+default is 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.apply_force_to_com">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">apply_force_to_com</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_arrow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.apply_force_to_com" title="Link to this definition"></a></dt>
+<dd><p>Applies an external force to the center of mass of the body.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj to which the force is applied.</p></li>
+<li><p><strong>force</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The force vector in either world or body coordinates to apply to
+the body.</p></li>
+<li><p><strong>body_coords</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether force is given in body
+coords (True) or world coords (False). The default is False.</p></li>
+<li><p><strong>show_arrow</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether an arrow will be rendered
+on the com to visualize the applied force. The default is False.</p></li>
+<li><p><strong>arrow_scale</strong> (<em>float</em><em>, </em><em>optional</em>) – The scaling factor that determines the size of the arrow. The
+default is 0.4.</p></li>
+<li><p><strong>arrow_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – The amount by which the drawn force arrow will be offset from the
+center of mass along the direction of the applied force. The
+default is 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.apply_external_torque">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">apply_external_torque</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">torque</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_arrow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.apply_external_torque" title="Link to this definition"></a></dt>
+<dd><p>Applies an external torque to the center of mass of the body.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj to which the torque is applied.</p></li>
+<li><p><strong>torque</strong> (<em>array-like</em><em>, </em><em>shape</em><em>(</em><em>3</em><em>,</em><em>)</em>) – The torque vector in world coordinates to apply to the body.</p></li>
+<li><p><strong>show_arrow</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether an arrow will be rendered
+on the com to visualize the applied torque. The default is False.</p></li>
+<li><p><strong>arrow_scale</strong> (<em>float</em><em>, </em><em>optional</em>) – The scaling factor that determines the size of the arrow. The
+default is 0.1.</p></li>
+<li><p><strong>arrow_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – The amount by which the drawn torque arrow will be offset from the
+center of mass along the direction of the applied torque. The
+default is 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="getting-the-center-of-mass-of-a-urdf">
+<h5>Getting the Center of Mass of a URDF<a class="headerlink" href="#getting-the-center-of-mass-of-a-urdf" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.get_center_of_mass">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">get_center_of_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.get_center_of_mass" title="Link to this definition"></a></dt>
+<dd><p>Get the center of mass of a body .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj whose center of mass is calculated.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>com</strong> – The cartesian coordinates of the center of mass of the body in
+world coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like, shape(3,)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="using-the-visualizer">
+<h4>Using the Visualizer<a class="headerlink" href="#using-the-visualizer" title="Link to this heading"></a></h4>
+<section id="loading-urdf-objects-in-the-visualizer">
+<h5>Loading URDF Objects in the Visualizer<a class="headerlink" href="#loading-urdf-objects-in-the-visualizer" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.add_urdf_to_visualizer">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_urdf_to_visualizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tex_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_urdf_to_visualizer" title="Link to this definition"></a></dt>
+<dd><p>Adds urdfs to the Visualizer. URDFs describe systems assembles from
+.stl and .obj links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vis</strong> (<a class="reference internal" href="#condynsate.Visualizer" title="condynsate.Visualizer"><em>Visualizer</em></a>) – The Visualizer to which the urdf is added.</p></li>
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that will be added to the Visualizer.</p></li>
+<li><p><strong>tex_path</strong> (<em>string</em><em>, </em><em>optional</em>) – The path pointing towards a texture file. This texture is applied
+to all .obj links in the urdf.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="adjusting-appearance-of-urdf-objects">
+<h5>Adjusting Appearance of URDF Objects<a class="headerlink" href="#adjusting-appearance-of-urdf-objects" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_link_color">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_link_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[91,</span> <span class="pre">155,</span> <span class="pre">213]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transparent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_link_color" title="Link to this definition"></a></dt>
+<dd><p>Allows the user to change the color, transparency, and opacity
+of an existing urdf in the simulation. The position and orientation
+are not altered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that link whose color is being updated.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link whose color is being updated. The link name is
+specified in the .urdf file.</p></li>
+<li><p><strong>color</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The 0-255 RGB color of the link.
+The default is [91, 155, 213].</p></li>
+<li><p><strong>transparent</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean that indicates if the link is transparent.
+The default is False.</p></li>
+<li><p><strong>opacity</strong> (<em>float</em><em>, </em><em>optional</em>) – The opacity of the link. Can take float values between 0.0 and 1.0.
+The default is 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_color_from_pos">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_color_from_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_pos</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_color_from_pos" title="Link to this definition"></a></dt>
+<dd><p>Sets the color of the child link of a specified joint based on the
+position of the joint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose position is measured.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose position is used to set the link color.
+The joint name is specified in the .urdf file.</p></li>
+<li><p><strong>min_pos</strong> (<em>float</em>) – The minimum possible position of the given joint.</p></li>
+<li><p><strong>max_pos</strong> (<em>float</em>) – The maximum possible position of the given joint.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_color_from_vel">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_color_from_vel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_vel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_vel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_color_from_vel" title="Link to this definition"></a></dt>
+<dd><p>Sets the color of the child link of a specified joint based on the
+velocity of the joint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose velocity is measured.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose velocity is used to set the link color.
+The joint name is specified in the .urdf file.</p></li>
+<li><p><strong>min_vel</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum possible velocity of the given joint. The default is
+-100.. Unless otherwise set, PyBullet does not allow joint
+velocities to exceed a magnitude of 100.</p></li>
+<li><p><strong>max_vel</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum possible velocity of the given joint. The default is
+100.. Unless otherwise set, PyBullet does not allow joint
+velocities to exceed a magnitude of 100.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_color_from_torque">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_color_from_torque</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">torque</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_color_from_torque" title="Link to this definition"></a></dt>
+<dd><p>Sets the color of the child link of a specified joint based on the
+torque applied to the joint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose torque is measured.</p></li>
+<li><p><strong>joint_name</strong> (<em>string</em>) – The name of the joint whose torque is used to set the link color.
+The joint name is specified in the .urdf file.</p></li>
+<li><p><strong>torque</strong> (<em>float</em>) – The torque applied to the joint.</p></li>
+<li><p><strong>min_torque</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum possible torque to apply to the joint. The default is
+-1..</p></li>
+<li><p><strong>max_torque</strong> (<em>float</em><em>, </em><em>optional</em>) – <p>The maximum possible torque to apply to the joint. The default is</p>
+<p>1..</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_color_from_mass">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_color_from_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_mass</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_color_from_mass" title="Link to this definition"></a></dt>
+<dd><p>Sets the color of a link based on its mass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_obj</strong> (<em>URDF_Obj</em>) – A URDF_Obj that contains that joint whose torque is measured.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link whose mass is used to set the link color.
+The link name is specified in the .urdf file.</p></li>
+<li><p><strong>min_mass</strong> (<em>float</em><em>, </em><em>optional</em>) – The minimum possible mass of the link.</p></li>
+<li><p><strong>max_mass</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum possible mass of the link.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="manipulating-the-visualizer">
+<h5>Manipulating the Visualizer<a class="headerlink" href="#manipulating-the-visualizer" title="Link to this heading"></a></h5>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.transform_camera">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">transform_camera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wxyz_quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pitch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.transform_camera" title="Link to this definition"></a></dt>
+<dd><p>Transforms the position, orientation, and scale of the Visualizer’s
+camera.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The scaling of the camera view about the camera point along the
+three axes. The default is [1., 1., 1.].</p></li>
+<li><p><strong>translate</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The translation of the camera point along the three axes.
+The default is [0., 0., 0.].</p></li>
+<li><p><strong>wxyz_quaternion</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>4</em><em>,</em><em>) </em><em>optional</em>) – A wxyz quaternion that describes the intial orientation of camera
+about the camera point. When roll, pitch, and yaw all have None
+type, the quaternion is used. If any roll, pitch, or yaw have non
+None type, the quaternion is ignored.
+The default is [1., 0., 0., 0.].</p></li>
+<li><p><strong>roll</strong> (<em>float</em><em>, </em><em>optional</em>) – The roll of the camera about the camera point.
+The default is None.</p></li>
+<li><p><strong>pitch</strong> (<em>float</em><em>, </em><em>optional</em>) – The pitch of the camera about the camera point.
+The default is None.</p></li>
+<li><p><strong>yaw</strong> (<em>float</em><em>, </em><em>optional</em>) – The yaw of the camera about the camera point.
+The default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_background">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bot_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_background" title="Link to this definition"></a></dt>
+<dd><p>Set the top and bottom colors of the background of the Visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_color</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The 0-255 color to apply to the top of the background.
+The default is None. If top_color is set to None, top_color
+is not altered.</p></li>
+<li><p><strong>bot_color</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The 0-255 color to apply to the bottom of the background.
+The default is None. If bot_color is set to None, bot_color
+is not altered.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_spotlight">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_spotlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_spotlight" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the spotlight in the Visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the spotlight is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the spotlight. The default is 1.0.</p></li>
+<li><p><strong>distance</strong> (<em>float</em><em> (</em><em>0. to 100.</em><em>)</em><em>, </em><em>optional</em>) – The distance from the origin of the spotlight. The default is 100..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_posx_pt_light">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_posx_pt_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_posx_pt_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the point light on the positive x axis
+in the Visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+<li><p><strong>distance</strong> (<em>float</em><em> (</em><em>0. to 100.</em><em>)</em><em>, </em><em>optional</em>) – The distance from the origin of the light. The default is 100..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_negx_pt_light">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_negx_pt_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_negx_pt_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the point light on the negative x axis
+in the Visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+<li><p><strong>distance</strong> (<em>float</em><em> (</em><em>0. to 100.</em><em>)</em><em>, </em><em>optional</em>) – The distance from the origin of the light. The default is 100..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_ambient_light">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_ambient_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_ambient_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the ambient light of the Visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_fill_light">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_fill_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_fill_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the fill light in the Visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="using-the-animator">
+<h4>Using the Animator<a class="headerlink" href="#using-the-animator" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.add_plot">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'solid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_plot" title="Link to this definition"></a></dt>
+<dd><p>Adds a plot to the animator. This function needs to be called to
+define a plot before data can be added to that plot. If called after
+start_animator, this function will do nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_artists</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of artists that draw on the plot
+The default is 1.</p></li>
+<li><p><strong>plot_type</strong> (<em>either 'line'</em><em> or </em><em>'bar'</em><em>, </em><em>optional</em>) – The type of plot. May either be ‘line’ or ‘bar’. The default
+is ‘line’.</p></li>
+<li><p><strong>title</strong> (<em>string</em><em>, </em><em>optional</em>) – The title of the plot. Will be written above the plot when
+rendered. The default is None.</p></li>
+<li><p><strong>x_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the x axis. Will be written under the plot
+when rendered. The default is None.</p></li>
+<li><p><strong>y_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the y axis. Will be written to the left of
+the plot when rendered. The default is None.</p></li>
+<li><p><strong>x_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the x axis of the plot. A value of None
+will apply automatically updating limits to the corresponding
+bound of the axis. For example [None, 10.] will fix the upper
+bound to exactly 10, but the lower bound will freely change to
+show all data.The default is [None, None].</p></li>
+<li><p><strong>y_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the y axis of the plot. A value of None
+will apply automatically updating limits to the corresponding
+bound of the axis. For example [None, 10.] will fix the upper
+bound to exactly 10, but the lower bound will freely change to
+show all data.The default is [None, None].</p></li>
+<li><p><strong>h_zero_line</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether a horizontal line will be
+drawn on the y=0 line. The default is false</p></li>
+<li><p><strong>v_zero_line</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether a vertical line will be
+drawn on the x=0 line. The default is false</p></li>
+<li><p><strong>color</strong> (<em>matplotlib color string</em><em> or </em><em>tuple</em><em> of </em><em>color strings</em><em>, </em><em>optional</em>) – The color each artist draws in. When tuple, must have length
+n_artists. The default is ‘black’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>tuple</em><em> of </em><em>strings</em><em>, </em><em>optional</em>) – The label applied to each artist. For line charts,
+the labels are shown in a legend in the top right of the plot. For
+bar charts, the labels are shown on the y axis next to their
+corresponging bars. When tuple, must have length n_artists.
+When None, no labels are made. The default is None.</p></li>
+<li><p><strong>line_width</strong> (<em>float</em><em> or </em><em>tuple</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – The line weigth each artist uses. For line plots, this is the
+width of the plotted line, for bar charts, this is the width of
+the border around each bar. When tuple, must have length n_artists.
+The default is 1.5.</p></li>
+<li><p><strong>line_style</strong> (<em>line style string</em><em> or </em><em>tuple</em><em> of </em><em>ls strings</em><em>, </em><em>optional</em>) – The line style each artist uses. For line plots, this is the
+style of the plotted line, for bar charts, this argument is not
+used and therefore ignored. When tuple, must have length n_artists.
+The default is ‘solid’.</p></li>
+<li><p><strong>tail</strong> (<em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints optional</em>) – Specifies how many data points are used to draw a line. Only the
+most recently added data points are kept. Any data points added
+more than tail data points ago are discarded and not plotted. Only
+valid for line plots. When tuple, must have length n_artists. A
+value less than or equal to 0 means that no data is ever discarded
+and all data points added to the animator will be drawn.
+The default is -1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – At least one of the arguments color, label, line_width,
+line_style, or tail is not parasble to all artists.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – A integer identifier that is unique to the plot created.
+This allows future interaction with this plot (adding data
+points, etc.).</p></li>
+<li><p><strong>artist_ids</strong> (<em>tuple of ints, optional</em>) – A tuple of integer identifiers that are unique to the artist
+created. This allows future interaction with these artists (adding
+data points, etc.). Is only returned when n_artists &gt; 1.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.start_animator">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">start_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.start_animator" title="Link to this definition"></a></dt>
+<dd><p>Opens the Animator GUI with the specified plots. After the Animator
+is open, no more plots can be added; however, the plot data can still
+be set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.add_line_datum">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">add_line_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.add_line_datum" title="Link to this definition"></a></dt>
+<dd><p>Adds a single data point to the plot. Data point is appended to the
+end of all previously plotted data points on the specified line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The x value of the data point added to the plot.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – The y value of the data point added to the plot.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index to which the data is added. If plot
+only has a single artist, is ignored. The default value is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.set_bar_value">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.set_bar_value" title="Link to this definition"></a></dt>
+<dd><p>Sets the value of one of the bars in a bar plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – The value to which the bar is being set.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index whose value is being set.
+The default is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.reset_animator">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">reset_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.reset_animator" title="Link to this definition"></a></dt>
+<dd><p>Removes all previously plotted data from all plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.terminate_animator">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">terminate_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.terminate_animator" title="Link to this definition"></a></dt>
+<dd><p>Terminates the animator window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="using-the-keyboard">
+<h4>Using the Keyboard<a class="headerlink" href="#using-the-keyboard" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.is_pressed">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">is_pressed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.is_pressed" title="Link to this definition"></a></dt>
+<dd><p>Wrapper for the keyboard.Keys.is_pressed() function.
+Returns a boolean flag to indicate whether a desired key is pressed.
+The key may be alpha numeric or some special keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>string</em>) – The key to be detected. May be alpha numeric (“a”, “A”, “1”, “!”,
+“`”, etc.) or some special keys. The special keys are as follows:
+“space”, “enter”, “backspace”, “tab”, “shift”, “alt”,
+“ctrl”, and “esc”. The following modifiers can also be used:
+“shift+”, “alt+”, and “ctrl+”. Modifiers are added with the
+following format: “shift+a”, “ctrl+a”, “alt+a”, “shift+ctrl+alt+a”,
+etc. If “esc” is pressed, the keyboard listener will automatically
+stop and cannot be restarted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean flag to indicate whether the desired key is pressed. If
+the keyboard is disabled, always returns False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.await_keypress">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">await_keypress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'enter'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.await_keypress" title="Link to this definition"></a></dt>
+<dd><p>Waits until a specified keystroke is recieved.
+When an Animator GUI is open, this function must be called to
+keep the GUI responsive. If a GUI is not present, this function is
+optional.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>string</em><em>, </em><em>optional</em>) – The key string identifier. The default is “enter”.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Simulator.iterate_val">
+<span class="sig-prename descclassname"><span class="pre">Simulator.</span></span><span class="sig-name descname"><span class="pre">iterate_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curr_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">down_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iter_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0333</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Simulator.iterate_val" title="Link to this definition"></a></dt>
+<dd><p>Iterates a current value by some amount every time this function is
+called according to which keys are pressed. If no keys are pressed,
+no iteration occurs. If the down key is pressed, decrement the value.
+If the up key is pressed, increment the value. If both the up and
+down keys are pressed, do nothing. The iterated value is clipped
+between [min_val and max_val].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curr_val</strong> (<em>numeric value</em>) – The current value which will be incremented or decremented.</p></li>
+<li><p><strong>down_key</strong> (<em>string</em>) – A Keyboard string that specifies what must be depressed for
+decrementation to occur.</p></li>
+<li><p><strong>up_key</strong> (<em>string</em>) – A Keyboard string that specifies what must be depressed for
+incrementation to occur.</p></li>
+<li><p><strong>iter_val</strong> (<em>numeric value</em><em>, </em><em>optional</em>) – The value by which the current value is either incremented
+or decremented. The default is 0.0333.</p></li>
+<li><p><strong>min_val</strong> (<em>numeric value</em><em>, </em><em>optional</em>) – The minimum possible value that can be returned.
+The default is -np.inf.</p></li>
+<li><p><strong>max_val</strong> (<em>numeric value</em><em>, </em><em>optional</em>) – The maximum possible value that can be returned.
+The default is np.inf.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>new_val</strong> – The iterated value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numeric value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="the-animator-class">
+<h3>The Animator Class<a class="headerlink" href="#the-animator-class" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="condynsate.Animator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Animator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator" title="Link to this definition"></a></dt>
+<dd><p>Animator manages the real time plotting in QT GUI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fr</strong> (<em>float</em><em>, </em><em>optional</em>) – The frame rate (frames per second) at which the animated plots are
+updated. The default is 8.0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="the-animation-sequence">
+<h4>The Animation Sequence<a class="headerlink" href="#the-animation-sequence" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.add_plot">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_artists</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_lim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None,</span> <span class="pre">None]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_zero_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'solid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_plot" title="Link to this definition"></a></dt>
+<dd><p>Adds a plot to the animator. This function needs to be called to
+define a plot before data can be added to that plot. If called after
+start_animator, this function will do nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_artists</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of artists that draw on the plot
+The default is 1.</p></li>
+<li><p><strong>plot_type</strong> (<em>either 'line'</em><em> or </em><em>'bar'</em><em>, </em><em>optional</em>) – The type of plot. May either be ‘line’ or ‘bar’. The default
+is ‘line’.</p></li>
+<li><p><strong>title</strong> (<em>string</em><em>, </em><em>optional</em>) – The title of the plot. Will be written above the plot when
+rendered. The default is None.</p></li>
+<li><p><strong>x_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the x axis. Will be written under the plot
+when rendered. The default is None.</p></li>
+<li><p><strong>y_label</strong> (<em>string</em><em>, </em><em>optional</em>) – The label to apply to the y axis. Will be written to the left of
+the plot when rendered. The default is None.</p></li>
+<li><p><strong>x_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the x axis of the plot. A value of None
+will apply automatically updating limits to the corresponding
+bound of the axis. For example [None, 10.] will fix the upper
+bound to exactly 10, but the lower bound will freely change to
+show all data.The default is [None, None].</p></li>
+<li><p><strong>y_lim</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The limits to apply to the y axis of the plot. A value of None
+will apply automatically updating limits to the corresponding
+bound of the axis. For example [None, 10.] will fix the upper
+bound to exactly 10, but the lower bound will freely change to
+show all data.The default is [None, None].</p></li>
+<li><p><strong>h_zero_line</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether a horizontal line will be
+drawn on the y=0 line. The default is false</p></li>
+<li><p><strong>v_zero_line</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether a vertical line will be
+drawn on the x=0 line. The default is false</p></li>
+<li><p><strong>color</strong> (<em>matplotlib color string</em><em> or </em><em>tuple</em><em> of </em><em>color strings</em><em>, </em><em>optional</em>) – The color each artist draws in. When tuple, must have length
+n_artists. The default is ‘black’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em> or </em><em>tuple</em><em> of </em><em>strings</em><em>, </em><em>optional</em>) – The label applied to each artist. For line charts,
+the labels are shown in a legend in the top right of the plot. For
+bar charts, the labels are shown on the y axis next to their
+corresponging bars. When tuple, must have length n_artists.
+When None, no labels are made. The default is None.</p></li>
+<li><p><strong>line_width</strong> (<em>float</em><em> or </em><em>tuple</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – The line weigth each artist uses. For line plots, this is the
+width of the plotted line, for bar charts, this is the width of
+the border around each bar. When tuple, must have length n_artists.
+The default is 1.5.</p></li>
+<li><p><strong>line_style</strong> (<em>line style string</em><em> or </em><em>tuple</em><em> of </em><em>ls strings</em><em>, </em><em>optional</em>) – The line style each artist uses. For line plots, this is the
+style of the plotted line, for bar charts, this argument is not
+used and therefore ignored. When tuple, must have length n_artists.
+The default is ‘solid’.</p></li>
+<li><p><strong>tail</strong> (<em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints optional</em>) – Specifies how many data points are used to draw a line. Only the
+most recently added data points are kept. Any data points added
+more than tail data points ago are discarded and not plotted. Only
+valid for line plots. When tuple, must have length n_artists. A
+value less than or equal to 0 means that no data is ever discarded
+and all data points added to the animator will be drawn.
+The default is -1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – At least one of the arguments color, label, line_width,
+line_style, or tail is not parasble to all artists.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – A integer identifier that is unique to the plot created.
+This allows future interaction with this plot (adding data
+points, etc.).</p></li>
+<li><p><strong>artist_ids</strong> (<em>tuple of ints, optional</em>) – A tuple of integer identifiers that are unique to the artist
+created. This allows future interaction with these artists (adding
+data points, etc.). Is only returned when n_artists &gt; 1.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.start_animator">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">start_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.start_animator" title="Link to this definition"></a></dt>
+<dd><p>Builds and shows the animator GUI. Starts the GUI thread that runs
+until the terminate_animator function is called. Once start_animator
+is called, no more plots can be added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.add_line_datum">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">add_line_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.add_line_datum" title="Link to this definition"></a></dt>
+<dd><p>Adds a single data point to the plot. Data point is appended to the
+end of all previously plotted data points on the specified line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – The x value of the data point added to the plot.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – The y value of the data point added to the plot.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index to which the data is added. If plot
+only has a single artist, is ignored. The default value is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.set_bar_value">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">set_bar_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artist_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.set_bar_value" title="Link to this definition"></a></dt>
+<dd><p>Sets the value of one of the bars in a bar plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_id</strong> (<em>int</em>) – The plot’s unique identifier.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – The value to which the bar is being set.</p></li>
+<li><p><strong>artist_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The plot’s artist index whose value is being set.
+The default is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.reset_animator">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">reset_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.reset_animator" title="Link to this definition"></a></dt>
+<dd><p>Removes all previously plotted data from all plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Animator.terminate_animator">
+<span class="sig-prename descclassname"><span class="pre">Animator.</span></span><span class="sig-name descname"><span class="pre">terminate_animator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Animator.terminate_animator" title="Link to this definition"></a></dt>
+<dd><p>Terminates the animator window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="the-keys-class">
+<h3>The Keys Class<a class="headerlink" href="#the-keys-class" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="condynsate.Keys">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Keys</span></span><a class="headerlink" href="#condynsate.Keys" title="Link to this definition"></a></dt>
+<dd><p>Keys detected keyboard events and stores key information. Used for
+polling key presses. Starts a new non-blocking thread that
+listens to the keyboard. Starts 2 new threads to detect script
+termination events.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Keys.is_pressed">
+<span class="sig-name descname"><span class="pre">is_pressed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Keys.is_pressed" title="Link to this definition"></a></dt>
+<dd><p>Returns a boolean flag to indicate whether a desired key is pressed.
+The key may be alpha numeric or some special keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key_str</strong> (<em>string</em>) – <p>The key to be detected. May be alpha numeric (“a”, “1”, “`”, etc.)
+or some special keys.</p>
+<p>The special keys are as follows:
+“space”, “enter”, “backspace”, “tab”, “tab”, and “esc”.</p>
+<p>The following modifiers can also be used:
+“shift+”, “alt+”, and “ctrl+”.</p>
+<p>Modifiers are added with the following format:
+“shift+a”, “ctrl+a”, “alt+a”, “shift+ctrl+alt+a”, etc.</p>
+<p>If “esc” is pressed, the keyboard listener will
+automatically stop and cannot be restarted.</p>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean flag to indicate whether the desired key is pressed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-visualizer-class">
+<h3>The Visualizer Class<a class="headerlink" href="#the-visualizer-class" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="condynsate.Visualizer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">condynsate.</span></span><span class="sig-name descname"><span class="pre">Visualizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_vis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes_vis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer" title="Link to this definition"></a></dt>
+<dd><p>Visualizer manages the meshcat based visulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid_vis</strong> (<em>bool</em><em>, </em><em>optional</em>) – The boolean value to which the visibility of the XY grid is set.
+The default is True.</p></li>
+<li><p><strong>axes_vis</strong> (<em>bool</em><em>, </em><em>optional</em>) – The boolean value to which the visibility of the axes is set.
+The default is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="adjusting-the-appearance-of-the-viewer">
+<h4>Adjusting the Appearance of the Viewer<a class="headerlink" href="#adjusting-the-appearance-of-the-viewer" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_grid">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_grid" title="Link to this definition"></a></dt>
+<dd><p>Controls the visibility state of the XY grid in the visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visible</strong> (<em>bool</em><em>, </em><em>optional</em>) – The boolean value to which the visibility of the XY grid is set.
+The default is True.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_axes">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_axes" title="Link to this definition"></a></dt>
+<dd><p>Controls the visibility state of the axes in the visualizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visible</strong> (<em>bool</em><em>, </em><em>optional</em>) – The boolean value to which the visibility of the axes is set.
+The default is True.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_background">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bot_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_background" title="Link to this definition"></a></dt>
+<dd><p>Set the top and bottom colors of the background of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_color</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The 0-255 color to apply to the top of the background.
+The default is None. If top_color is set to None, top_color
+is not altered.</p></li>
+<li><p><strong>bot_color</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The 0-255 color to apply to the bottom of the background.
+The default is None. If bot_color is set to None, bot_color
+is not altered.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_spotlight">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_spotlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_spotlight" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the spotlight in the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+<li><p><strong>distance</strong> (<em>float</em><em> (</em><em>0. to 100.</em><em>)</em><em>, </em><em>optional</em>) – The distance from the origin of the light. The default is 100..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_posx_pt_light">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_posx_pt_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_posx_pt_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the point light on the positive x axis
+in the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+<li><p><strong>distance</strong> (<em>float</em><em> (</em><em>0. to 100.</em><em>)</em><em>, </em><em>optional</em>) – The distance from the origin of the light. The default is 100..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_negx_pt_light">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_negx_pt_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_negx_pt_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties of the point light on the negative x axis
+in the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+<li><p><strong>distance</strong> (<em>float</em><em> (</em><em>0. to 100.</em><em>)</em><em>, </em><em>optional</em>) – The distance from the origin of the light. The default is 100..</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_ambient_light">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_ambient_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_ambient_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties ambient light of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_fill_light">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_fill_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_fill_light" title="Link to this definition"></a></dt>
+<dd><p>Sets the properties fill light of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>on</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean flag that indicates whether the light is on.
+The default is False.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em> (</em><em>0. to 20.</em><em>)</em><em>, </em><em>optional</em>) – The brightness of the light. The default is 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.transform_camera">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">transform_camera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wxyz_quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pitch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.transform_camera" title="Link to this definition"></a></dt>
+<dd><p>Transforms the position, orientation, and scale of the camera
+in the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The scaling of the camera view about the camera point along the
+three axes. The default is [1., 1., 1.].</p></li>
+<li><p><strong>translate</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The translation of the camera point along the three axes.
+The default is [0., 0., 0.].</p></li>
+<li><p><strong>wxyz_quaternion</strong> (<em>array-like</em><em>, </em><em>shape</em><em> (</em><em>4</em><em>,</em><em>) </em><em>optional</em>) – A wxyz quaternion that describes the intial orientation of camera
+about the camera point. When roll, pitch, and yaw all have None
+type, the quaternion is used. If any roll, pitch, or yaw have non
+None type, the quaternion is ignored.
+The default is [1., 0., 0., 0.].</p></li>
+<li><p><strong>roll</strong> (<em>float</em><em>, </em><em>optional</em>) – The roll of the camera about the camera point.
+The default is None.</p></li>
+<li><p><strong>pitch</strong> (<em>float</em><em>, </em><em>optional</em>) – The pitch of the camera about the camera point.
+The default is None.</p></li>
+<li><p><strong>yaw</strong> (<em>float</em><em>, </em><em>optional</em>) – The yaw of the camera about the camera point.
+The default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="adding-elements-to-the-viewer">
+<h4>Adding Elements to the Viewer<a class="headerlink" href="#adding-elements-to-the-viewer" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.add_obj">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">add_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tex_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wxyz_quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.add_obj" title="Link to this definition"></a></dt>
+<dd><p>Adds a textured .obj to the visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_name</strong> (<em>string</em>) – The name of the urdf to which the .obj is being added as a link.
+URDF objects define robots or assemblies.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link.</p></li>
+<li><p><strong>tex_path</strong> (<em>string</em>) – Relative path pointing to the .png file that provides the
+texture.</p></li>
+<li><p><strong>scale</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The initial scaling along the three axes applied to the .obj.
+The default is [1., 1., 1.].</p></li>
+<li><p><strong>translate</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The initial translation along the three axes applied to the .obj.
+The default is [0., 0., 0.].</p></li>
+<li><p><strong>wxyz_quaternion</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>4</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The wxyz quaternion that defines the initial rotation applied to
+the .obj. The default is [1., 0., 0., 0.].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>obj_geometry</strong> (<em>meshcat.geometry.ObjMeshGeometry</em>) – The object mesh.</p></li>
+<li><p><strong>obj_texture</strong> (<em>meshcat.geometry.MeshPhongMaterial</em>) – The object texture.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.add_stl">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">add_stl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stl_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[91,</span> <span class="pre">155,</span> <span class="pre">213]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transparent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wxyz_quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.add_stl" title="Link to this definition"></a></dt>
+<dd><p>Adds a colored .stl to the visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_name</strong> (<em>string</em>) – The name of the urdf to which the .stl is being added as a link.
+URDF objects define robots or assemblies.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link.</p></li>
+<li><p><strong>stl_path</strong> (<em>string</em>) – The relative path pointing to the .stl description of the link that
+is being added.</p></li>
+<li><p><strong>color</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The 0-255 RGB color of the .stl. The default is [91, 155, 213].</p></li>
+<li><p><strong>transparent</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean that indicates if the .stl is transparent.
+The default is False.</p></li>
+<li><p><strong>opacity</strong> (<em>float</em><em>, </em><em>optional</em>) – The opacity of the .stl. Can take float values between 0.0 and 1.0.
+The default is 1.0.</p></li>
+<li><p><strong>scale</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The initial scaling along the three axes applied to the .stl.
+The default is [1., 1., 1.].</p></li>
+<li><p><strong>translate</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The initial translation along the three axes applied to the .stl.
+The default is [0., 0., 0.].</p></li>
+<li><p><strong>wxyz_quaternion</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>4</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The wxyz quaternion that defines the initial rotation applied to
+the .stl. The default is [1., 0., 0., 0.].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>link_geometry</strong> (<em>meshcat.geometry.StlMeshGeometry</em>) – The link mesh.</p></li>
+<li><p><strong>link_mat</strong> (<em>meshcat.geometry.MeshPhongMaterial</em>) – The link material.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="adjusting-elements-in-the-viewer">
+<h4>Adjusting Elements in the Viewer<a class="headerlink" href="#adjusting-elements-in-the-viewer" title="Link to this heading"></a></h4>
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.set_link_color">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">set_link_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[91,</span> <span class="pre">155,</span> <span class="pre">213]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transparent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opacity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.set_link_color" title="Link to this definition"></a></dt>
+<dd><p>Set a link color by deleting it and then adding another copy of it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_name</strong> (<em>string</em>) – The name of the urdf that contains the link being refreshed.
+URDF objects define robots or assemblies.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link.</p></li>
+<li><p><strong>link_geometry</strong> (<em>meshcat.geometry.StlMeshGeometry</em>) – The link mesh.</p></li>
+<li><p><strong>color</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The 0-255 RGB color of the link. The default is [91, 155, 213].</p></li>
+<li><p><strong>transparent</strong> (<em>boolean</em><em>, </em><em>optional</em>) – A boolean that indicates if the link is transparent.
+The default is False.</p></li>
+<li><p><strong>opacity</strong> (<em>float</em><em>, </em><em>optional</em>) – The opacity of the link. Can take float values between 0.0 and 1.0.
+The default is 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="condynsate.Visualizer.apply_transform">
+<span class="sig-prename descclassname"><span class="pre">Visualizer.</span></span><span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urdf_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">1.0,</span> <span class="pre">1.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wxyz_quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#condynsate.Visualizer.apply_transform" title="Link to this definition"></a></dt>
+<dd><p>Applies a 3D affine transformation inclunding scaling, translating,
+and rotating to a specified link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>urdf_name</strong> (<em>string</em>) – The name of the urdf being transformed.</p></li>
+<li><p><strong>link_name</strong> (<em>string</em>) – The name of the link being transformed.</p></li>
+<li><p><strong>scale</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The scaling along the three axes. The default is [1., 1., 1.].</p></li>
+<li><p><strong>translate</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>3</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The translation along the three axes. The default is [0., 0., 0.].</p></li>
+<li><p><strong>wxyz_quaternion</strong> (<em>array-like</em><em>, </em><em>size</em><em> (</em><em>4</em><em>,</em><em>)</em><em>, </em><em>optional</em>) – The wxyz quaternion that defines the rotation.
+The default is [1., 0., 0., 0.].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>transform</strong> – The 4x4 3D affine transformation matrix applied to the link.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array-like, size (4,4)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/pendulum.html">condynsate.Simulator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Setting-up-Data-Collection">Setting up Data Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Running-the-Simulation">Running the Simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/pendulum.html#Post-Processing">Post-Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/gyro.html">Keyboard Interactivity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/gyro.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/gyro.html#Enabling-Keyboard-Interactivity">Enabling Keyboard Interactivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/gyro.html#Running-the-Simulation">Running the Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/cart.html">Animator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/cart.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/cart.html#Setting-up-the-Animator">Setting up the Animator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/cart.html#Running-the-Simulation">Running the Simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_collections/examples/wheel.html">Wheel Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Setting-up-the-Animator">Setting up the Animator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Setting-up-the-Simulation-Loop">Setting up the Simulation Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_collections/examples/wheel.html#Running-the-Simulation-Loop">Running the Simulation Loop</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_collections/examples/pendulum.html" class="btn btn-neutral float-right" title="condynsate.Simulator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, G. Schaer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

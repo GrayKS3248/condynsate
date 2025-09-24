@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 00: Introduction &mdash; condynsate 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autoclasstoc.css?v=08871587" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tutorial 01: External Forces" href="01_External_Forces.html" />
+    <link rel="prev" title="Tutorials" href="../../tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            condynsate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../package.html">The condynsate Package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial 00: Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Tutorial-Description">Tutorial Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Imports">Imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Building-the-Project-Class">Building the Project Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Running-the-Project-Class">Running the Project Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Challenge">Challenge</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="01_External_Forces.html">Tutorial 01: External Forces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_Joint_Forces.html">Tutorial 02: Joint Forces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_The_Animator.html">Tutorial 03: The Animator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_Links_and_Data_Collection.html">Tutorial 04: Links and Data Collection</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">condynsate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Tutorial 00: Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/_collections/tutorials/00_Introduction.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Tutorial-00:-Introduction">
+<h1>Tutorial 00: Introduction<a class="headerlink" href="#Tutorial-00:-Introduction" title="Link to this heading"></a></h1>
+<section id="Tutorial-Description">
+<h2>Tutorial Description<a class="headerlink" href="#Tutorial-Description" title="Link to this heading"></a></h2>
+<p>This tutorial covers creating the backend of a new project using condynsate. In this tutorial, we will cover how to:</p>
+<ol class="arabic simple">
+<li><p>Import physics objects in the condynsate physics environment.</p></li>
+<li><p>Test that physics objects behave as expected.</p></li>
+</ol>
+<p>We will accomplish these goals by importing a cube 1 meter above a solid ground plane, starting the physics engine, then observing the dynamics of the cube. Note that this project will not coverhow to create your own .URDF files. Instead, we recommend reviewing <a class="reference external" href="https://wiki.ros.org/urdf">https://wiki.ros.org/urdf</a>.</p>
+</section>
+<section id="Imports">
+<h2>Imports<a class="headerlink" href="#Imports" title="Link to this heading"></a></h2>
+<p>To begin, we import the required dependencies. In general, for projects that will simulate the physics of a set of urdf objects, the only module needed from the condynsate project is <code class="docutils literal notranslate"><span class="pre">condynsate.simulator</span></code>. Note that we also import <code class="docutils literal notranslate"><span class="pre">condynsate.__assets__</span></code> so that we can load and use a condynsate default cube .URDF file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">condynsate</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span> <span class="k">as</span> <span class="n">con_sim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">condynsate</span><span class="w"> </span><span class="kn">import</span> <span class="n">__assets__</span> <span class="k">as</span> <span class="n">assets</span>
+</pre></div>
+</div>
+</div>
+<p>To see what default .URDF files are available to us, we can list the keys of <code class="docutils literal notranslate"><span class="pre">assets</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">assets</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;cart&#39;, &#39;check_img&#39;, &#39;concrete_img&#39;, &#39;cube&#39;, &#39;double_pendulum&#39;, &#39;gyro&#39;, &#39;pendulum&#39;, &#39;plane_big&#39;, &#39;sphere&#39;, &#39;target_arrow&#39;, &#39;wheel&#39;])
+</pre></div></div>
+</div>
+</section>
+<section id="Building-the-Project-Class">
+<h2>Building the Project Class<a class="headerlink" href="#Building-the-Project-Class" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Project</span></code> class is that object that front end users interact with. In its simplest form, the <code class="docutils literal notranslate"><span class="pre">Project</span></code> class contains two class functions: <code class="docutils literal notranslate"><span class="pre">__init__</span></code> and <code class="docutils literal notranslate"><span class="pre">run</span></code>. In <code class="docutils literal notranslate"><span class="pre">__init__</span></code> the physics engine is initialized, .URDF files are imported into the engine, and initial conditions are set. In <code class="docutils literal notranslate"><span class="pre">run</span></code> initial conditions are reset, and the physics engine is turned on.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        STEP 1: Initialize an instance of the condynsate.simulator class.</span>
+<span class="sd">        Note that for this project, we do not want to use animation.</span>
+<span class="sd">        This means that we do not want to plot things in real time.</span>
+<span class="sd">        To avoid condynsate from assuming that we want to do this and</span>
+<span class="sd">        running some things in the background that take compute power,</span>
+<span class="sd">        we simply set the animation flag in the initialization function</span>
+<span class="sd">        to be false. We also do not want to use the keyboard for</span>
+<span class="sd">        interactivity, so we set keyboard to False.</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">con_sim</span><span class="p">(</span><span class="n">animation</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="n">keyboard</span>  <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        STEP 2: Add solid ground to the physics environment. Condynsate</span>
+<span class="sd">        already includes several default .URDF files that are listed in</span>
+<span class="sd">        the  condynsate.__assets__ variable. To load any one of these,</span>
+<span class="sd">        we simply  select the path to the asset we want and call the</span>
+<span class="sd">        load_urdf function.</span>
+
+<span class="sd">        load_urdf has 5 arguments. urdf_path tells the function where the</span>
+<span class="sd">        .URDF file is that we want to load. For the ground we will use</span>
+<span class="sd">        &#39;plane_big&#39;.</span>
+
+<span class="sd">        position and wxyz_quaternion define the position and orientation</span>
+<span class="sd">        in which the URDF object will be placed. These positions and</span>
+<span class="sd">        orientations are defined around the parent axes of the URDF</span>
+<span class="sd">        object. By setting position = [0, 0, 0] and</span>
+<span class="sd">        wxyz_quaternion = [1, 0, 0, 0], we place the plane at (0, 0, 0)</span>
+<span class="sd">        aligned to the XY plane.</span>
+
+<span class="sd">        By setting fixed = True, we are telling the simulator NOT to</span>
+<span class="sd">        update the physics of the base of the object. It will still have</span>
+<span class="sd">        collision, but no other forces, including gravity, will affect it.</span>
+
+<span class="sd">        By setting update_vis = False, we are telling the simulator NOT</span>
+<span class="sd">        to send updates to the visualizer for this object. This flag is</span>
+<span class="sd">        usually set to False for unjointed, fixed URDFs to reduce the</span>
+<span class="sd">        amount of compute power required by the visualization</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ground</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">load_urdf</span><span class="p">(</span><span class="n">urdf_path</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[</span><span class="s1">&#39;plane_big&#39;</span><span class="p">],</span>
+                                       <span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span>
+                                       <span class="n">wxyz_quaternion</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                                       <span class="n">fixed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                       <span class="n">update_vis</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        STEP 3: Load a cube into the simulator as a physics object. For</span>
+<span class="sd">        this we will use the &#39;cube&#39; asset.</span>
+
+<span class="sd">        By setting position = [0, 0, 1.5] and</span>
+<span class="sd">        wxyz_quaternion = [1, 0, 0, 0], we place the cube at (0, 0, 1.5)</span>
+<span class="sd">        in the orientation defined by the URDF parent axes. As it turns</span>
+<span class="sd">        out, the cube is 1x1x1, so that a center position of [0, 0, 1.5]</span>
+<span class="sd">        places the bottom of the cube exactly 1 meter above the ground.</span>
+
+<span class="sd">        By setting fixed = False, we are telling the simulator apply</span>
+<span class="sd">        physics to this .URDF when the engine is running.</span>
+
+<span class="sd">        By setting update_vis = True, we are telling the simulator to</span>
+<span class="sd">        send updates to the visualizer for this object. This is usually</span>
+<span class="sd">        set to  true when an object is not fixed and will change its</span>
+<span class="sd">        position and/or orientation.</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cube</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">load_urdf</span><span class="p">(</span><span class="n">urdf_path</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[</span><span class="s1">&#39;cube&#39;</span><span class="p">],</span>
+                                     <span class="n">position</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+                                     <span class="n">wxyz_quaternion</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                                     <span class="n">fixed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">update_vis</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        Now that we have created an initialization function, we move on</span>
+<span class="sd">        to the run function. This function will run a physics simulation</span>
+<span class="sd">        using condynsate. Essentially, we will do two things:</span>
+<span class="sd">            1) Reset the simulation environment to the initial</span>
+<span class="sd">               conditions. Whereas this will not do anything for this</span>
+<span class="sd">               particular example, it is best practice to always call</span>
+<span class="sd">               condynsate.simulator.reset before running a simulation</span>
+<span class="sd">               loop.</span>
+<span class="sd">            3) Run a simulation to completion. In this case, completion</span>
+<span class="sd">               is defined as the simulator reaching max_time. We will</span>
+<span class="sd">               describe how to do this using a while loop and</span>
+<span class="sd">               condynsate.simulator.step below.</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        STEP 1: Reset the simulator. It is best practice to do this at</span>
+<span class="sd">        the beginning of every run function.</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Reset the simulator.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        STEP 2: Run the simulation loop. condynsate.simulator cannot run</span>
+<span class="sd">        an entire simulation by itself. Instead, it can take one time</span>
+<span class="sd">        step of 0.01 seconds. Therefore, the way we run an entire</span>
+<span class="sd">        simulation is to place the condynsate.simulator.step function</span>
+<span class="sd">        inside a while loop that executes until the boolean flag</span>
+<span class="sd">        condynsate.simulator.is_done is True. Note that this flag will</span>
+<span class="sd">        automatically be set to true when max_time is reached or, if</span>
+<span class="sd">        the keyboard is enabled, when the user presses the esc key.</span>
+<span class="sd">        If the max_time argument to  is None, is_done will not be set</span>
+<span class="sd">        to true until the esc key is pressed. Further, if max_time is</span>
+<span class="sd">        None AND keyboard interactivity is disabled, max_time fails safe</span>
+<span class="sd">        to 10 seconds.</span>
+<span class="sd">        ##################################################################</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Run the simulation loop until done</span>
+        <span class="k">while</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">is_done</span><span class="p">):</span>
+            <span class="n">ret_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">max_time</span> <span class="o">=</span> <span class="n">max_time</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Running-the-Project-Class">
+<h2>Running the Project Class<a class="headerlink" href="#Running-the-Project-Class" title="Link to this heading"></a></h2>
+<p>Now that we have made the <code class="docutils literal notranslate"><span class="pre">Project</span></code> class, we can test it by initializing it and then calling the <code class="docutils literal notranslate"><span class="pre">run</span></code> function. Remember to press the enter key to start the simulation and the esc key to end the simulation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an instance of the Project class.</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">()</span>
+
+<span class="c1"># Run the simulation. max_time defines when the simulation automatically terminates.</span>
+<span class="c1"># Set to None for unlimited runtime terminated by user keypress.</span>
+<span class="n">proj</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_time</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+You can open the visualizer by visiting the following URL:
+http://127.0.0.1:7002/static/
+</pre></div></div>
+</div>
+</section>
+<section id="Challenge">
+<h2>Challenge<a class="headerlink" href="#Challenge" title="Link to this heading"></a></h2>
+<p>This tutorial is now complete. For an added challenge, think of how you would modify <code class="docutils literal notranslate"><span class="pre">__init__</span></code> so that two cubes, one above the other, are loaded but only the top one has physics applied to it.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="01_External_Forces.html" class="btn btn-neutral float-right" title="Tutorial 01: External Forces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, G. Schaer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

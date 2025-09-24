@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>condynsate.Simulator &mdash; condynsate 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autoclasstoc.css?v=08871587" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Keyboard Interactivity" href="gyro.html" />
+    <link rel="prev" title="The condynsate Package" href="../../package.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            condynsate
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../package.html">The condynsate Package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../package.html#classes">Classes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../package.html#examples">Examples</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">condynsate.Simulator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Setting-up-the-Simulation-Environment">Setting up the Simulation Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Setting-up-Data-Collection">Setting up Data Collection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Running-the-Simulation">Running the Simulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Post-Processing">Post-Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gyro.html">Keyboard Interactivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cart.html">Animator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="wheel.html">Wheel Project</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">condynsate</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../package.html">The condynsate Package</a></li>
+      <li class="breadcrumb-item active">condynsate.Simulator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/_collections/examples/pendulum.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="condynsate.Simulator">
+<h1>condynsate.Simulator<a class="headerlink" href="#condynsate.Simulator" title="Link to this heading"></a></h1>
+<section id="Setting-up-the-Simulation-Environment">
+<h2>Setting up the Simulation Environment<a class="headerlink" href="#Setting-up-the-Simulation-Environment" title="Link to this heading"></a></h2>
+<p>Import necessary <code class="docutils literal notranslate"><span class="pre">condynsate</span></code> modules</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">condynsate</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span> <span class="k">as</span> <span class="n">conSim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">condynsate</span><span class="w"> </span><span class="kn">import</span> <span class="n">__assets__</span> <span class="k">as</span> <span class="n">assets</span>
+</pre></div>
+</div>
+</div>
+<p>Create a instance of <code class="docutils literal notranslate"><span class="pre">condynsate.simulator</span></code> that does not use the keyboard or the animator but does use the visualizer.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulator</span> <span class="o">=</span> <span class="n">conSim</span><span class="p">(</span><span class="n">keyboard</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                   <span class="n">visualization</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                   <span class="n">animation</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+You can open the visualizer by visiting the following URL:
+http://127.0.0.1:7002/static/
+</pre></div></div>
+</div>
+<p>Load the pendulum into the simulator. Set <code class="docutils literal notranslate"><span class="pre">fixed</span> <span class="pre">=</span> <span class="pre">true</span></code> so that the base link of the pendulum is fixed in space. Set <code class="docutils literal notranslate"><span class="pre">update_vis</span> <span class="pre">=</span> <span class="pre">true</span></code> so that its position updates are reflected in the visualizer. Additionally, set the base pitch to 180 degrees and the yaw to 90 degrees so the pendulum is oriented downward and swings in the YZ visual plane, respectively.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pendulum</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">load_urdf</span><span class="p">(</span><span class="n">urdf_path</span> <span class="o">=</span> <span class="n">assets</span><span class="p">[</span><span class="s1">&#39;pendulum&#39;</span><span class="p">],</span>
+                               <span class="n">fixed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                               <span class="n">update_vis</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                               <span class="n">yaw</span> <span class="o">=</span> <span class="mf">1.571</span><span class="p">,</span> <span class="c1"># All angle arguments are in radians</span>
+                               <span class="n">pitch</span> <span class="o">=</span> <span class="mf">3.142</span><span class="p">)</span> <span class="c1"># All angle arguments are in radians</span>
+</pre></div>
+</div>
+</div>
+<p>Set the <code class="docutils literal notranslate"><span class="pre">&quot;chassis_to_arm&quot;</span></code> joint friction to some small value. The <code class="docutils literal notranslate"><span class="pre">&quot;chassis_to_arm&quot;</span></code> joint is the rotational joint about which the pendulum swings</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">simulator</span><span class="o">.</span><span class="n">set_joint_damping</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="n">pendulum</span><span class="p">,</span>
+                            <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">,</span>
+                            <span class="n">damping</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Set the initial angle of the pendulum. We denote that this is an initial condition with the <code class="docutils literal notranslate"><span class="pre">initial_cond</span> <span class="pre">=</span> <span class="pre">True</span></code> flag and we make the change instantaneously by using the <code class="docutils literal notranslate"><span class="pre">physics</span> <span class="pre">=</span> <span class="pre">False</span></code> flag.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">initial_angle</span> <span class="o">=</span> <span class="mf">0.1745</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">set_joint_position</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="n">pendulum</span><span class="p">,</span>
+                             <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">,</span>
+                             <span class="n">position</span> <span class="o">=</span> <span class="n">initial_angle</span><span class="p">,</span> <span class="c1"># For a rotational joint, this value is in radians</span>
+                             <span class="n">initial_cond</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                             <span class="n">physics</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Setting-up-Data-Collection">
+<h2>Setting up Data Collection<a class="headerlink" href="#Setting-up-Data-Collection" title="Link to this heading"></a></h2>
+<p>For fun, we will compare the dynamics of our nonlinear simulation to the small-angle linear approximation of pendulum dynamics. To do so, we define the small-angle pendulum dynamics approximations.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use a numerical integrator and the linear approximation of pendulum dynamics to get an estimated trajectory</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">linear_angle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="n">initial_angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">9.81</span><span class="o">/</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="n">linear_angle_vel</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">9.81</span><span class="o">/</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">initial_angle</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">9.81</span><span class="o">/</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>Create an empty dictionary to collect simulation data</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;angle&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;angle_vel&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;time&#39;</span> <span class="p">:</span> <span class="p">[],}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Running-the-Simulation">
+<h2>Running the Simulation<a class="headerlink" href="#Running-the-Simulation" title="Link to this heading"></a></h2>
+<p>Run the simulation in a loop. Begin by resetting the simulation using <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.reset</span></code>, then create a loop. The loop terminates when the flag <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.is_done</span></code> flips to True. In each time step of the simulation loop we do three things:</p>
+<ol class="arabic simple">
+<li><p>Take a simulation time step.</p></li>
+<li><p>Extract and store the state of the <code class="docutils literal notranslate"><span class="pre">&quot;chassis_to_arm&quot;</span></code> joint. if a successful simulation step is taken. (Successful simulation steps are indicated by <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.step</span></code> having a <code class="docutils literal notranslate"><span class="pre">ret_code</span></code> greater than <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p>Reset the data dictionary if the simulation was reset during <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.step</span></code>. A simulation reset is indicated by <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.step</span></code> having a <code class="docutils literal notranslate"><span class="pre">ret_code</span></code> equal to <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+</ol>
+<p>By setting the <code class="docutils literal notranslate"><span class="pre">real_time</span> <span class="pre">=</span> <span class="pre">True</span></code> flag and <code class="docutils literal notranslate"><span class="pre">max_time</span> <span class="pre">=</span> <span class="pre">5.0</span></code> in <code class="docutils literal notranslate"><span class="pre">condynsate.Simulator.step</span></code>, we tell the simulation to attempt to run in real time for 5 seconds.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reset before running a simulation loop</span>
+<span class="n">simulator</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+<span class="c1"># Get the initial joint state at time t = 0.</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">get_joint_state</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="n">pendulum</span><span class="p">,</span>
+                                  <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">])</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;angle_vel&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;velocity&#39;</span><span class="p">])</span>
+
+<span class="c1"># Create the main simulation loop</span>
+<span class="k">while</span><span class="p">(</span><span class="ow">not</span> <span class="n">simulator</span><span class="o">.</span><span class="n">is_done</span><span class="p">):</span>
+    <span class="c1"># Take a single physics step of condynsate.Simulator.dt seconds. This will</span>
+    <span class="c1"># automatically update the physics and the visualizer, and attempts</span>
+    <span class="c1"># to run in real time.</span>
+    <span class="n">ret_code</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">real_time</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                              <span class="n">max_time</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">)</span>
+
+    <span class="c1"># Add the simulation data at the current time if a simulation step is taken</span>
+    <span class="k">if</span> <span class="n">ret_code</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">get_joint_state</span><span class="p">(</span><span class="n">urdf_obj</span> <span class="o">=</span> <span class="n">pendulum</span><span class="p">,</span>
+                                          <span class="n">joint_name</span> <span class="o">=</span> <span class="s1">&#39;chassis_to_arm&#39;</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">])</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;angle_vel&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;velocity&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Handle resetting the data collection if the simulation is reset.</span>
+    <span class="k">if</span> <span class="n">ret_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;angle&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;angle_vel&#39;</span> <span class="p">:</span> <span class="p">[],</span>
+                <span class="s1">&#39;time&#39;</span> <span class="p">:</span> <span class="p">[],}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Post-Processing">
+<h2>Post-Processing<a class="headerlink" href="#Post-Processing" title="Link to this heading"></a></h2>
+<p>Here we format and plot the data we collected during the simulation using the <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> package.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot simulation data</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Create the plot</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+
+<span class="c1"># Plot the angles</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;angle&#39;</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Simulated&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">linear_angle</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Small-Angle&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Angle [rad]&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.21</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">),</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Plot the angluar velocities</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;angle_vel&#39;</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Simulated&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span> <span class="n">linear_angle_vel</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Small-Angle&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Angular Vel [rad/s]&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Small Angle Approximation vs. Simulation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/_collections_examples_pendulum_23_0.png" src="../../_images/_collections_examples_pendulum_23_0.png" />
+</div>
+</div>
+<p>As expected, because the initial angle was small (~10 degrees) the period of the nonlinear simulation and linear approximation are close; however, due to the joint damping the amplitude of the simulation decreases with time. This behavior is not captured by the small-angle approximation.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../package.html" class="btn btn-neutral float-left" title="The condynsate Package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gyro.html" class="btn btn-neutral float-right" title="Keyboard Interactivity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, G. Schaer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
